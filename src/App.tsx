@@ -1,57 +1,17 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Facultes from './pages/Facultes';
-import Departements from './pages/Departements';
-import ProtectedRoute from './components/ProtectedRoute';
-import MainLayout from './layouts/MainLayout';
-
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Route publique */}
-          <Route path="/login" element={<Login />} />
-          
-          {/* Routes protégées avec Layout */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/facultes"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <Facultes />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/Departements'
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <Departements />
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
-          {/* Redirections */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <div className="min-h-screen bg-base-200 flex items-center justify-center">
+      <div className="card w-96 bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">🎓 University Management</h2>
+          <p>Infrastructure configurée avec succès !</p>
+          <div className="badge badge-primary">React 19.2</div>
+          <div className="badge badge-secondary">TypeScript</div>
+          <div className="badge badge-accent">Tailwind v4</div>
+          <div className="badge badge-success">DaisyUI</div>
+        </div>
+      </div>
+    </div>
   );
 }
 
