@@ -1,7 +1,4 @@
-// =========================================
 // TYPES COMMUNS RÉUTILISABLES
-// =========================================
-
 /**
  * Paramètres de requête pour la pagination et les filtres
  */

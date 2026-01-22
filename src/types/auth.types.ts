@@ -1,7 +1,4 @@
-// =========================================
 // TYPES POUR L'AUTHENTIFICATION
-// =========================================
-
 /**
  * Structure d'un utilisateur
  */

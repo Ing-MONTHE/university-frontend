@@ -18,13 +18,13 @@ Système de gestion universitaire moderne développé avec React 19, TypeScript,
 
 ### Prérequis
 
-- Node.js 18+ ou 20+
+- Node.js 20+
 - npm ou yarn
 
 ### Étapes
 ```bash
 # Cloner le repository
-git clone https://github.com/VotreUsername/university-frontend.git
+git clone https://github.com/Ing-MONTHE/university-frontend.git
 
 # Entrer dans le dossier
 cd university-frontend
@@ -76,35 +76,61 @@ src/
 
 ## 🎯 Fonctionnalités
 
-### Phase 1 - Infrastructure ✅
-- [x] Configuration du projet
+### Phase 1 - Infrastructure ✅ (Terminée)
+- [x] Configuration du projet (Vite + React 19 + TypeScript)
+- [x] Tailwind CSS v4 configuré
 - [x] Client API avec intercepteurs JWT
 - [x] Types TypeScript de base
-- [ ] Contexte d'authentification
-- [ ] Système de routing
+- [x] Contexte d'authentification (AuthContext)
+- [x] Hook personnalisé useAuth
+- [x] Système de routing avec React Router v7
+- [x] Composant ProtectedRoute
+- [x] Pages temporaires (Login, Dashboard)
 
-### Phase 2 - Authentification
-- [ ] Page de connexion
-- [ ] Gestion des tokens JWT
-- [ ] Routes protégées
+### Phase 2 - Authentification ✅ (Terminée)
+- [x] Page de connexion professionnelle (design split-screen)
+- [x] Formulaire avec validation
+- [x] Gestion des erreurs de connexion
+- [x] Intégration avec backend Django (JWT)
+- [x] Toggle afficher/masquer mot de passe
+- [x] Checkbox "Se souvenir"
+- [x] Lien "Mot de passe oublié"
+- [x] États de chargement (spinner)
+- [x] Redirection automatique après connexion
+- [x] Design responsive (mobile/desktop)
 
-### Phase 3 - Structure Académique
+### Phase 3 - Layout & Composants UI (En cours)
+- [ ] Sidebar de navigation
+- [ ] Header avec profil utilisateur
+- [ ] MainLayout (structure globale)
+- [ ] Dashboard avec statistiques réelles
+- [ ] Graphiques (Recharts)
+- [ ] Composants UI réutilisables
+  - [ ] Button
+  - [ ] Input
+  - [ ] Modal
+  - [ ] Table
+  - [ ] Card
+  - [ ] Badge
+  - [ ] Spinner
+
+### Phase 4 - Structure Académique (Sprint 2)
 - [ ] Gestion des Facultés (CRUD)
 - [ ] Gestion des Départements (CRUD)
 - [ ] Gestion des Filières (CRUD)
 - [ ] Gestion des Matières (CRUD)
 
-### Phase 4 - Étudiants & Enseignants
+### Phase 5 - Étudiants & Enseignants (Sprint 3)
 - [ ] Liste et détails des étudiants
 - [ ] Gestion des enseignants
 - [ ] Système d'inscriptions
 
-### Phase 5 - Évaluations
+### Phase 6 - Évaluations (Sprint 4)
 - [ ] Gestion des évaluations
 - [ ] Saisie des notes
 - [ ] Délibérations et résultats
 
-### Phase 6 - Emploi du temps
+### Phase 7 - Emploi du temps (Sprint 5)
 - [ ] Visualisation de l'emploi du temps
 - [ ] Gestion des cours
 - [ ] Détection de conflits

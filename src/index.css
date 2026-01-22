@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
-/* Styles globaux personnalisés */
+/* Variables CSS personnalisées */
+:root {
+  --color-primary: 59 130 246;
+  --color-secondary: 100 116 139;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,9 +14,11 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animation fade-in */
+/* Animations personnalisées */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -23,14 +30,42 @@ body {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Scrollbar personnalisée */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -39,9 +74,26 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Effets de focus */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid rgb(59 130 246);
+  outline-offset: 2px;
+}
+
+/* Transitions globales */
+button,
+a,
+input,
+textarea,
+select {
+  transition: all 0.2s ease-in-out;
 }

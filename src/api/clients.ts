@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-// =========================================
 // CONFIGURATION DE BASE
-// =========================================
-
 /**
  * URL de base de l'API Django
  * Récupérée depuis les variables d'environnement
@@ -22,11 +19,8 @@ export const apiClient = axios.create({
   timeout: 10000, // 10 secondes
 });
 
-// =========================================
 // INTERCEPTEUR DE REQUÊTE
 // Ajoute automatiquement le token JWT
-// =========================================
-
 apiClient.interceptors.request.use(
   (config) => {
     // Récupérer le token depuis localStorage
@@ -44,11 +38,8 @@ apiClient.interceptors.request.use(
   }
 );
 
-// =========================================
 // INTERCEPTEUR DE RÉPONSE
 // Gère le rafraîchissement automatique du token
-// =========================================
-
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
