@@ -1,35 +1,84 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import Login from '../pages/auth/Login';
-import Dashboard from '../pages/dashboard/Dashboard';
-import ProtectedRoute from '../components/shared/ProtectedRoute';
-import MainLayout from '../components/layout/MainLayout';
+import { ROUTES, USER_ROLES } from '@/config/constants';
 
+// Pages
+import Login from '@/pages/auth/Login';
+import NotFound from '@/pages/NotFound';
+import Unauthorized from '@/pages/Unauthorized';
+
+// Dashboards
+import AdminDashboard from '@/pages/admin/Dashboard';
+import TeacherDashboard from '@/pages/teacher/Dashboard';
+import StudentDashboard from '@/pages/student/Dashboard';
+
+// Components
+import RoleRoute from '@/components/RoleRoute';
+
+/**
+ * Configuration du router
+ */
 export const router = createBrowserRouter([
+  // Route racine - Redirection vers login
+  {
+    path: '/',
+    element: <Navigate to={ROUTES.LOGIN} replace />,
+  },
+
   // Routes publiques
   {
-    path: '/login',
+    path: ROUTES.LOGIN,
     element: <Login />,
   },
 
-  // Routes protégées avec Layout
+  // Page 403 - Unauthorized
   {
-    path: '/dashboard',
+    path: ROUTES.UNAUTHORIZED,
+    element: <Unauthorized />,
+  },
+
+  // ==================== ROUTES ADMIN ====================
+  {
+    path: ROUTES.ADMIN_DASHBOARD,
     element: (
-      <ProtectedRoute>
-        <MainLayout>
-          <Dashboard />
-        </MainLayout>
-      </ProtectedRoute>
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <AdminDashboard />
+      </RoleRoute>
     ),
   },
 
-  // Redirections
+  // TODO: Ajouter plus de routes admin
+  // {
+  //   path: ROUTES.ADMIN_STUDENTS,
+  //   element: (
+  //     <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+  //       <StudentsList />
+  //     </RoleRoute>
+  //   ),
+  // },
+
+  // ==================== ROUTES ENSEIGNANT ====================
   {
-    path: '/',
-    element: <Navigate to="/dashboard" replace />,
+    path: ROUTES.TEACHER_DASHBOARD,
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
+        <TeacherDashboard />
+      </RoleRoute>
+    ),
   },
+
+  // ==================== ROUTES ÉTUDIANT ====================
+  {
+    path: ROUTES.STUDENT_DASHBOARD,
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.STUDENT]}>
+        <StudentDashboard />
+      </RoleRoute>
+    ),
+  },
+
+  // Page 404 - Not Found (doit être en dernier)
   {
     path: '*',
-    element: <Navigate to="/dashboard" replace />,
+    element: <NotFound />,
   },
 ]);

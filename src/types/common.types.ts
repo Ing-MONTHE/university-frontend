@@ -1,37 +1,73 @@
-// TYPES COMMUNS RÉUTILISABLES
 /**
- * Paramètres de requête pour la pagination et les filtres
+ * Types communs réutilisables dans toute l'application
  */
-export interface QueryParams {
-  page?: number;
-  page_size?: number;
-  search?: string;
-  ordering?: string;
-  [key: string]: any;
+
+// Option pour les selects
+export interface SelectOption<T = string | number> {
+  value: T;
+  label: string;
+  disabled?: boolean;
 }
 
-/**
- * Réponse paginée standard de Django REST Framework
- */
-export interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
+// Métadonnées de base pour tous les modèles
+export interface BaseModel {
+  id: number;
+  created_at: string;
+  updated_at: string;
 }
 
-/**
- * Réponse standard d'erreur de l'API
- */
-export interface ApiError {
-  detail?: string;
-  [key: string]: any;
+// Statut générique
+export type Status = 'active' | 'inactive' | 'pending' | 'archived';
+
+// Sexe
+export enum Gender {
+  MALE = 'M',
+  FEMALE = 'F',
 }
 
-/**
- * État de chargement pour les composants
- */
-export interface LoadingState {
-  isLoading: boolean;
-  error: string | null;
+export const GenderLabels: Record<Gender, string> = {
+  [Gender.MALE]: 'Masculin',
+  [Gender.FEMALE]: 'Féminin',
+};
+
+// Langue
+export enum Language {
+  FR = 'fr',
+  EN = 'en',
+}
+
+// Configuration de colonne de table
+export interface TableColumn<T = any> {
+  key: keyof T | string;
+  label: string;
+  sortable?: boolean;
+  filterable?: boolean;
+  render?: (value: any, row: T) => React.ReactNode;
+  width?: string;
+  align?: 'left' | 'center' | 'right';
+}
+
+// Action de table (boutons d'action)
+export interface TableAction<T = any> {
+  label: string;
+  icon?: React.ReactNode;
+  onClick: (row: T) => void;
+  variant?: 'default' | 'primary' | 'danger' | 'ghost';
+  disabled?: (row: T) => boolean;
+  hidden?: (row: T) => boolean;
+}
+
+// Toast notification
+export interface ToastNotification {
+  id?: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message?: string;
+  duration?: number;
+}
+
+// Breadcrumb
+export interface Breadcrumb {
+  label: string;
+  href?: string;
 }
