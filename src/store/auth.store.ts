@@ -1,7 +1,6 @@
 /**
  * Store Zustand pour la gestion de l'authentification
  */
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, AuthState } from '@/types';
@@ -92,11 +91,23 @@ export const useAuthStore = create<AuthStore>()(
       clearError: () => set({ error: null }),
     }),
     {
-      name: STORAGE_KEYS.USER, // Nom de la clé dans localStorage
-      // Ne persister que l'utilisateur, pas les tokens (sécurité)
+      name: STORAGE_KEYS.USER,
+      // ✅ CORRECTION : Persister user + tokens + isAuthenticated
       partialize: (state) => ({
         user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        isAuthenticated: state.isAuthenticated,
       }),
+      // ✅ Restaurer les tokens dans le client API au chargement
+      onRehydrateStorage: () => (state) => {
+        if (state?.accessToken) {
+          setAccessToken(state.accessToken);
+        }
+        if (state?.refreshToken) {
+          setRefreshToken(state.refreshToken);
+        }
+      },
     }
   )
 );

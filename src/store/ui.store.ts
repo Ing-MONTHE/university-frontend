@@ -1,134 +1,129 @@
 /**
- * Store Zustand pour la gestion de l'interface utilisateur
+ * Store Zustand pour la gestion de l'UI
  */
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { STORAGE_KEYS } from '@/config/constants';
 
 type Theme = 'light' | 'dark';
 type Language = 'fr' | 'en';
 
+interface Notification {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  message: string;
+  timestamp: number;
+}
+
 interface UIState {
   // Sidebar
-  isSidebarOpen: boolean;
-  isSidebarCollapsed: boolean;
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
   
   // Theme
   theme: Theme;
-  
-  // Language
-  language: Language;
-  
-  // Notifications
-  notifications: number;
-  
-  // Loading global
-  isGlobalLoading: boolean;
-}
-
-interface UIStore extends UIState {
-  // Actions Sidebar
-  toggleSidebar: () => void;
-  openSidebar: () => void;
-  closeSidebar: () => void;
-  toggleSidebarCollapse: () => void;
-  setSidebarCollapsed: (collapsed: boolean) => void;
-  
-  // Actions Theme
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   
-  // Actions Language
+  // Language
+  language: Language;
   setLanguage: (language: Language) => void;
   
-  // Actions Notifications
-  setNotifications: (count: number) => void;
-  incrementNotifications: () => void;
-  decrementNotifications: () => void;
+  // Notifications
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
+  removeNotification: (id: string) => void;
   clearNotifications: () => void;
   
-  // Actions Loading
-  setGlobalLoading: (isLoading: boolean) => void;
+  // Global Loading
+  isLoading: boolean;
+  setLoading: (isLoading: boolean) => void;
 }
 
 /**
  * Store UI avec persistence
  */
-export const useUIStore = create<UIStore>()(
+export const useUIStore = create<UIState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // État initial
-      isSidebarOpen: true,
-      isSidebarCollapsed: false,
+      sidebarCollapsed: false,
       theme: 'light',
       language: 'fr',
-      notifications: 0,
-      isGlobalLoading: false,
+      notifications: [],
+      isLoading: false,
 
-      // Sidebar actions
+      // Toggle Sidebar
       toggleSidebar: () =>
-        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-      
-      openSidebar: () => set({ isSidebarOpen: true }),
-      
-      closeSidebar: () => set({ isSidebarOpen: false }),
-      
-      toggleSidebarCollapse: () =>
-        set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
-      
-      setSidebarCollapsed: (collapsed) =>
-        set({ isSidebarCollapsed: collapsed }),
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
-      // Theme actions
-      toggleTheme: () =>
-        set((state) => {
-          const newTheme = state.theme === 'light' ? 'dark' : 'light';
-          // Appliquer le thème au document
-          if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-          return { theme: newTheme };
-        }),
-      
+      // Toggle Theme avec application au DOM
+      toggleTheme: () => {
+        const newTheme = get().theme === 'light' ? 'dark' : 'light';
+        
+        // Appliquer au DOM
+        if (newTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        
+        set({ theme: newTheme });
+      },
+
+      // Set Theme
       setTheme: (theme) => {
-        // Appliquer le thème au document
+        // Appliquer au DOM
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
         }
+        
         set({ theme });
       },
 
-      // Language actions
+      // Set Language
       setLanguage: (language) => set({ language }),
 
-      // Notifications actions
-      setNotifications: (count) => set({ notifications: count }),
-      
-      incrementNotifications: () =>
-        set((state) => ({ notifications: state.notifications + 1 })),
-      
-      decrementNotifications: () =>
+      // Add Notification
+      addNotification: (notification) =>
         set((state) => ({
-          notifications: Math.max(0, state.notifications - 1),
+          notifications: [
+            ...state.notifications,
+            {
+              ...notification,
+              id: Math.random().toString(36).substr(2, 9),
+              timestamp: Date.now(),
+            },
+          ],
         })),
-      
-      clearNotifications: () => set({ notifications: 0 }),
 
-      // Loading actions
-      setGlobalLoading: (isLoading) => set({ isGlobalLoading: isLoading }),
+      // Remove Notification
+      removeNotification: (id) =>
+        set((state) => ({
+          notifications: state.notifications.filter((n) => n.id !== id),
+        })),
+
+      // Clear Notifications
+      clearNotifications: () => set({ notifications: [] }),
+
+      // Set Loading
+      setLoading: (isLoading) => set({ isLoading }),
     }),
     {
-      name: STORAGE_KEYS.THEME,
+      name: 'ums-ui-preferences', // Nom de la clé dans localStorage
+      // Persister les préférences utilisateur
       partialize: (state) => ({
+        sidebarCollapsed: state.sidebarCollapsed,
         theme: state.theme,
         language: state.language,
-        isSidebarCollapsed: state.isSidebarCollapsed,
       }),
+      // Restaurer le theme au chargement
+      onRehydrateStorage: () => (state) => {
+        if (state?.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      },
     }
   )
 );
