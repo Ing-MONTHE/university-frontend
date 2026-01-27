@@ -211,7 +211,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Main Navigation - Espacements comme image 3 */}
+      {/* Main Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         {filteredMainItems.map((item) => {
           const Icon = item.icon;
@@ -242,7 +242,7 @@ export default function Sidebar() {
         {filteredBottomItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          const hasNotification = item.label === 'Notifications';
+          // const hasNotification = item.label === 'Notifications';
 
           return (
             <Link
@@ -260,11 +260,11 @@ export default function Sidebar() {
                 <span>{item.label}</span>
               )}
               {/* Badge notifications */}
-              {hasNotification && (
+              {/* {hasNotification && (
                 <span className={`${isCollapsed ? 'absolute -top-0.5 -right-0.5' : 'ml-auto'} bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center`}>
-                  4
+                  
                 </span>
-              )}
+              )} */}
             </Link>
           );
         })}

@@ -4,7 +4,6 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // Active le dark mode avec classe
   theme: {
     extend: {
       colors: {
@@ -16,7 +15,7 @@ export default {
           300: '#93c5fd',
           400: '#60a5fa',
           500: '#3b82f6',
-          600: '#2563eb', // Couleur principale
+          600: '#2563eb',
           700: '#1d4ed8',
           800: '#1e40af',
           900: '#1e3a8a',
@@ -30,12 +29,11 @@ export default {
           400: '#c084fc',
           500: '#a855f7',
           600: '#9333ea',
-          700: '#7c3aed', // Violet accent
+          700: '#7c3aed',
           800: '#6b21a8',
           900: '#581c87',
           950: '#3b0764',
         },
-        // Couleurs système
         success: {
           DEFAULT: '#16a34a',
           light: '#22c55e',

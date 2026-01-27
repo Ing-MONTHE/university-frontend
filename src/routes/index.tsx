@@ -11,6 +11,9 @@ import AdminDashboard from '@/pages/admin/Dashboard';
 import TeacherDashboard from '@/pages/teacher/Dashboard';
 import StudentDashboard from '@/pages/student/Dashboard';
 
+// Students
+import StudentsList from '@/pages/admin/students/StudentsList';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 
@@ -45,13 +48,23 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
+  
+  // Route STUDENTS
+  {
+    path: '/admin/students',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <StudentsList />
+      </RoleRoute>
+    ),
+  },
 
   // TODO: Ajouter plus de routes admin
   // {
-  //   path: ROUTES.ADMIN_STUDENTS,
+  //   path: '/admin/teachers',
   //   element: (
   //     <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-  //       <StudentsList />
+  //       <TeachersList />
   //     </RoleRoute>
   //   ),
   // },

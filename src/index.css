@@ -1,16 +1,12 @@
 /* Import Google Font Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* Import Tailwind CSS v4 */
 @import "tailwindcss";
 
-/* CONFIGURATION TAILWIND V4 - DARK MODE */
-
-@theme {
-  /* Active le dark mode avec la classe "dark" */
-  --color-scheme: light dark;
-}
-
-  /* VARIABLES CSS PERSONNALISÉES */
+/* ============================================
+   STYLES DE BASE
+   ============================================ */
 
 @layer base {
   :root {
@@ -38,13 +34,8 @@
     --color-info: #06b6d4;
   }
 
-  /* Configuration globale */
   * {
-    border-color: theme('colors.gray.200');
-  }
-
-  .dark * {
-    border-color: theme('colors.gray.700');
+    @apply border-gray-200;
   }
 
   body {
@@ -53,7 +44,7 @@
 }
 
 /* ============================================
-   STYLES ADDITIONNELS (Optionnel)
+   UTILITIES PERSONNALISÉES
    ============================================ */
 
 @layer utilities {
@@ -68,19 +59,10 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: theme('colors.gray.400');
-    border-radius: 3px;
-  }
-
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: theme('colors.gray.600');
+    @apply bg-gray-400 rounded;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: theme('colors.gray.500');
-  }
-
-  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: theme('colors.gray.500');
+    @apply bg-gray-500;
   }
 }

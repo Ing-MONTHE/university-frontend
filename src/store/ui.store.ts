@@ -4,7 +4,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type Theme = 'light' | 'dark';
 type Language = 'fr' | 'en';
 
 interface Notification {
@@ -18,11 +17,6 @@ interface UIState {
   // Sidebar
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
-  
-  // Theme
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
   
   // Language
   language: Language;
@@ -44,10 +38,9 @@ interface UIState {
  */
 export const useUIStore = create<UIState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // État initial
       sidebarCollapsed: false,
-      theme: 'light',
       language: 'fr',
       notifications: [],
       isLoading: false,
@@ -55,32 +48,6 @@ export const useUIStore = create<UIState>()(
       // Toggle Sidebar
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-
-      // Toggle Theme avec application au DOM
-      toggleTheme: () => {
-        const newTheme = get().theme === 'light' ? 'dark' : 'light';
-        
-        // Appliquer au DOM
-        if (newTheme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        
-        set({ theme: newTheme });
-      },
-
-      // Set Theme
-      setTheme: (theme) => {
-        // Appliquer au DOM
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        
-        set({ theme });
-      },
 
       // Set Language
       setLanguage: (language) => set({ language }),
@@ -111,19 +78,12 @@ export const useUIStore = create<UIState>()(
       setLoading: (isLoading) => set({ isLoading }),
     }),
     {
-      name: 'ums-ui-preferences', // Nom de la clé dans localStorage
+      name: 'ums-ui-preferences',
       // Persister les préférences utilisateur
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
-        theme: state.theme,
         language: state.language,
       }),
-      // Restaurer le theme au chargement
-      onRehydrateStorage: () => (state) => {
-        if (state?.theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        }
-      },
     }
   )
 );

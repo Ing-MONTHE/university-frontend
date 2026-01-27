@@ -3,7 +3,17 @@
  */
 
 export { default as apiClient } from './client';
-export { authApi } from './auth.api';
+
+// Auth API
+export * from './auth.api';
+
+// Students API
+export * from './students.api';
+
+// TODO: Ajouter les autres APIs
+// export * from './teachers.api';
+// export * from './courses.api';
+// export * from './grades.api';
 
 // À ajouter plus tard :
 // export { academicApi } from './academic.api';
