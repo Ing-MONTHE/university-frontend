@@ -49,7 +49,7 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: BookOpen,
     label: 'Académique',
-    path: '/admin/academic',
+    path: '/admin/academic/facultes',
     roles: ['ADMIN'],
   },
   {

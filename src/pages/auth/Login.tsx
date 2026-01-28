@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { GraduationCap, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
+import { GraduationCap } from 'lucide-react';
 import { useAuth } from '@/hooks';
+import { Button, Input, Spinner } from '@/components/ui';
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -115,51 +115,39 @@ export default function Login() {
                 <p className="text-gray-600 text-lg">Connectez-vous pour accéder à votre espace</p>
               </div>
 
+              {/* Message d'erreur */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
+                </div>
+              )}
+
               {/* FORMULAIRE */}
-              <form onSubmit={handleSubmit} className="space-y-10 w-full">
+              <form onSubmit={handleSubmit} className="space-y-8 w-full">
 
                 {/* USERNAME */}
-                <div>
-                  <label className="block text-lg font-semibold text-gray-700 mb-4">
-                    Nom d'utilisateur
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    className="w-full px-6 py-5 text-lg border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    placeholder="Username"
-                  />
-                </div>
+                <Input
+                  type="text"
+                  label="Nom d'utilisateur"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Entrez votre nom d'utilisateur"
+                  required
+                  disabled={isLoading}
+                  className="text-lg"
+                />
 
                 {/* PASSWORD */}
-                <div>
-                  <label className="block text-lg font-semibold text-gray-700 mb-4">
-                    Mot de passe
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="w-full px-6 py-5 pr-14 text-lg border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                      placeholder="********"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-4 flex items-center"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-6 h-6 text-gray-400 hover:text-gray-600" />
-                      ) : (
-                        <Eye className="w-6 h-6 text-gray-400 hover:text-gray-600" />
-                      )}
-                    </button>
-                  </div>
-                </div>
+                <Input
+                  type="password"
+                  label="Mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Entrez votre mot de passe"
+                  required
+                  disabled={isLoading}
+                  className="text-lg"
+                />
 
                 {/* OPTIONS */}
                 <div className="flex items-center justify-between">
@@ -168,7 +156,8 @@ export default function Login() {
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      disabled={isLoading}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
                     />
                     <span className="text-gray-700 group-hover:text-gray-900">
                       Se souvenir de moi
@@ -181,12 +170,17 @@ export default function Login() {
                 </div>
 
                 {/* BOUTON */}
-                <button
+                <Button
                   type="submit"
-                  className="w-full py-5 text-xl font-bold text-white bg-blue-600 rounded-2xl hover:bg-blue-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5"
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                  className="text-xl py-5"
                 >
-                  Se connecter
-                </button>
+                  {isLoading ? 'Connexion...' : 'Se connecter'}
+                </Button>
               </form>
 
               {/* FOOTER */}

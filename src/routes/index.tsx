@@ -9,10 +9,9 @@ import Unauthorized from '@/pages/Unauthorized';
 // Dashboards
 import AdminDashboard from '@/pages/admin/Dashboard';
 import TeacherDashboard from '@/pages/teacher/Dashboard';
-import StudentDashboard from '@/pages/student/Dashboard';
 
-// Students
-import StudentsList from '@/pages/admin/students/StudentsList';
+// Academic
+import FacultiesList from '@/pages/admin/academic/Facultieslist';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -48,26 +47,16 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-  
-  // Route STUDENTS
+
+  // Academic - Facultés
   {
-    path: '/admin/students',
+    path: '/admin/academic/facultes',
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <StudentsList />
+        <FacultiesList />
       </RoleRoute>
     ),
   },
-
-  // TODO: Ajouter plus de routes admin
-  // {
-  //   path: '/admin/teachers',
-  //   element: (
-  //     <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-  //       <TeachersList />
-  //     </RoleRoute>
-  //   ),
-  // },
 
   // ==================== ROUTES ENSEIGNANT ====================
   {
@@ -75,16 +64,6 @@ export const router = createBrowserRouter([
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
         <TeacherDashboard />
-      </RoleRoute>
-    ),
-  },
-
-  // ==================== ROUTES ÉTUDIANT ====================
-  {
-    path: ROUTES.STUDENT_DASHBOARD,
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.STUDENT]}>
-        <StudentDashboard />
       </RoleRoute>
     ),
   },

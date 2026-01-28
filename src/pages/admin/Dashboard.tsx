@@ -1,6 +1,5 @@
 import MainLayout from '@/components/layout/MainLayout';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
+import { Button, Badge, Card } from '@/components/ui';
 import { useAuth } from '@/hooks';
 import {
   Users,
@@ -189,9 +188,12 @@ export default function AdminDashboard() {
           const Icon = stat.icon;
           
           return (
-            <div
+            <Card
               key={index}
-              className="group relative bg-white rounded-xl p-5 border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-transparent transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+              padding="md"
+              variant="default"
+              hoverable
+              className="group relative overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
               
@@ -212,7 +214,7 @@ export default function AdminDashboard() {
                   {stat.value}
                 </p>
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
@@ -221,7 +223,11 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
         
         {/* Recent Activities */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+        <Card
+          padding="none"
+          variant="default"
+          className="hover:shadow-md transition-shadow duration-300"
+        >
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 px-5 py-3.5 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-600" />
@@ -257,10 +263,14 @@ export default function AdminDashboard() {
               Voir toutes les activités →
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Alerts */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+        <Card
+          padding="none"
+          variant="default"
+          className="hover:shadow-md transition-shadow duration-300"
+        >
           <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 px-5 py-3.5 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-orange-600" />
@@ -290,11 +300,11 @@ export default function AdminDashboard() {
               })}
             </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <Card padding="md">
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-purple-600" />
           Actions rapides
@@ -320,7 +330,7 @@ export default function AdminDashboard() {
             );
           })}
         </div>
-      </div>
+      </Card>
     </MainLayout>
   );
 }

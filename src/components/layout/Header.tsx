@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Search, User, LogOut, Settings, Globe } from 'lucide-react';
+import { User, LogOut, Settings, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks';
 import { useUIStore } from '@/store';
-import Button from '@/components/ui/Button';
+import { Button, SearchBar } from '@/components/ui';
 import ConfirmModal from './ConfirmModal';
 
 export default function Header() {
@@ -11,15 +11,13 @@ export default function Header() {
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { language, setLanguage } = useUIStore();
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Recherche:', searchQuery);
+  const handleSearch = (query: string) => {
+    console.log('Recherche:', query);
   };
 
   return (
@@ -29,30 +27,11 @@ export default function Header() {
           
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl">
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher..."
-                className="w-full pl-5 pr-32 py-3 text-base border-2 border-gray-300 rounded-lg 
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                         hover:border-gray-400 transition-all
-                         placeholder:text-gray-500
-                         bg-white"
-              />
-              
-              {/* Bouton Rechercher */}
-              <Button
-                type="submit"
-                variant="primary"
-                size="md"
-                icon={<Search className="w-5 h-5" />}
-                className="absolute right-0 top-0 bottom-0 rounded-l-none"
-              >
-                Rechercher
-              </Button>
-            </form>
+            <SearchBar
+              placeholder="Rechercher..."
+              onSearch={handleSearch}
+              size="md"
+            />
           </div>
 
           {/* Right Side Actions */}

@@ -12,10 +12,17 @@ export * from './api.types';
 // Common types
 export * from './common.types';
 
-// À ajouter plus tard :
-// export * from './academic.types';
-// export * from './student.types';
-// export * from './evaluation.types';
-// export * from './schedule.types';
-// export * from './library.types';
-// export * from './finance.types';
+// Academic types
+export * from './academic.types';
+
+// Student & Teacher types
+export * from './student.types';
+
+// Evaluation types
+export * from './evaluation.types';
+
+// Schedule types
+export * from './schedule.types';
+
+// Finance, Library, Attendance types
+export * from './other.types';
