@@ -4,6 +4,3 @@
 
 // Auth hook
 export { useAuth } from './useAuth';
-
-// Academic hooks
-export * from './useAcademic';

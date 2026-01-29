@@ -10,8 +10,6 @@ import Unauthorized from '@/pages/Unauthorized';
 import AdminDashboard from '@/pages/admin/Dashboard';
 import TeacherDashboard from '@/pages/teacher/Dashboard';
 
-// Academic
-import FacultiesList from '@/pages/admin/academic/Facultieslist';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -44,16 +42,6 @@ export const router = createBrowserRouter([
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <AdminDashboard />
-      </RoleRoute>
-    ),
-  },
-
-  // Academic - Facultés
-  {
-    path: '/admin/academic/facultes',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <FacultiesList />
       </RoleRoute>
     ),
   },
