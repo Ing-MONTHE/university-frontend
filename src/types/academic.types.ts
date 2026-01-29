@@ -7,7 +7,7 @@
 
 export interface AnneeAcademique {
   id: number;
-  code: string;
+  code: string; // Ex: "2024-2025"
   date_debut: string; // ISO date
   date_fin: string; // ISO date
   is_active: boolean;
@@ -22,196 +22,204 @@ export interface AnneeAcademiqueCreate {
   is_active?: boolean;
 }
 
+export interface AnneeAcademiqueUpdate {
+  code?: string;
+  date_debut?: string;
+  date_fin?: string;
+  is_active?: boolean;
+}
+
 // ============== FACULTÉ ==============
 
 export interface Faculte {
   id: number;
+  code: string; // Ex: "FST", "FDSP"
   nom: string;
-  code: string;
   description?: string;
-  logo?: string;
-  is_active: boolean;
+  doyen?: string;
+  email?: string;
+  telephone?: string;
   created_at: string;
   updated_at: string;
   
-  // Relations comptées
-  nombre_departements?: number;
-  nombre_filieres?: number;
-  nombre_etudiants?: number;
+  // Champs calculés
+  departements_count?: number;
+  etudiants_count?: number;
 }
 
 export interface FaculteCreate {
-  nom: string;
   code: string;
+  nom: string;
   description?: string;
-  logo?: File | string;
-  is_active?: boolean;
+  doyen?: string;
+  email?: string;
+  telephone?: string;
 }
 
 export interface FaculteUpdate {
-  nom?: string;
   code?: string;
+  nom?: string;
   description?: string;
-  logo?: File | string;
-  is_active?: boolean;
-}
-
-export interface FaculteStats {
-  id: number;
-  nom: string;
-  nombre_departements: number;
-  nombre_filieres: number;
-  nombre_etudiants: number;
-  nombre_enseignants: number;
+  doyen?: string;
+  email?: string;
+  telephone?: string;
 }
 
 // ============== DÉPARTEMENT ==============
 
 export interface Departement {
   id: number;
+  code: string; // Ex: "INFO", "MATH"
   nom: string;
-  code: string;
   description?: string;
-  faculte: number; // ID
+  faculte: number; // ID de la faculté
   faculte_details?: Faculte;
-  chef_departement?: number; // ID enseignant
-  chef_details?: any; // À typer avec Enseignant
-  is_active: boolean;
+  chef_departement?: string;
   created_at: string;
   updated_at: string;
   
-  // Relations comptées
-  nombre_filieres?: number;
-  nombre_etudiants?: number;
+  // Champs calculés
+  filieres_count?: number;
 }
 
 export interface DepartementCreate {
-  nom: string;
   code: string;
+  nom: string;
   description?: string;
-  faculte: number;
-  chef_departement?: number;
-  is_active?: boolean;
+  faculte_id: number; // Note: faculte_id pour correspondre au serializer
+  chef_departement?: string;
 }
 
 export interface DepartementUpdate {
-  nom?: string;
   code?: string;
+  nom?: string;
   description?: string;
-  faculte?: number;
-  chef_departement?: number;
-  is_active?: boolean;
+  faculte_id?: number;
+  chef_departement?: string;
 }
 
-// ============== FILIÈRE (Programme) ==============
+// ============== FILIÈRE ==============
 
-export type NiveauFiliere = 'L1' | 'L2' | 'L3' | 'M1' | 'M2' | 'DOCTORAT';
+export type CycleFiliere = 'LICENCE' | 'MASTER' | 'DOCTORAT' | 'DUT' | 'BTS';
+
+export const CYCLE_CHOICES: { value: CycleFiliere; label: string }[] = [
+  { value: 'LICENCE', label: 'Licence' },
+  { value: 'MASTER', label: 'Master' },
+  { value: 'DOCTORAT', label: 'Doctorat' },
+  { value: 'DUT', label: 'DUT' },
+  { value: 'BTS', label: 'BTS' },
+];
 
 export interface Filiere {
   id: number;
+  code: string; // Ex: "L3-INFO", "M2-MATH"
   nom: string;
-  code: string;
+  cycle: CycleFiliere;
+  cycle_display?: string;
+  duree_annees: number;
+  frais_inscription: string; // Decimal comme string
   description?: string;
-  faculte: number; // ID
-  faculte_details?: Faculte;
   departement: number; // ID
   departement_details?: Departement;
-  niveau: NiveauFiliere;
-  duree_annees: number;
-  capacite_max?: number;
-  frais_inscription?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
   
-  // Relations comptées
-  nombre_etudiants?: number;
-  nombre_matieres?: number;
-  effectif_actuel?: number;
+  // Champs calculés
+  matieres_count?: number;
 }
 
 export interface FiliereCreate {
-  nom: string;
   code: string;
-  description?: string;
-  faculte: number;
-  departement: number;
-  niveau: NiveauFiliere;
+  nom: string;
+  cycle: CycleFiliere;
   duree_annees: number;
-  capacite_max?: number;
-  frais_inscription?: number;
+  frais_inscription?: number | string;
+  description?: string;
+  departement_id: number;
   is_active?: boolean;
 }
 
 export interface FiliereUpdate {
-  nom?: string;
   code?: string;
-  description?: string;
-  faculte?: number;
-  departement?: number;
-  niveau?: NiveauFiliere;
+  nom?: string;
+  cycle?: CycleFiliere;
   duree_annees?: number;
-  capacite_max?: number;
-  frais_inscription?: number;
+  frais_inscription?: number | string;
+  description?: string;
+  departement_id?: number;
   is_active?: boolean;
 }
 
 // ============== MATIÈRE ==============
 
-export type TypeCours = 'CM' | 'TD' | 'TP';
+export type SemestreChoice = 1 | 2;
+
+export const SEMESTRE_CHOICES: { value: SemestreChoice; label: string }[] = [
+  { value: 1, label: 'Semestre 1' },
+  { value: 2, label: 'Semestre 2' },
+];
 
 export interface Matiere {
   id: number;
+  code: string; // Ex: "INFO301", "MATH205"
   nom: string;
-  code: string;
-  description?: string;
-  filiere: number; // ID
-  filiere_details?: Filiere;
-  semestre: number; // 1-6 pour Licence, 1-4 pour Master
   coefficient: number;
-  credits_ects: number;
-  volume_horaire: number;
-  type_cours: TypeCours;
-  enseignant_responsable?: number; // ID
-  enseignant_details?: any; // À typer avec Enseignant
-  is_active: boolean;
+  credits: number; // ECTS
+  volume_horaire_cm: number;
+  volume_horaire_td: number;
+  volume_horaire_tp: number;
+  volume_horaire_total?: number; // Calculé
+  semestre: SemestreChoice;
+  semestre_display?: string;
+  is_optionnelle: boolean;
+  description?: string;
+  filieres: number[]; // IDs des filières
+  filieres_details?: Filiere[];
   created_at: string;
   updated_at: string;
 }
 
 export interface MatiereCreate {
-  nom: string;
   code: string;
-  description?: string;
-  filiere: number;
-  semestre: number;
+  nom: string;
   coefficient: number;
-  credits_ects: number;
-  volume_horaire: number;
-  type_cours: TypeCours;
-  enseignant_responsable?: number;
-  is_active?: boolean;
+  credits: number;
+  volume_horaire_cm?: number;
+  volume_horaire_td?: number;
+  volume_horaire_tp?: number;
+  semestre: SemestreChoice;
+  is_optionnelle?: boolean;
+  description?: string;
+  filiere_ids?: number[];
 }
 
 export interface MatiereUpdate {
-  nom?: string;
   code?: string;
-  description?: string;
-  filiere?: number;
-  semestre?: number;
+  nom?: string;
   coefficient?: number;
-  credits_ects?: number;
-  volume_horaire?: number;
-  type_cours?: TypeCours;
-  enseignant_responsable?: number;
-  is_active?: boolean;
+  credits?: number;
+  volume_horaire_cm?: number;
+  volume_horaire_td?: number;
+  volume_horaire_tp?: number;
+  semestre?: SemestreChoice;
+  is_optionnelle?: boolean;
+  description?: string;
+  filiere_ids?: number[];
 }
 
 // ============== TYPES DE FILTRES ==============
 
-export interface FaculteFilters {
+export interface AnneeAcademiqueFilters {
   search?: string;
   is_active?: boolean;
+  ordering?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface FaculteFilters {
+  search?: string;
   ordering?: string;
   page?: number;
   page_size?: number;
@@ -220,7 +228,6 @@ export interface FaculteFilters {
 export interface DepartementFilters {
   search?: string;
   faculte?: number;
-  is_active?: boolean;
   ordering?: string;
   page?: number;
   page_size?: number;
@@ -228,9 +235,8 @@ export interface DepartementFilters {
 
 export interface FiliereFilters {
   search?: string;
-  faculte?: number;
   departement?: number;
-  niveau?: NiveauFiliere;
+  cycle?: CycleFiliere;
   is_active?: boolean;
   ordering?: string;
   page?: number;
@@ -240,33 +246,18 @@ export interface FiliereFilters {
 export interface MatiereFilters {
   search?: string;
   filiere?: number;
-  semestre?: number;
-  type_cours?: TypeCours;
-  enseignant_responsable?: number;
-  is_active?: boolean;
+  semestre?: SemestreChoice;
+  is_optionnelle?: boolean;
   ordering?: string;
   page?: number;
   page_size?: number;
 }
 
-// ============== TYPES POUR UI ==============
+// ============== TYPES POUR RÉPONSES API ==============
 
-// Pour la vue hiérarchique (tree view)
-export interface AcademicTreeNode {
-  id: string;
-  type: 'faculte' | 'departement' | 'filiere' | 'matiere';
-  label: string;
-  children?: AcademicTreeNode[];
-  data?: Faculte | Departement | Filiere | Matiere;
-  expanded?: boolean;
-}
-
-// Stats globales
-export interface AcademicStats {
-  total_facultes: number;
-  total_departements: number;
-  total_filieres: number;
-  total_matieres: number;
-  total_etudiants: number;
-  total_enseignants: number;
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }

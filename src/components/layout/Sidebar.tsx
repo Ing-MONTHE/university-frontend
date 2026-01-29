@@ -15,18 +15,30 @@ import {
   HelpCircle,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Building2,
+  Building,
+  Network,
+  FileText,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
 
-interface MenuItem {
+interface SubMenuItem {
   icon: any;
   label: string;
   path: string;
-  roles?: string[];
 }
 
-// Menu principal de navigation
+interface MenuItem {
+  icon: any;
+  label: string;
+  path?: string;
+  roles?: string[];
+  children?: SubMenuItem[];
+}
+
+// Menu principal de navigation avec sous-menus pour Académique
 const mainMenuItems: MenuItem[] = [
   {
     icon: LayoutDashboard,
@@ -49,12 +61,43 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: BookOpen,
     label: 'Académique',
-    path: '/admin/academic/facultes',
     roles: ['ADMIN'],
+    children: [
+      {
+        icon: Network,
+        label: 'Structure',
+        path: '/admin/academic/structure',
+      },
+      {
+        icon: Calendar,
+        label: 'Années Académiques',
+        path: '/admin/academic/annees-academiques',
+      },
+      {
+        icon: Building2,
+        label: 'Facultés',
+        path: '/admin/academic/facultes',
+      },
+      {
+        icon: Building,
+        label: 'Départements',
+        path: '/admin/academic/departements',
+      },
+      {
+        icon: GraduationCap,
+        label: 'Filières',
+        path: '/admin/academic/filieres',
+      },
+      {
+        icon: FileText,
+        label: 'Matières',
+        path: '/admin/academic/matieres',
+      },
+    ],
   },
   {
     icon: ClipboardList,
-    label: 'Notes',
+    label: 'Évaluations',
     path: '/admin/evaluations',
     roles: ['ADMIN'],
   },
@@ -108,6 +151,7 @@ const bottomMenuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['Académique'])); // Académique ouvert par défaut
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
@@ -124,6 +168,25 @@ export default function Sidebar() {
     if (!item.roles) return true;
     return item.roles.some((role) => userRoles.includes(role));
   });
+
+  // Toggle sous-menu
+  const toggleSubmenu = (label: string) => {
+    setExpandedMenus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(label)) {
+        newSet.delete(label);
+      } else {
+        newSet.add(label);
+      }
+      return newSet;
+    });
+  };
+
+  // Vérifier si un sous-menu contient le path actif
+  const isSubmenuActive = (children?: SubMenuItem[]) => {
+    if (!children) return false;
+    return children.some((child) => location.pathname === child.path);
+  };
 
   return (
     <aside
@@ -215,23 +278,77 @@ export default function Sidebar() {
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         {filteredMainItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path;
+          const hasChildren = item.children && item.children.length > 0;
+          const isExpanded = expandedMenus.has(item.label);
+          const isActive = item.path ? location.pathname === item.path : false;
+          const isChildActive = isSubmenuActive(item.children);
 
+          // Si l'item a des enfants
+          if (hasChildren && !isCollapsed) {
+            return (
+              <div key={item.label}>
+                {/* Parent menu item */}
+                <button
+                  onClick={() => toggleSubmenu(item.label)}
+                  className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                    isChildActive
+                      ? 'bg-blue-500/20 text-white'
+                      : 'text-white/90 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+                    <span>{item.label}</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isExpanded ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Submenu */}
+                {isExpanded && (
+                  <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-white/10 pl-2">
+                    {item.children!.map((child) => {
+                      const ChildIcon = child.icon;
+                      const isChildActive = location.pathname === child.path;
+
+                      return (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-xs font-medium ${
+                            isChildActive
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'text-white/80 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          <ChildIcon className="w-[16px] h-[16px] flex-shrink-0" strokeWidth={2} />
+                          <span>{child.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // Item simple (avec ou sans enfants en mode collapsed)
           return (
             <Link
-              key={item.path}
-              to={item.path}
+              key={item.path || item.label}
+              to={item.path || '#'}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
                 isActive
-                  ? 'bg-blue-500 text-white shadow-md' // Sélectionneur bleu clair
+                  ? 'bg-blue-500 text-white shadow-md'
                   : 'text-white/90 hover:bg-white/5'
               } ${isCollapsed ? 'justify-center' : ''}`}
               title={isCollapsed ? item.label : ''}
             >
               <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
-              {!isCollapsed && (
-                <span>{item.label}</span>
-              )}
+              {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
@@ -242,12 +359,11 @@ export default function Sidebar() {
         {filteredBottomItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          // const hasNotification = item.label === 'Notifications';
 
           return (
             <Link
               key={item.path}
-              to={item.path}
+              to={item.path!}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all relative text-sm font-medium ${
                 isActive
                   ? 'bg-blue-500 text-white shadow-md'
@@ -256,15 +372,7 @@ export default function Sidebar() {
               title={isCollapsed ? item.label : ''}
             >
               <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
-              {!isCollapsed && (
-                <span>{item.label}</span>
-              )}
-              {/* Badge notifications */}
-              {/* {hasNotification && (
-                <span className={`${isCollapsed ? 'absolute -top-0.5 -right-0.5' : 'ml-auto'} bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center`}>
-                  
-                </span>
-              )} */}
+              {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );
         })}

@@ -6,10 +6,12 @@ interface PaginationProps {
   totalItems?: number;
   itemsPerPage?: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
   showPageNumbers?: boolean;
   maxPageButtons?: number;
   showFirstLast?: boolean;
   className?: string;
+  pageSize?: number;
 }
 
 export default function Pagination({

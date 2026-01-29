@@ -10,9 +10,19 @@ import Unauthorized from '@/pages/Unauthorized';
 import AdminDashboard from '@/pages/admin/Dashboard';
 import TeacherDashboard from '@/pages/teacher/Dashboard';
 
+// Pages Académiques
+import {
+  AnneeAcademiquesPage,
+  FacultesPage,
+  DepartementsPage,
+  FilieresPage,
+  MatieresPage,
+  AcademicStructureTree,
+} from '@/pages/admin/academic';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
+import { MainLayout } from '@/components/layout';
 
 /**
  * Configuration du router
@@ -41,7 +51,71 @@ export const router = createBrowserRouter([
     path: ROUTES.ADMIN_DASHBOARD,
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <AdminDashboard />
+        <MainLayout>
+          <AdminDashboard />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Routes Académiques
+  {
+    path: '/admin/academic/structure',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AcademicStructureTree />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/academic/annees-academiques',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AnneeAcademiquesPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/academic/facultes',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FacultesPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/academic/departements',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DepartementsPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/academic/filieres',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FilieresPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/academic/matieres',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <MatieresPage />
+        </MainLayout>
       </RoleRoute>
     ),
   },
@@ -51,7 +125,9 @@ export const router = createBrowserRouter([
     path: ROUTES.TEACHER_DASHBOARD,
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
-        <TeacherDashboard />
+        <MainLayout>
+          <TeacherDashboard />
+        </MainLayout>
       </RoleRoute>
     ),
   },

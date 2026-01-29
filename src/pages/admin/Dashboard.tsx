@@ -1,6 +1,7 @@
 import MainLayout from '@/components/layout/MainLayout';
 import { Button, Badge, Card } from '@/components/ui';
 import { useAuth } from '@/hooks';
+import { useNavigate } from 'react-router-dom';
 import {
   Users,
   GraduationCap,
@@ -14,10 +15,16 @@ import {
   XCircle,
   AlertTriangle,
   Sparkles,
+  Network,
+  Building2,
+  Building,
+  FileText,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Stats avec couleurs variées et modernes
   const stats = [
@@ -126,24 +133,74 @@ export default function AdminDashboard() {
       label: 'Nouvel Étudiant', 
       gradient: 'from-blue-500 to-blue-600',
       hoverGradient: 'hover:from-blue-600 hover:to-blue-700',
+      onClick: () => navigate('/admin/students'),
     },
     { 
       icon: ClipboardCheck, 
       label: 'Saisir Notes', 
       gradient: 'from-purple-500 to-purple-600',
       hoverGradient: 'hover:from-purple-600 hover:to-purple-700',
+      onClick: () => navigate('/admin/evaluations'),
     },
     { 
       icon: DollarSign, 
       label: 'Enreg. Paiement', 
       gradient: 'from-emerald-500 to-emerald-600',
       hoverGradient: 'hover:from-emerald-600 hover:to-emerald-700',
+      onClick: () => navigate('/admin/finance'),
     },
     { 
       icon: TrendingUp, 
       label: 'Générer Rapport', 
       gradient: 'from-orange-500 to-orange-600',
       hoverGradient: 'hover:from-orange-600 hover:to-orange-700',
+      onClick: () => navigate('/admin/analytics'),
+    },
+  ];
+
+  // NOUVEAU : Raccourcis module académique
+  const academicShortcuts = [
+    {
+      icon: Network,
+      label: 'Structure Académique',
+      description: 'Vue hiérarchique complète',
+      gradient: 'from-teal-500 to-teal-600',
+      path: '/admin/academic/structure',
+    },
+    {
+      icon: Calendar,
+      label: 'Années Académiques',
+      description: 'Gérer les années scolaires',
+      gradient: 'from-indigo-500 to-indigo-600',
+      path: '/admin/academic/annees-academiques',
+    },
+    {
+      icon: Building2,
+      label: 'Facultés',
+      description: 'Gérer les facultés',
+      gradient: 'from-blue-500 to-blue-600',
+      path: '/admin/academic/facultes',
+    },
+    {
+      icon: Building,
+      label: 'Départements',
+      description: 'Gérer les départements',
+      gradient: 'from-violet-500 to-violet-600',
+      path: '/admin/academic/departements',
+    },
+    {
+      icon: GraduationCap,
+      label: 'Filières',
+      description: 'Programmes d\'études',
+      gradient: 'from-purple-500 to-purple-600',
+      path: '/admin/academic/filieres',
+    },
+    {
+      icon: FileText,
+      label: 'Matières',
+      description: 'Unités d\'enseignement',
+      gradient: 'from-pink-500 to-pink-600',
+      path: '/admin/academic/matieres',
     },
   ];
 
@@ -218,6 +275,52 @@ export default function AdminDashboard() {
           );
         })}
       </div>
+
+      {/* NOUVEAU : Section Module Académique */}
+      <Card padding="md" className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-blue-600" />
+            Module Académique
+          </h2>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate('/admin/academic/structure')}
+          >
+            <ArrowRight className="w-4 h-4 mr-2" />
+            Vue complète
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {academicShortcuts.map((shortcut, index) => {
+            const Icon = shortcut.icon;
+            return (
+              <button
+                key={index}
+                onClick={() => navigate(shortcut.path)}
+                className="group text-left bg-white border-2 border-gray-100 hover:border-blue-200 rounded-xl p-4 transition-all duration-300 hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`p-2.5 bg-gradient-to-br ${shortcut.gradient} rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-0.5 group-hover:text-blue-600 transition-colors">
+                      {shortcut.label}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {shortcut.description}
+                    </p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
@@ -316,6 +419,7 @@ export default function AdminDashboard() {
             return (
               <button 
                 key={index}
+                onClick={action.onClick}
                 className={`group relative bg-gradient-to-br ${action.gradient} ${action.hoverGradient} text-white rounded-xl p-5 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden`}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
