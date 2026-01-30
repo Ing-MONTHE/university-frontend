@@ -8,7 +8,7 @@ import Unauthorized from '@/pages/Unauthorized';
 
 // Dashboards
 import AdminDashboard from '@/pages/admin/Dashboard';
-import TeacherDashboard from '@/pages/teacher/Dashboard';
+// import TeacherDashboard from '@/pages/teacher/Dashboard';
 
 // Pages Académiques
 import {
@@ -19,6 +19,12 @@ import {
   MatieresPage,
   AcademicStructureTree,
 } from '@/pages/admin/academic';
+
+//Pages Etudiants et Enseignants
+import {
+  EtudiantsPage,
+  EnseignantsPage,
+} from '@/pages/admin/students';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -120,17 +126,43 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // ==================== ROUTES ENSEIGNANT ====================
+  /**
+ * Routes à ajouter dans le fichier routes/index.tsx
+ */
   {
-    path: ROUTES.TEACHER_DASHBOARD,
+    path: '/admin/students/etudiants',
     element: (
-      <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
-          <TeacherDashboard />
+          <EtudiantsPage />
         </MainLayout>
       </RoleRoute>
     ),
   },
+
+  // ==================== ROUTES ENSEIGNANTS ====================
+  {
+    path: '/admin/students/enseignants',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EnseignantsPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES ENSEIGNANT ====================
+  // {
+  //   path: ROUTES.TEACHER_DASHBOARD,
+  //   element: (
+  //     <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
+  //       <MainLayout>
+  //         <TeacherDashboard />
+  //       </MainLayout>
+  //     </RoleRoute>
+  //   ),
+  // },
 
   // Page 404 - Not Found (doit être en dernier)
   {

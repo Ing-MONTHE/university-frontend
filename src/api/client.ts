@@ -58,9 +58,13 @@ export const clearTokens = (): void => {
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
+    console.log('🔑 Token récupéré:', token ? 'OUI ✅' : 'NON ❌');
     
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('✅ Header Authorization ajouté');
+    } else {
+      console.warn('⚠️ Pas de token ou pas de headers');
     }
     
     return config;

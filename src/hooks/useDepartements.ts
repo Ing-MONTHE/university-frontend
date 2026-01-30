@@ -51,6 +51,7 @@ export const useCreateDepartement = () => {
       toast.success('Département créé avec succès');
     },
     onError: (error: any) => {
+      console.log(error)
       toast.error(error?.message || 'Erreur lors de la création');
     },
   });

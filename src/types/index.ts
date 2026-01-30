@@ -16,7 +16,7 @@ export * from './common.types';
 export * from './academic.types';
 
 // Student & Teacher types
-export * from './student.types';
+export * from './students.types';
 
 // Evaluation types
 export * from './evaluation.types';

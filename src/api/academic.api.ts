@@ -1,5 +1,8 @@
 /**
- * API Client pour le module Académique
+ * API Client pour le module Académique - VERSION CORRIGÉE
+ * 
+ * ✅ CORRECTION: Suppression du préfixe /academic/ dans toutes les URLs
+ * Les endpoints sont maintenant alignés avec le backend Django
  */
 
 import apiClient from './client';
@@ -43,7 +46,7 @@ export const anneeAcademiqueApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedResponse<AnneeAcademique>>(
-      `/academic/annees-academiques/?${params.toString()}`
+      `/annees-academiques/?${params.toString()}`
     );
     return response.data;
   },
@@ -52,7 +55,7 @@ export const anneeAcademiqueApi = {
    * Récupérer une année académique par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<AnneeAcademique>(`/academic/annees-academiques/${id}/`);
+    const response = await apiClient.get<AnneeAcademique>(`/annees-academiques/${id}/`);
     return response.data;
   },
 
@@ -60,7 +63,7 @@ export const anneeAcademiqueApi = {
    * Créer une nouvelle année académique
    */
   create: async (data: AnneeAcademiqueCreate) => {
-    const response = await apiClient.post<AnneeAcademique>('/academic/annees-academiques/', data);
+    const response = await apiClient.post<AnneeAcademique>('/annees-academiques/', data);
     return response.data;
   },
 
@@ -68,7 +71,7 @@ export const anneeAcademiqueApi = {
    * Mettre à jour une année académique
    */
   update: async (id: number, data: AnneeAcademiqueUpdate) => {
-    const response = await apiClient.patch<AnneeAcademique>(`/academic/annees-academiques/${id}/`, data);
+    const response = await apiClient.patch<AnneeAcademique>(`/annees-academiques/${id}/`, data);
     return response.data;
   },
 
@@ -76,14 +79,14 @@ export const anneeAcademiqueApi = {
    * Supprimer une année académique
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/academic/annees-academiques/${id}/`);
+    await apiClient.delete(`/annees-academiques/${id}/`);
   },
 
   /**
    * Activer une année académique (action custom)
    */
   activate: async (id: number) => {
-    const response = await apiClient.post<AnneeAcademique>(`/academic/annees-academiques/${id}/activate/`);
+    const response = await apiClient.post<AnneeAcademique>(`/annees-academiques/${id}/activate/`);
     return response.data;
   },
 
@@ -91,7 +94,7 @@ export const anneeAcademiqueApi = {
    * Fermer une année académique (action custom)
    */
   close: async (id: number) => {
-    const response = await apiClient.post<AnneeAcademique>(`/academic/annees-academiques/${id}/close/`);
+    const response = await apiClient.post<AnneeAcademique>(`/annees-academiques/${id}/close/`);
     return response.data;
   },
 };
@@ -111,7 +114,7 @@ export const faculteApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedResponse<Faculte>>(
-      `/academic/facultes/?${params.toString()}`
+      `/facultes/?${params.toString()}`
     );
     return response.data;
   },
@@ -120,7 +123,7 @@ export const faculteApi = {
    * Récupérer une faculté par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<Faculte>(`/academic/facultes/${id}/`);
+    const response = await apiClient.get<Faculte>(`/facultes/${id}/`);
     return response.data;
   },
 
@@ -128,7 +131,7 @@ export const faculteApi = {
    * Créer une nouvelle faculté
    */
   create: async (data: FaculteCreate) => {
-    const response = await apiClient.post<Faculte>('/academic/facultes/', data);
+    const response = await apiClient.post<Faculte>('/facultes/', data);
     return response.data;
   },
 
@@ -136,7 +139,7 @@ export const faculteApi = {
    * Mettre à jour une faculté
    */
   update: async (id: number, data: FaculteUpdate) => {
-    const response = await apiClient.patch<Faculte>(`/academic/facultes/${id}/`, data);
+    const response = await apiClient.patch<Faculte>(`/facultes/${id}/`, data);
     return response.data;
   },
 
@@ -144,7 +147,7 @@ export const faculteApi = {
    * Supprimer une faculté
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/academic/facultes/${id}/`);
+    await apiClient.delete(`/facultes/${id}/`);
   },
 };
 
@@ -164,7 +167,7 @@ export const departementApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedResponse<Departement>>(
-      `/academic/departements/?${params.toString()}`
+      `/departements/?${params.toString()}`
     );
     return response.data;
   },
@@ -173,7 +176,7 @@ export const departementApi = {
    * Récupérer un département par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<Departement>(`/academic/departements/${id}/`);
+    const response = await apiClient.get<Departement>(`/departements/${id}/`);
     return response.data;
   },
 
@@ -181,7 +184,7 @@ export const departementApi = {
    * Créer un nouveau département
    */
   create: async (data: DepartementCreate) => {
-    const response = await apiClient.post<Departement>('/academic/departements/', data);
+    const response = await apiClient.post<Departement>('departements/', data);
     return response.data;
   },
 
@@ -189,7 +192,7 @@ export const departementApi = {
    * Mettre à jour un département
    */
   update: async (id: number, data: DepartementUpdate) => {
-    const response = await apiClient.patch<Departement>(`/academic/departements/${id}/`, data);
+    const response = await apiClient.patch<Departement>(`/departements/${id}/`, data);
     return response.data;
   },
 
@@ -197,7 +200,7 @@ export const departementApi = {
    * Supprimer un département
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/academic/departements/${id}/`);
+    await apiClient.delete(`/departements/${id}/`);
   },
 };
 
@@ -219,7 +222,7 @@ export const filiereApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedResponse<Filiere>>(
-      `/academic/filieres/?${params.toString()}`
+      `/filieres/?${params.toString()}`
     );
     return response.data;
   },
@@ -228,7 +231,7 @@ export const filiereApi = {
    * Récupérer une filière par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<Filiere>(`/academic/filieres/${id}/`);
+    const response = await apiClient.get<Filiere>(`/filieres/${id}/`);
     return response.data;
   },
 
@@ -236,7 +239,7 @@ export const filiereApi = {
    * Créer une nouvelle filière
    */
   create: async (data: FiliereCreate) => {
-    const response = await apiClient.post<Filiere>('/academic/filieres/', data);
+    const response = await apiClient.post<Filiere>('/filieres/', data);
     return response.data;
   },
 
@@ -244,7 +247,7 @@ export const filiereApi = {
    * Mettre à jour une filière
    */
   update: async (id: number, data: FiliereUpdate) => {
-    const response = await apiClient.patch<Filiere>(`/academic/filieres/${id}/`, data);
+    const response = await apiClient.patch<Filiere>(`/filieres/${id}/`, data);
     return response.data;
   },
 
@@ -252,7 +255,7 @@ export const filiereApi = {
    * Supprimer une filière
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/academic/filieres/${id}/`);
+    await apiClient.delete(`/filieres/${id}/`);
   },
 };
 
@@ -274,7 +277,7 @@ export const matiereApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedResponse<Matiere>>(
-      `/academic/matieres/?${params.toString()}`
+      `/matieres/?${params.toString()}`
     );
     return response.data;
   },
@@ -283,7 +286,7 @@ export const matiereApi = {
    * Récupérer une matière par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<Matiere>(`/academic/matieres/${id}/`);
+    const response = await apiClient.get<Matiere>(`/matieres/${id}/`);
     return response.data;
   },
 
@@ -291,7 +294,7 @@ export const matiereApi = {
    * Créer une nouvelle matière
    */
   create: async (data: MatiereCreate) => {
-    const response = await apiClient.post<Matiere>('/academic/matieres/', data);
+    const response = await apiClient.post<Matiere>('/matieres/', data);
     return response.data;
   },
 
@@ -299,7 +302,7 @@ export const matiereApi = {
    * Mettre à jour une matière
    */
   update: async (id: number, data: MatiereUpdate) => {
-    const response = await apiClient.patch<Matiere>(`/academic/matieres/${id}/`, data);
+    const response = await apiClient.patch<Matiere>(`/matieres/${id}/`, data);
     return response.data;
   },
 
@@ -307,6 +310,6 @@ export const matiereApi = {
    * Supprimer une matière
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/academic/matieres/${id}/`);
+    await apiClient.delete(`/matieres/${id}/`);
   },
 };
