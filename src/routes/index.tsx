@@ -20,11 +20,6 @@ import {
   AcademicStructureTree,
 } from '@/pages/admin/academic';
 
-//Pages Etudiants et Enseignants
-import {
-  EtudiantsPage,
-  EnseignantsPage,
-} from '@/pages/admin/students';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -121,32 +116,6 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <MatieresPage />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-
-  /**
- * Routes à ajouter dans le fichier routes/index.tsx
- */
-  {
-    path: '/admin/students/etudiants',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EtudiantsPage />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-
-  // ==================== ROUTES ENSEIGNANTS ====================
-  {
-    path: '/admin/students/enseignants',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EnseignantsPage />
         </MainLayout>
       </RoleRoute>
     ),
