@@ -4,7 +4,7 @@
  */
 
 import { Matiere } from './academic.types';
-import { Etudiant, Enseignant } from './students.types';
+import { Etudiant, Enseignant } from './student.types';
 
 // ============== STATUTS ==============
 

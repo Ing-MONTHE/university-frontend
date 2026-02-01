@@ -1,6 +1,6 @@
-import MainLayout from '@/components/layout/MainLayout';
 import { Button, Badge, Card } from '@/components/ui';
 import { useAuth } from '@/hooks';
+import { useDashboardStats } from '@/hooks/useDashboard';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -25,23 +25,24 @@ import {
 export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { data: dashboardStats, isLoading } = useDashboardStats();
 
-  // Stats avec couleurs variées et modernes
+  // Stats avec données réelles
   const stats = [
     {
       icon: Users,
       label: 'Étudiants actifs',
-      value: '2,547',
-      change: '+12%',
+      value: dashboardStats?.students.actifs.toString() || '0',
+      change: `${dashboardStats?.students.nouveaux || 0} nouveaux`,
       gradient: 'from-blue-500 via-blue-600 to-blue-700',
       lightBg: 'bg-blue-50',
       iconColor: 'text-blue-600',
     },
     {
       icon: GraduationCap,
-      label: 'Enseignants',
-      value: '147',
-      change: '+5 ce mois',
+      label: 'Total étudiants',
+      value: dashboardStats?.students.total.toString() || '0',
+      change: 'Tous statuts',
       gradient: 'from-purple-500 via-purple-600 to-purple-700',
       lightBg: 'bg-purple-50',
       iconColor: 'text-purple-600',
@@ -58,7 +59,7 @@ export default function AdminDashboard() {
     {
       icon: TrendingUp,
       label: 'Taux de réussite',
-      value: '87.3%',
+      value: `${dashboardStats?.students.taux_reussite || 0}%`,
       change: '+2.1%',
       gradient: 'from-orange-500 via-orange-600 to-orange-700',
       lightBg: 'bg-orange-50',
@@ -133,7 +134,7 @@ export default function AdminDashboard() {
       label: 'Nouvel Étudiant', 
       gradient: 'from-blue-500 to-blue-600',
       hoverGradient: 'hover:from-blue-600 hover:to-blue-700',
-      onClick: () => navigate('/admin/students'),
+      onClick: () => navigate('/admin/students/new'),
     },
     { 
       icon: ClipboardCheck, 
@@ -206,6 +207,16 @@ export default function AdminDashboard() {
 
   return (
     <div>
+      {/* Loading state */}
+      {isLoading && (
+        <div className="mb-6 bg-white rounded-xl p-6 border border-gray-200">
+          <div className="flex items-center justify-center gap-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600">Chargement des statistiques...</p>
+          </div>
+        </div>
+      )}
+
       {/* Welcome Section */}
       <div className="mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full blur-3xl opacity-30 -mr-32 -mt-32"></div>

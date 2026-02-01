@@ -3,7 +3,7 @@
  * Mapped depuis les modèles Django Backend
  */
 
-import { Etudiant } from './students.types';
+import { Etudiant } from './student.types';
 import { Cours } from './schedule.types';
 
 // ============== FINANCE ==============

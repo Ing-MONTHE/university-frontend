@@ -20,6 +20,14 @@ import {
   AcademicStructureTree,
 } from '@/pages/admin/academic';
 
+// Pages Étudiants
+import {
+  StudentsList,
+  StudentForm,
+  StudentProfile,
+  StudentImport,
+} from '@/pages/admin/students';
+
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -116,6 +124,58 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <MatieresPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Routes Étudiants
+  {
+    path: '/admin/students',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/import',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentImport />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentProfile />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentForm />
         </MainLayout>
       </RoleRoute>
     ),
