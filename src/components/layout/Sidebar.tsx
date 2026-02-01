@@ -1,400 +1,418 @@
-/**
- * Sidebar - Menu de navigation principal
- * Inclut: Dashboard, Étudiants, Enseignants, Académique, et autres modules
- */
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  GraduationCap,
   Users,
+  GraduationCap,
   BookOpen,
-  Building2,
-  Building,
   Calendar,
-  ClipboardCheck,
-  DollarSign,
+  ClipboardList,
   Library,
+  DollarSign,
   Bell,
   BarChart3,
   Settings,
-  ChevronDown,
+  HelpCircle,
+  ChevronLeft,
   ChevronRight,
-  X,
+  ChevronDown,
+  Building2,
+  Building,
+  Network,
+  FileText,
 } from 'lucide-react';
-import { cn } from '@/utils/Cn';
+import { useAuthStore } from '@/store';
+import { ROUTES } from '@/config/constants';
 
-interface SidebarProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+interface SubMenuItem {
+  icon: any;
+  label: string;
+  path: string;
 }
 
-export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
-  const location = useLocation();
-  const pathname = location.pathname;
+interface MenuItem {
+  icon: any;
+  label: string;
+  path?: string;
+  roles?: string[];
+  children?: SubMenuItem[];
+}
 
-  // État pour les sous-menus dépliables
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
-    students: pathname.startsWith('/admin/students'),
-    academic: pathname.startsWith('/admin/academic'),
+// Menu principal de navigation avec sous-menus pour Académique
+const mainMenuItems: MenuItem[] = [
+  {
+    icon: LayoutDashboard,
+    label: 'Dashboard',
+    path: ROUTES.ADMIN_DASHBOARD,
+    roles: ['ADMIN'],
+  },
+  {
+    icon: Users,
+    label: 'Étudiants',
+    path: '/admin/students',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: GraduationCap,
+    label: 'Enseignants',
+    path: '/admin/teachers',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: BookOpen,
+    label: 'Académique',
+    roles: ['ADMIN'],
+    children: [
+      {
+        icon: Network,
+        label: 'Structure',
+        path: '/admin/academic/structure',
+      },
+      {
+        icon: Calendar,
+        label: 'Années Académiques',
+        path: '/admin/academic/annees-academiques',
+      },
+      {
+        icon: Building2,
+        label: 'Facultés',
+        path: '/admin/academic/facultes',
+      },
+      {
+        icon: Building,
+        label: 'Départements',
+        path: '/admin/academic/departements',
+      },
+      {
+        icon: GraduationCap,
+        label: 'Filières',
+        path: '/admin/academic/filieres',
+      },
+      {
+        icon: FileText,
+        label: 'Matières',
+        path: '/admin/academic/matieres',
+      },
+    ],
+  },
+  {
+    icon: ClipboardList,
+    label: 'Évaluations',
+    path: '/admin/evaluations',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: Calendar,
+    label: 'Emploi du temps',
+    path: '/admin/schedule',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: Library,
+    label: 'Bibliothèque',
+    path: '/admin/library',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: DollarSign,
+    label: 'Finance',
+    path: '/admin/finance',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: BarChart3,
+    label: 'Statistiques',
+    path: '/admin/analytics',
+    roles: ['ADMIN'],
+  },
+];
+
+// Menu du bas (séparé)
+const bottomMenuItems: MenuItem[] = [
+  {
+    icon: Bell,
+    label: 'Notifications',
+    path: '/admin/notifications',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: HelpCircle,
+    label: 'Support',
+    path: '/admin/support',
+    roles: ['ADMIN'],
+  },
+  {
+    icon: Settings,
+    label: 'Paramètres',
+    path: '/admin/settings',
+    roles: ['ADMIN'],
+  },
+];
+
+export default function Sidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['Académique'])); // Académique ouvert par défaut
+  const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+
+  // Extraire les noms de rôles de l'utilisateur
+  const userRoles = user?.roles?.map((role: any) => role.name) || [];
+
+  // Filtrer les items de menu selon le rôle de l'utilisateur
+  const filteredMainItems = mainMenuItems.filter((item) => {
+    if (!item.roles) return true;
+    return item.roles.some((role) => userRoles.includes(role));
   });
 
-  const toggleMenu = (key: string) => {
-    setExpandedMenus((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+  const filteredBottomItems = bottomMenuItems.filter((item) => {
+    if (!item.roles) return true;
+    return item.roles.some((role) => userRoles.includes(role));
+  });
+
+  // Toggle sous-menu
+  const toggleSubmenu = (label: string) => {
+    setExpandedMenus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(label)) {
+        newSet.delete(label);
+      } else {
+        newSet.add(label);
+      }
+      return newSet;
+    });
   };
 
-  // Types pour la navigation
-  type NavigationBadge = { count?: number; text?: string; color: string };
-  type NavigationChild = {
-    name: string;
-    href: string;
-    icon: React.ComponentType<any>;
-    current: boolean;
-    badge?: NavigationBadge;
-    description?: string;
+  // Vérifier si un sous-menu contient le path actif
+  const isSubmenuActive = (children?: SubMenuItem[]) => {
+    if (!children) return false;
+    return children.some((child) => location.pathname === child.path);
   };
-  type NavigationItem = {
-    name: string;
-    href?: string;
-    icon: React.ComponentType<any>;
-    current: boolean;
-    badge?: NavigationBadge;
-    children?: NavigationChild[];
-  };
-
-  // Configuration de la navigation
-  const navigation: NavigationItem[] = [
-    {
-      name: 'Dashboard',
-      href: '/admin',
-      icon: LayoutDashboard,
-      current: pathname === '/admin',
-    },
-    
-    // ==================== MODULE STUDENTS ====================
-    {
-      name: 'Students',
-      icon: GraduationCap,
-      current: pathname.startsWith('/admin/students'),
-      children: [
-        {
-          name: 'Étudiants',
-          href: '/admin/students/etudiants',
-          icon: GraduationCap,
-          current: pathname === '/admin/students/etudiants',
-          badge: { count: 2547, color: 'bg-blue-500' },
-        },
-        {
-          name: 'Enseignants',
-          href: '/admin/students/enseignants',
-          icon: Users,
-          current: pathname === '/admin/students/enseignants',
-          badge: { count: 147, color: 'bg-purple-500' },
-        },
-      ],
-    },
-
-    // ==================== MODULE ACADÉMIQUE ====================
-    {
-      name: 'Académique',
-      icon: BookOpen,
-      current: pathname.startsWith('/admin/academic'),
-      children: [
-        {
-          name: 'Structure',
-          href: '/admin/academic/structure',
-          icon: Building2,
-          current: pathname === '/admin/academic/structure',
-          description: 'Vue hiérarchique complète',
-        },
-        {
-          name: 'Années Académiques',
-          href: '/admin/academic/annees-academiques',
-          icon: Calendar,
-          current: pathname === '/admin/academic/annees-academiques',
-        },
-        {
-          name: 'Facultés',
-          href: '/admin/academic/facultes',
-          icon: Building2,
-          current: pathname === '/admin/academic/facultes',
-        },
-        {
-          name: 'Départements',
-          href: '/admin/academic/departements',
-          icon: Building,
-          current: pathname === '/admin/academic/departements',
-        },
-        {
-          name: 'Filières',
-          href: '/admin/academic/filieres',
-          icon: GraduationCap,
-          current: pathname === '/admin/academic/filieres',
-        },
-        {
-          name: 'Matières',
-          href: '/admin/academic/matieres',
-          icon: BookOpen,
-          current: pathname === '/admin/academic/matieres',
-        },
-      ],
-    },
-
-    // ==================== AUTRES MODULES ====================
-    {
-      name: 'Évaluations',
-      href: '/admin/evaluations',
-      icon: ClipboardCheck,
-      current: pathname.startsWith('/admin/evaluations'),
-      badge: { text: 'Bientôt', color: 'bg-orange-500' },
-    },
-    {
-      name: 'Emploi du temps',
-      href: '/admin/schedule',
-      icon: Calendar,
-      current: pathname.startsWith('/admin/schedule'),
-    },
-    {
-      name: 'Bibliothèque',
-      href: '/admin/library',
-      icon: Library,
-      current: pathname.startsWith('/admin/library'),
-    },
-    {
-      name: 'Finance',
-      href: '/admin/finance',
-      icon: DollarSign,
-      current: pathname.startsWith('/admin/finance'),
-    },
-    {
-      name: 'Statistiques',
-      href: '/admin/statistics',
-      icon: BarChart3,
-      current: pathname.startsWith('/admin/statistics'),
-    },
-  ];
-
-  const bottomNavigation = [
-    {
-      name: 'Notifications',
-      href: '/admin/notifications',
-      icon: Bell,
-      current: pathname === '/admin/notifications',
-      badge: { count: 12, color: 'bg-red-500' },
-    },
-    {
-      name: 'Paramètres',
-      href: '/admin/settings',
-      icon: Settings,
-      current: pathname === '/admin/settings',
-    },
-  ];
 
   return (
-    <>
-      {/* Overlay pour mobile */}
-      {isOpen && onClose && (
-        <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div
-        className={cn(
-          'fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        )}
-      >
-        <div className="flex flex-col h-full">
-          {/* Logo & Header */}
-          <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
-            <Link to="/admin" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-white font-bold text-lg">UMS</h1>
-                <p className="text-gray-400 text-xs">Admin Panel</p>
-              </div>
-            </Link>
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="lg:hidden text-gray-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            )}
-          </div>
-
-          {/* Navigation principale */}
-          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const hasChildren = item.children && item.children.length > 0;
-              const isExpanded = expandedMenus[item.name.toLowerCase().replace(' ', '_')];
-
-              if (hasChildren) {
-                return (
-                  <div key={item.name}>
-                    {/* Menu parent */}
-                    <button
-                      onClick={() => toggleMenu(item.name.toLowerCase().replace(' ', '_'))}
-                      className={cn(
-                        'w-full group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                        item.current
-                          ? 'bg-gray-800 text-white'
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon className="w-5 h-5 flex-shrink-0" />
-                        <span>{item.name}</span>
-                      </div>
-                      {isExpanded ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
-                    </button>
-
-                    {/* Sous-menu */}
-                    {isExpanded && (
-                      <div className="mt-1 space-y-1 ml-4">
-                        {item.children?.map((child) => (
-                          <Link
-                            key={child.href}
-                            to={child.href}
-                            className={cn(
-                              'group flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors',
-                              child.current
-                                ? 'bg-gray-800 text-white'
-                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <child.icon className="w-4 h-4 flex-shrink-0" />
-                              <div>
-                                <span className="block">{child.name}</span>
-                                {child.description && (
-                                  <span className="text-xs text-gray-500">
-                                    {child.description}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {child.badge && (
-                              <span
-                                className={cn(
-                                  'px-2 py-0.5 text-xs font-medium text-white rounded-full',
-                                  child.badge.color
-                                )}
-                              >
-                                {child.badge.count || child.badge.text}
-                              </span>
-                            )}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-
-              return (
-                item.href ? (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className={cn(
-                      'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                      item.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
-                      <span>{item.name}</span>
-                    </div>
-                    {item.badge && (
-                      <span
-                        className={cn(
-                          'px-2 py-0.5 text-xs font-medium text-white rounded-full',
-                          item.badge.color
-                        )}
-                      >
-                        {item.badge.count || item.badge.text}
-                      </span>
-                    )}
-                  </Link>
-                ) : (
-                  <div
-                    key={item.name}
-                    className={cn(
-                      'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-default',
-                      item.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-300'
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
-                      <span>{item.name}</span>
-                    </div>
-                    {item.badge && (
-                      <span
-                        className={cn(
-                          'px-2 py-0.5 text-xs font-medium text-white rounded-full',
-                          item.badge.color
-                        )}
-                      >
-                        {item.badge.count || item.badge.text}
-                      </span>
-                    )}
-                  </div>
-                )
-              );
-            })}
-          </nav>
-
-          {/* Navigation du bas */}
-          <div className="border-t border-gray-800 px-2 py-4 space-y-1">
-            {bottomNavigation.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={cn(
-                  'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                  item.current
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <span>{item.name}</span>
+    <aside
+      className={`bg-[#1e3a5f] text-white transition-all duration-300 flex flex-col ${
+        isCollapsed ? 'w-20' : 'w-64'
+      }`}
+    >
+      {/* Header - Logo & Toggle */}
+      <div className="px-5 py-5 border-b border-white/10">
+        {!isCollapsed ? (
+          // Mode étendu : Logo + nom + bouton à droite
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {/* Logo Shield */}
+              <div className="relative w-9 h-11">
+                <svg viewBox="0 0 80 96" className="absolute inset-0 drop-shadow-lg">
+                  <defs>
+                    <linearGradient id="sidebarShieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: 'rgba(255,255,255,0.3)' }} />
+                      <stop offset="100%" style={{ stopColor: 'rgba(255,255,255,0.05)' }} />
+                    </linearGradient>
+                  </defs>
+                  <path 
+                    d="M40 0 L5 15 L5 45 Q5 70 40 95 Q75 70 75 45 L75 15 Z" 
+                    fill="url(#sidebarShieldGrad)" 
+                    stroke="rgba(255,255,255,0.5)" 
+                    strokeWidth="2"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
+                  <GraduationCap className="w-5 h-5 text-white mb-0.5" strokeWidth={2.5} />
+                  <span className="text-white font-bold text-[8px] tracking-wider">UMS</span>
                 </div>
-                {item.badge && (
-                  <span
-                    className={cn(
-                      'px-2 py-0.5 text-xs font-medium text-white rounded-full',
-                      item.badge.color
-                    )}
-                  >
-                    {item.badge.count}
-                  </span>
-                )}
-              </Link>
-            ))}
+              </div>
+
+              <div>
+                <h1 className="font-bold text-base">UMS</h1>
+                <p className="text-xs text-white/60">Admin Panel</p>
+              </div>
+            </div>
+
+            {/* Bouton collapse */}
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+              title="Réduire"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
           </div>
-        </div>
+        ) : (
+          // Mode réduit : Logo centré + bouton en dessous
+          <div className="flex flex-col items-center gap-2">
+            {/* Logo Shield centré */}
+            <div className="relative w-9 h-11">
+              <svg viewBox="0 0 80 96" className="absolute inset-0 drop-shadow-lg">
+                <defs>
+                  <linearGradient id="sidebarShieldGradCollapsed" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: 'rgba(255,255,255,0.3)' }} />
+                    <stop offset="100%" style={{ stopColor: 'rgba(255,255,255,0.05)' }} />
+                  </linearGradient>
+                </defs>
+                <path 
+                  d="M40 0 L5 15 L5 45 Q5 70 40 95 Q75 70 75 45 L75 15 Z" 
+                  fill="url(#sidebarShieldGradCollapsed)" 
+                  stroke="rgba(255,255,255,0.5)" 
+                  strokeWidth="2"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
+                <GraduationCap className="w-5 h-5 text-white mb-0.5" strokeWidth={2.5} />
+                <span className="text-white font-bold text-[8px] tracking-wider">UMS</span>
+              </div>
+            </div>
+
+            {/* Bouton expand visible */}
+            <button
+              onClick={() => setIsCollapsed(false)}
+              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+              title="Étendre"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
-    </>
+
+      {/* Main Navigation */}
+      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        {filteredMainItems.map((item) => {
+          const Icon = item.icon;
+          const hasChildren = item.children && item.children.length > 0;
+          const isExpanded = expandedMenus.has(item.label);
+          const isActive = item.path ? location.pathname === item.path : false;
+          const isChildActive = isSubmenuActive(item.children);
+
+          // Si l'item a des enfants
+          if (hasChildren && !isCollapsed) {
+            return (
+              <div key={item.label}>
+                {/* Parent menu item */}
+                <button
+                  onClick={() => toggleSubmenu(item.label)}
+                  className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                    isChildActive
+                      ? 'bg-blue-500/20 text-white'
+                      : 'text-white/90 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+                    <span>{item.label}</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isExpanded ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Submenu */}
+                {isExpanded && (
+                  <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-white/10 pl-2">
+                    {item.children!.map((child) => {
+                      const ChildIcon = child.icon;
+                      const isChildActive = location.pathname === child.path;
+
+                      return (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-xs font-medium ${
+                            isChildActive
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'text-white/80 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          <ChildIcon className="w-[16px] h-[16px] flex-shrink-0" strokeWidth={2} />
+                          <span>{child.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // Item simple (avec ou sans enfants en mode collapsed)
+          return (
+            <Link
+              key={item.path || item.label}
+              to={item.path || '#'}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                isActive
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'text-white/90 hover:bg-white/5'
+              } ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? item.label : ''}
+            >
+              <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+              {!isCollapsed && <span>{item.label}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Bottom Menu - Séparation subtile */}
+      <div className="px-3 py-2 space-y-0.5 border-t border-white/10">
+        {filteredBottomItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
+
+          return (
+            <Link
+              key={item.path}
+              to={item.path!}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all relative text-sm font-medium ${
+                isActive
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'text-white/90 hover:bg-white/5'
+              } ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? item.label : ''}
+            >
+              <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+              {!isCollapsed && <span>{item.label}</span>}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* User Profile - Bottom */}
+      <div className="px-3 py-3 border-t border-white/10">
+        {!isCollapsed ? (
+          <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+            {/* Avatar avec dégradé */}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-400/20">
+              <span className="text-xs font-bold text-white">
+                {user?.username?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            {/* Info utilisateur */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-white truncate">
+                {user?.username}
+              </p>
+              <p className="text-[10px] text-white/60 truncate">
+                {user?.email}
+              </p>
+            </div>
+            {/* Flèche au hover */}
+            <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <ChevronRight className="w-3.5 h-3.5 text-white/60" />
+            </button>
+          </div>
+        ) : (
+          // Avatar seul en mode collapsed
+          <button className="w-full flex justify-center">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-blue-400/20">
+              <span className="text-xs font-bold text-white">
+                {user?.username?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          </button>
+        )}
+      </div>
+    </aside>
   );
 }
