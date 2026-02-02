@@ -1,3 +1,4 @@
+import MainLayout from '@/components/layout/MainLayout';
 import { Button, Badge, Card } from '@/components/ui';
 import { useAuth } from '@/hooks';
 import { useDashboardStats } from '@/hooks/useDashboard';
@@ -32,7 +33,7 @@ export default function AdminDashboard() {
     {
       icon: Users,
       label: 'Étudiants actifs',
-      value: dashboardStats?.students.actifs.toString() || '0',
+      value: dashboardStats?.students.actifs.toLocaleString() || '0',
       change: `${dashboardStats?.students.nouveaux || 0} nouveaux`,
       gradient: 'from-blue-500 via-blue-600 to-blue-700',
       lightBg: 'bg-blue-50',
@@ -41,7 +42,7 @@ export default function AdminDashboard() {
     {
       icon: GraduationCap,
       label: 'Total étudiants',
-      value: dashboardStats?.students.total.toString() || '0',
+      value: dashboardStats?.students.total.toLocaleString() || '0',
       change: 'Tous statuts',
       gradient: 'from-purple-500 via-purple-600 to-purple-700',
       lightBg: 'bg-purple-50',
@@ -49,9 +50,11 @@ export default function AdminDashboard() {
     },
     {
       icon: DollarSign,
-      label: 'Revenus mensuels',
-      value: '12.5M',
-      change: '+8%',
+      label: 'Montant impayé',
+      value: dashboardStats?.finance.montant_impaye 
+        ? `${(dashboardStats.finance.montant_impaye / 1000000).toFixed(1)}M`
+        : '0',
+      change: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants`,
       gradient: 'from-emerald-500 via-emerald-600 to-emerald-700',
       lightBg: 'bg-emerald-50',
       iconColor: 'text-emerald-600',
@@ -60,7 +63,7 @@ export default function AdminDashboard() {
       icon: TrendingUp,
       label: 'Taux de réussite',
       value: `${dashboardStats?.students.taux_reussite || 0}%`,
-      change: '+2.1%',
+      change: `${dashboardStats?.students.par_statut.diplomes || 0} diplômés`,
       gradient: 'from-orange-500 via-orange-600 to-orange-700',
       lightBg: 'bg-orange-50',
       iconColor: 'text-orange-600',
@@ -70,36 +73,36 @@ export default function AdminDashboard() {
   const recentActivities = [
     { 
       icon: Users, 
-      text: 'Jean Dupont inscrit en L1 Informatique', 
-      time: '5 min',
+      text: `${dashboardStats?.students.nouveaux || 0} nouveaux étudiants inscrits ce mois`, 
+      time: 'Aujourd\'hui',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
     },
     { 
       icon: DollarSign, 
-      text: 'Paiement de 150,000 FCFA - Marie Kouassi', 
-      time: '12 min',
+      text: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants avec retard de paiement`, 
+      time: 'Aujourd\'hui',
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50',
     },
     { 
       icon: ClipboardCheck, 
-      text: 'Notes saisies - Mathématiques L2 (Prof. Amani)', 
-      time: '1h',
+      text: `${dashboardStats?.students.par_statut.actifs || 0} étudiants actifs`, 
+      time: 'Aujourd\'hui',
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
     },
     { 
       icon: Calendar, 
-      text: 'Cours d\'Algorithmique ajouté - Salle A205', 
-      time: '2h',
+      text: `${dashboardStats?.students.par_statut.diplomes || 0} étudiants diplômés`, 
+      time: 'Cette année',
       color: 'text-amber-600',
       bgColor: 'bg-amber-50',
     },
     { 
       icon: BookOpen, 
-      text: '3 nouveaux livres ajoutés à la bibliothèque', 
-      time: '3h',
+      text: `${dashboardStats?.students.par_sexe.masculin || 0} garçons / ${dashboardStats?.students.par_sexe.feminin || 0} filles`, 
+      time: 'Total',
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
     },
@@ -108,22 +111,22 @@ export default function AdminDashboard() {
   const alerts = [
     { 
       icon: XCircle, 
-      text: '15 étudiants avec retard de paiement', 
+      text: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants avec retard de paiement`, 
       variant: 'danger' as const,
     },
     { 
       icon: AlertTriangle, 
-      text: '3 conflits d\'emploi du temps à résoudre', 
+      text: `${dashboardStats?.students.par_statut.suspendus || 0} étudiants suspendus`, 
       variant: 'warning' as const,
     },
     { 
       icon: Clock, 
-      text: '8 justificatifs d\'absence en attente', 
+      text: `${dashboardStats?.students.par_statut.abandonnes || 0} étudiants ont abandonné`, 
       variant: 'warning' as const,
     },
     { 
       icon: CheckCircle2, 
-      text: 'Session de délibération L3 Économie à planifier', 
+      text: `${dashboardStats?.students.nouveaux || 0} nouveaux étudiants ce mois`, 
       variant: 'info' as const,
     },
   ];

@@ -1,7 +1,9 @@
 // Hook pour récupérer les statistiques du dashboard
 
 import { useQuery } from '@tanstack/react-query';
-import { useStudentStatistics } from './useStudents';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 export interface DashboardStats {
   students: {
@@ -9,44 +11,38 @@ export interface DashboardStats {
     actifs: number;
     nouveaux: number;
     taux_reussite: number;
-  };
-  teachers: {
-    total: number;
-    actifs: number;
+    par_statut: {
+      actifs: number;
+      suspendus: number;
+      diplomes: number;
+      exclus: number;
+      abandonnes: number;
+    };
+    par_sexe: {
+      masculin: number;
+      feminin: number;
+    };
   };
   finance: {
-    revenus_mensuels: number;
+    total_a_payer: number;
+    total_paye: number;
     montant_impaye: number;
+    etudiants_impaye: number;
   };
 }
 
+const fetchDashboardStats = async (): Promise<DashboardStats> => {
+  const response = await axios.get(`${API_BASE_URL}/etudiants/dashboard-stats/`);
+  return response.data;
+};
+
 export const useDashboardStats = () => {
-  // Récupérer les stats étudiants
-  const { data: studentStats, isLoading: loadingStudents } = useStudentStatistics();
-
-  // TODO: Ajouter les autres stats (enseignants, finance) quand les endpoints seront prêts
-  
-  const dashboardData: DashboardStats = {
-    students: {
-      total: studentStats?.total || 0,
-      actifs: studentStats?.actifs || 0,
-      nouveaux: studentStats?.nouveaux || 0,
-      taux_reussite: studentStats?.taux_reussite || 0,
-    },
-    teachers: {
-      total: 0, // TODO: Récupérer depuis l'API
-      actifs: 0,
-    },
-    finance: {
-      revenus_mensuels: 0, // TODO: Récupérer depuis l'API
-      montant_impaye: 0,
-    },
-  };
-
-  return {
-    data: dashboardData,
-    isLoading: loadingStudents,
-  };
+  return useQuery({
+    queryKey: ['dashboard-stats'],
+    queryFn: fetchDashboardStats,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2,
+  });
 };
 
 export default useDashboardStats;

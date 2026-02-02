@@ -13,6 +13,7 @@ import {
   Edit,
   Mail,
   Phone,
+  MapPin,
   Download,
 } from 'lucide-react';
 import {
@@ -94,14 +95,14 @@ const StudentProfile: React.FC = () => {
             {/* Photo */}
             <img
               src={student.photo || '/default-avatar.png'}
-              alt={student.user.first_name}
+              alt={student.prenom}
               className="w-32 h-32 rounded-full object-cover"
             />
 
             {/* Informations principales */}
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900">
-                {student.user.last_name} {student.user.first_name}
+                {student.nom} {student.prenom}
               </h1>
               <p className="text-lg text-gray-600 mt-1">{student.matricule}</p>
               <div className="flex items-center gap-4 mt-4">
@@ -236,7 +237,7 @@ const StudentProfile: React.FC = () => {
                 <dl className="space-y-3">
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Nom complet</dt>
-                    <dd className="text-base text-gray-900">{student.user.last_name} {student.user.first_name}</dd>
+                    <dd className="text-base text-gray-900">{student.nom} {student.prenom}</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Sexe</dt>

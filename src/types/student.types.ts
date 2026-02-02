@@ -27,14 +27,20 @@ export interface User {
 }
 
 export interface Etudiant {
+  user: any;
   id: number;
   matricule: string; // Auto-généré (ex: ETU-2024-0001)
-  user: User;
+  
+  // Informations de base (maintenant en direct depuis l'API)
+  nom: string;
+  prenom: string;
+  email: string; // Alias pour email_personnel
   
   // Informations personnelles
   date_naissance: string; // ISO date
   lieu_naissance: string;
   sexe: SexeEtudiant;
+  sexe_display?: string;
   nationalite: string;
   
   // Contact
@@ -46,6 +52,7 @@ export interface Etudiant {
   
   // Photo
   photo?: string; // URL
+  photo_url?: string; // URL complète
   
   // Tuteur/Parent
   tuteur_nom: string;
@@ -54,6 +61,7 @@ export interface Etudiant {
   
   // Statut
   statut: StatutEtudiant;
+  statut_display?: string;
   
   // Métadonnées
   created_at: string;

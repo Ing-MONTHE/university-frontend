@@ -390,7 +390,7 @@ const StudentsList: React.FC = () => {
                     <td className="px-6 py-4">
                       <img
                         src={student.photo || '/default-avatar.png'}
-                        alt={student.user.first_name}
+                        alt={student.prenom}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
@@ -399,7 +399,7 @@ const StudentsList: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {student.user.last_name} {student.user.first_name}
+                        {student.nom} {student.prenom}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -497,11 +497,11 @@ const StudentsList: React.FC = () => {
               <div className="flex flex-col items-center">
                 <img
                   src={student.photo || '/default-avatar.png'}
-                  alt={student.user.first_name}
+                  alt={student.prenom}
                   className="w-24 h-24 rounded-full object-cover mb-4"
                 />
                 <h3 className="text-lg font-semibold text-gray-900 text-center">
-                  {student.user.last_name} {student.user.first_name}
+                  {student.nom} {student.prenom}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">{student.matricule}</p>
                 <span
