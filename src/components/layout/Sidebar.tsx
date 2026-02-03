@@ -20,7 +20,6 @@ import {
   Building,
   Network,
   FileText,
-  Upload,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -50,19 +49,8 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: Users,
     label: 'Étudiants',
+    path: '/admin/students',
     roles: ['ADMIN'],
-    children: [
-      {
-        icon: Users,
-        label: 'Liste des étudiants',
-        path: '/admin/students',
-      },
-      {
-        icon: Upload,
-        label: 'Import CSV',
-        path: '/admin/students/import',
-      },
-    ],
   },
   {
     icon: GraduationCap,

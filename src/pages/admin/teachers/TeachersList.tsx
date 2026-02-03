@@ -1,5 +1,5 @@
 /**
- * Page Liste des Étudiants - Style Module Académique
+ * Page Liste des Enseignants - Style Module Académique
  */
 
 import { useState } from 'react';
@@ -7,23 +7,22 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
-  Users, 
+  GraduationCap, 
   Pencil, 
   Trash2, 
   Eye, 
-  Upload, 
   Download,
   User,
   Mail,
   Phone,
-  MapPin,
-  Calendar
+  Briefcase,
+  Award
 } from 'lucide-react';
 import {
-  useStudents,
-  useDeleteStudent,
-} from '@/hooks/useStudents';
-import type { Etudiant, EtudiantFilters } from '@/types/student.types';
+  useTeachers,
+  useDeleteTeacher,
+} from '@/hooks/useTeachers';
+import type { Enseignant, EnseignantFilters } from '@/types/teacher.types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Pagination from '@/components/ui/Pagination';
@@ -31,23 +30,23 @@ import Spinner from '@/components/ui/Spinner';
 import ConfirmModal from '@/components/layout/ConfirmModal';
 import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
-export default function StudentsListPage() {
+export default function TeachersListPage() {
   const navigate = useNavigate();
 
   // États locaux
-  const [filters, setFilters] = useState<EtudiantFilters>({
+  const [filters, setFilters] = useState<EnseignantFilters>({
     page: 1,
     page_size: DEFAULT_PAGE_SIZE,
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; item: Etudiant | null }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; item: Enseignant | null }>({
     isOpen: false,
     item: null,
   });
 
   // React Query
-  const { data, isLoading } = useStudents(filters);
-  const deleteMutation = useDeleteStudent();
+  const { data, isLoading } = useTeachers(filters);
+  const deleteMutation = useDeleteTeacher();
 
   // Handlers
   const handleSearch = () => {
@@ -61,13 +60,21 @@ export default function StudentsListPage() {
     }
   };
 
+  const getGradeColor = (grade: string) => {
+    const colors: Record<string, string> = {
+      ASSISTANT: 'bg-blue-100 text-blue-700',
+      MC: 'bg-purple-100 text-purple-700',
+      PROFESSEUR: 'bg-green-100 text-green-700',
+    };
+    return colors[grade] || 'bg-gray-100 text-gray-700';
+  };
+
   const getStatutColor = (statut: string) => {
     const colors: Record<string, string> = {
       ACTIF: 'bg-green-100 text-green-700',
-      SUSPENDU: 'bg-yellow-100 text-yellow-700',
-      DIPLOME: 'bg-blue-100 text-blue-700',
-      EXCLU: 'bg-red-100 text-red-700',
-      ABANDONNE: 'bg-gray-100 text-gray-700',
+      INACTIF: 'bg-red-100 text-red-700',
+      EN_CONGE: 'bg-yellow-100 text-yellow-700',
+      RETIRE: 'bg-gray-100 text-gray-700',
     };
     return colors[statut] || 'bg-gray-100 text-gray-700';
   };
@@ -79,24 +86,17 @@ export default function StudentsListPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-purple-600" />
               </div>
-              Gestion des Étudiants
+              Gestion des Enseignants
             </h1>
             <p className="text-gray-600 mt-1">
-              {data?.count || 0} étudiant(s) • {data?.results.filter(s => s.statut === 'ACTIF').length || 0} actif(s)
+              {data?.count || 0} enseignant(s) • {data?.results.filter(t => t.statut === 'ACTIF').length || 0} actif(s)
             </p>
           </div>
 
           <div className="flex gap-3">
-            <Button
-              onClick={() => navigate('/admin/students/import')}
-              variant="secondary"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Importer CSV
-            </Button>
             <Button
               onClick={() => {/* TODO: Export */}}
               variant="secondary"
@@ -104,9 +104,9 @@ export default function StudentsListPage() {
               <Download className="w-4 h-4 mr-2" />
               Exporter
             </Button>
-            <Button onClick={() => navigate('/admin/students/new')} variant="primary">
+            <Button onClick={() => navigate('/admin/teachers/new')} variant="primary">
               <Plus className="w-4 h-4 mr-2" />
-              Nouvel Étudiant
+              Nouvel Enseignant
             </Button>
           </div>
         </div>
@@ -120,8 +120,8 @@ export default function StudentsListPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Rechercher un étudiant (nom, prénom, matricule, email)..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Rechercher un enseignant (nom, matricule, spécialité)..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
           <Button onClick={handleSearch} variant="primary">
@@ -137,69 +137,68 @@ export default function StudentsListPage() {
         </div>
       )}
 
-      {/* Liste des étudiants en cartes */}
+      {/* Liste des enseignants en cartes */}
       {!isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {data?.results && data.results.length > 0 ? (
-            data.results.map((student) => (
+            data.results.map((teacher) => (
               <div
-                key={student.id}
+                key={teacher.id}
                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
                 <div className="p-6">
                   {/* Header avec photo */}
                   <div className="flex items-start gap-4 mb-4">
                     <img
-                      src={student.photo_url || '/default-avatar.png'}
-                      alt={student.prenom}
+                      src={teacher.photo_url || '/default-avatar.png'}
+                      alt={teacher.prenom}
                       className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">
-                        {student.nom} {student.prenom}
+                        {teacher.nom} {teacher.prenom}
                       </h3>
-                      <p className="text-sm text-gray-500 font-mono">{student.matricule}</p>
-                      <div className="mt-1">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatutColor(student.statut)}`}>
-                          {student.statut_display || student.statut}
+                      <p className="text-sm text-gray-500 font-mono">{teacher.matricule}</p>
+                      <div className="mt-1 flex gap-2">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getGradeColor(teacher.grade)}`}>
+                          {teacher.grade_display || teacher.grade}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatutColor(teacher.statut)}`}>
+                          {teacher.statut_display || teacher.statut}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Informations de contact */}
+                  {/* Informations */}
                   <div className="space-y-2 text-sm text-gray-600 mb-4">
                     <div className="flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-gray-400" />
+                      <span className="truncate">{teacher.specialite}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Award className="w-4 h-4 text-gray-400" />
+                      <span>{teacher.departement_nom || 'Non assigné'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-gray-400" />
-                      <span className="truncate">{student.email_personnel || student.email}</span>
+                      <span className="truncate">{teacher.email_personnel || teacher.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-400" />
-                      <span>{student.telephone}</span>
-                    </div>
-                    {student.ville && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span>{student.ville}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span>Né(e) le {new Date(student.date_naissance).toLocaleDateString('fr-FR')}</span>
+                      <span>{teacher.telephone}</span>
                     </div>
                   </div>
 
-                  {/* Informations supplémentaires */}
+                  {/* Stats */}
                   <div className="flex items-center gap-4 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      <span>{student.sexe === 'M' ? 'Masculin' : 'Féminin'}</span>
+                      <span>{teacher.nb_matieres || 0} matières</span>
                     </div>
-                    {student.nationalite && (
-                      <div className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {student.nationalite}
-                      </div>
-                    )}
+                    <div className="text-xs bg-gray-100 px-2 py-1 rounded">
+                      {teacher.charge_horaire || 0}h/sem
+                    </div>
                   </div>
 
                   {/* Actions */}
@@ -207,7 +206,7 @@ export default function StudentsListPage() {
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => navigate(`/admin/students/${student.id}`)}
+                      onClick={() => navigate(`/admin/teachers/${teacher.id}`)}
                       className="flex-1"
                     >
                       <Eye className="w-4 h-4 mr-2" />
@@ -216,7 +215,7 @@ export default function StudentsListPage() {
                     <Button
                       size="sm"
                       variant="primary"
-                      onClick={() => navigate(`/admin/students/${student.id}/edit`)}
+                      onClick={() => navigate(`/admin/teachers/${teacher.id}/edit`)}
                       className="flex-1"
                     >
                       <Pencil className="w-4 h-4 mr-2" />
@@ -225,7 +224,7 @@ export default function StudentsListPage() {
                     <Button
                       size="sm"
                       variant="danger"
-                      onClick={() => setDeleteConfirm({ isOpen: true, item: student })}
+                      onClick={() => setDeleteConfirm({ isOpen: true, item: teacher })}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -235,8 +234,8 @@ export default function StudentsListPage() {
             ))
           ) : (
             <div className="col-span-full text-center py-12 text-gray-500">
-              <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>Aucun étudiant trouvé</p>
+              <GraduationCap className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <p>Aucun enseignant trouvé</p>
             </div>
           )}
         </div>
@@ -261,8 +260,8 @@ export default function StudentsListPage() {
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, item: null })}
         onConfirm={handleDelete}
-        title="Supprimer l'étudiant"
-        message={`Êtes-vous sûr de vouloir supprimer l'étudiant ${deleteConfirm.item?.nom} ${deleteConfirm.item?.prenom} ? Cette action est irréversible.`}
+        title="Supprimer l'enseignant"
+        message={`Êtes-vous sûr de vouloir supprimer l'enseignant ${deleteConfirm.item?.nom} ${deleteConfirm.item?.prenom} ? Cette action est irréversible.`}
         confirmText="Supprimer"
         cancelText="Annuler"
       />

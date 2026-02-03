@@ -25,8 +25,14 @@ import {
   StudentsList,
   StudentForm,
   StudentProfile,
-  StudentImport,
 } from '@/pages/admin/students';
+
+// Pages Enseignants
+import {
+  TeachersList,
+  TeacherForm,
+  TeacherProfile,
+} from '@/pages/admin/teachers';
 
 
 // Components
@@ -151,16 +157,6 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/admin/students/import',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <StudentImport />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
     path: '/admin/students/:id',
     element: (
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
@@ -176,6 +172,48 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <StudentForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Routes Enseignants
+  {
+    path: '/admin/teachers',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TeachersList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/teachers/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TeacherForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/teachers/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TeacherProfile />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/teachers/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TeacherForm />
         </MainLayout>
       </RoleRoute>
     ),

@@ -1,454 +1,362 @@
-import MainLayout from '@/components/layout/MainLayout';
-import { Button, Badge, Card } from '@/components/ui';
-import { useAuth } from '@/hooks';
-import { useDashboardStats } from '@/hooks/useDashboard';
+/**
+ * Dashboard Admin - Style Module Académique Moderne
+ */
+
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
   GraduationCap,
+  BookOpen,
   DollarSign,
   TrendingUp,
-  BookOpen,
+  TrendingDown,
   Calendar,
-  ClipboardCheck,
+  Award,
   Clock,
-  CheckCircle2,
+  AlertCircle,
+  CheckCircle,
   XCircle,
-  AlertTriangle,
-  Sparkles,
-  Network,
-  Building2,
-  Building,
-  FileText,
   ArrowRight,
+  Building2,
+  FileText,
 } from 'lucide-react';
+import { useDashboardStats } from '@/hooks/useDashboard';
+import Button from '@/components/ui/Button';
+import Spinner from '@/components/ui/Spinner';
 
-export default function AdminDashboard() {
-  const { user } = useAuth();
+export default function DashboardPage() {
   const navigate = useNavigate();
-  const { data: dashboardStats, isLoading } = useDashboardStats();
+  const { data: stats, isLoading } = useDashboardStats();
 
-  // Stats avec données réelles
-  const stats = [
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  // Cartes statistiques principales
+  const mainStats = [
     {
+      title: 'Étudiants actifs',
+      value: stats?.students.actifs?.toLocaleString() || '0',
+      change: `+${stats?.students.nouveaux || 0} ce mois`,
       icon: Users,
-      label: 'Étudiants actifs',
-      value: dashboardStats?.students.actifs.toLocaleString() || '0',
-      change: `${dashboardStats?.students.nouveaux || 0} nouveaux`,
-      gradient: 'from-blue-500 via-blue-600 to-blue-700',
-      lightBg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-    },
-    {
-      icon: GraduationCap,
-      label: 'Total étudiants',
-      value: dashboardStats?.students.total.toLocaleString() || '0',
-      change: 'Tous statuts',
-      gradient: 'from-purple-500 via-purple-600 to-purple-700',
-      lightBg: 'bg-purple-50',
-      iconColor: 'text-purple-600',
-    },
-    {
-      icon: DollarSign,
-      label: 'Montant impayé',
-      value: dashboardStats?.finance.montant_impaye 
-        ? `${(dashboardStats.finance.montant_impaye / 1000000).toFixed(1)}M`
-        : '0',
-      change: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants`,
-      gradient: 'from-emerald-500 via-emerald-600 to-emerald-700',
-      lightBg: 'bg-emerald-50',
-      iconColor: 'text-emerald-600',
-    },
-    {
-      icon: TrendingUp,
-      label: 'Taux de réussite',
-      value: `${dashboardStats?.students.taux_reussite || 0}%`,
-      change: `${dashboardStats?.students.par_statut.diplomes || 0} diplômés`,
-      gradient: 'from-orange-500 via-orange-600 to-orange-700',
-      lightBg: 'bg-orange-50',
-      iconColor: 'text-orange-600',
-    },
-  ];
-
-  const recentActivities = [
-    { 
-      icon: Users, 
-      text: `${dashboardStats?.students.nouveaux || 0} nouveaux étudiants inscrits ce mois`, 
-      time: 'Aujourd\'hui',
-      color: 'text-blue-600',
+      color: 'blue',
       bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600',
+      path: '/admin/students',
     },
-    { 
-      icon: DollarSign, 
-      text: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants avec retard de paiement`, 
-      time: 'Aujourd\'hui',
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50',
-    },
-    { 
-      icon: ClipboardCheck, 
-      text: `${dashboardStats?.students.par_statut.actifs || 0} étudiants actifs`, 
-      time: 'Aujourd\'hui',
-      color: 'text-purple-600',
+    {
+      title: 'Total étudiants',
+      value: stats?.students.total?.toLocaleString() || '0',
+      change: 'Tous statuts',
+      icon: GraduationCap,
+      color: 'purple',
       bgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      path: '/admin/students',
     },
-    { 
-      icon: Calendar, 
-      text: `${dashboardStats?.students.par_statut.diplomes || 0} étudiants diplômés`, 
-      time: 'Cette année',
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
+    {
+      title: 'Montant impayé',
+      value: stats?.finance.montant_impaye 
+        ? `${(stats.finance.montant_impaye / 1000000).toFixed(1)}M`
+        : '0',
+      change: `${stats?.finance.etudiants_impaye || 0} étudiants`,
+      icon: DollarSign,
+      color: 'green',
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600',
+      path: '/admin/finance',
     },
-    { 
-      icon: BookOpen, 
-      text: `${dashboardStats?.students.par_sexe.masculin || 0} garçons / ${dashboardStats?.students.par_sexe.feminin || 0} filles`, 
-      time: 'Total',
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-    },
-  ];
-
-  const alerts = [
-    { 
-      icon: XCircle, 
-      text: `${dashboardStats?.finance.etudiants_impaye || 0} étudiants avec retard de paiement`, 
-      variant: 'danger' as const,
-    },
-    { 
-      icon: AlertTriangle, 
-      text: `${dashboardStats?.students.par_statut.suspendus || 0} étudiants suspendus`, 
-      variant: 'warning' as const,
-    },
-    { 
-      icon: Clock, 
-      text: `${dashboardStats?.students.par_statut.abandonnes || 0} étudiants ont abandonné`, 
-      variant: 'warning' as const,
-    },
-    { 
-      icon: CheckCircle2, 
-      text: `${dashboardStats?.students.nouveaux || 0} nouveaux étudiants ce mois`, 
-      variant: 'info' as const,
+    {
+      title: 'Taux de réussite',
+      value: `${stats?.students.taux_reussite || 0}%`,
+      change: `${stats?.students.par_statut?.diplomes || 0} diplômés`,
+      icon: Award,
+      color: 'orange',
+      bgColor: 'bg-orange-50',
+      iconColor: 'text-orange-600',
+      path: '/admin/evaluations',
     },
   ];
 
+  // Statistiques détaillées
+  const detailedStats = [
+    {
+      label: 'Masculin',
+      value: stats?.students.par_sexe?.masculin || 0,
+      total: stats?.students.total || 0,
+      color: 'blue',
+    },
+    {
+      label: 'Féminin',
+      value: stats?.students.par_sexe?.feminin || 0,
+      total: stats?.students.total || 0,
+      color: 'pink',
+    },
+    {
+      label: 'Suspendus',
+      value: stats?.students.par_statut?.suspendus || 0,
+      total: stats?.students.total || 0,
+      color: 'yellow',
+    },
+    {
+      label: 'Abandons',
+      value: stats?.students.par_statut?.abandonnes || 0,
+      total: stats?.students.total || 0,
+      color: 'red',
+    },
+  ];
+
+  // Actions rapides
   const quickActions = [
-    { 
-      icon: Users, 
-      label: 'Nouvel Étudiant', 
-      gradient: 'from-blue-500 to-blue-600',
-      hoverGradient: 'hover:from-blue-600 hover:to-blue-700',
-      onClick: () => navigate('/admin/students/new'),
-    },
-    { 
-      icon: ClipboardCheck, 
-      label: 'Saisir Notes', 
-      gradient: 'from-purple-500 to-purple-600',
-      hoverGradient: 'hover:from-purple-600 hover:to-purple-700',
-      onClick: () => navigate('/admin/evaluations'),
-    },
-    { 
-      icon: DollarSign, 
-      label: 'Enreg. Paiement', 
-      gradient: 'from-emerald-500 to-emerald-600',
-      hoverGradient: 'hover:from-emerald-600 hover:to-emerald-700',
-      onClick: () => navigate('/admin/finance'),
-    },
-    { 
-      icon: TrendingUp, 
-      label: 'Générer Rapport', 
-      gradient: 'from-orange-500 to-orange-600',
-      hoverGradient: 'hover:from-orange-600 hover:to-orange-700',
-      onClick: () => navigate('/admin/analytics'),
-    },
-  ];
-
-  // NOUVEAU : Raccourcis module académique
-  const academicShortcuts = [
     {
-      icon: Network,
-      label: 'Structure Académique',
-      description: 'Vue hiérarchique complète',
-      gradient: 'from-teal-500 to-teal-600',
-      path: '/admin/academic/structure',
+      title: 'Nouvel étudiant',
+      description: 'Inscrire un nouvel étudiant',
+      icon: Users,
+      color: 'blue',
+      path: '/admin/students/new',
     },
     {
-      icon: Calendar,
-      label: 'Années Académiques',
-      description: 'Gérer les années scolaires',
-      gradient: 'from-indigo-500 to-indigo-600',
-      path: '/admin/academic/annees-academiques',
+      title: 'Nouvel enseignant',
+      description: 'Ajouter un enseignant',
+      icon: GraduationCap,
+      color: 'purple',
+      path: '/admin/teachers/new',
     },
     {
+      title: 'Nouvelle faculté',
+      description: 'Créer une faculté',
       icon: Building2,
-      label: 'Facultés',
-      description: 'Gérer les facultés',
-      gradient: 'from-blue-500 to-blue-600',
+      color: 'green',
       path: '/admin/academic/facultes',
     },
     {
-      icon: Building,
-      label: 'Départements',
-      description: 'Gérer les départements',
-      gradient: 'from-violet-500 to-violet-600',
-      path: '/admin/academic/departements',
-    },
-    {
-      icon: GraduationCap,
-      label: 'Filières',
-      description: 'Programmes d\'études',
-      gradient: 'from-purple-500 to-purple-600',
-      path: '/admin/academic/filieres',
-    },
-    {
+      title: 'Import CSV',
+      description: 'Importer des étudiants',
       icon: FileText,
-      label: 'Matières',
-      description: 'Unités d\'enseignement',
-      gradient: 'from-pink-500 to-pink-600',
-      path: '/admin/academic/matieres',
+      color: 'orange',
+      path: '/admin/students/import',
     },
   ];
 
-  return (
-    <div>
-      {/* Loading state */}
-      {isLoading && (
-        <div className="mb-6 bg-white rounded-xl p-6 border border-gray-200">
-          <div className="flex items-center justify-center gap-3">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="text-gray-600">Chargement des statistiques...</p>
-          </div>
-        </div>
-      )}
+  // Alertes
+  const alerts = [
+    {
+      type: 'danger',
+      icon: XCircle,
+      message: `${stats?.finance.etudiants_impaye || 0} étudiants avec retard de paiement`,
+    },
+    {
+      type: 'warning',
+      icon: AlertCircle,
+      message: `${stats?.students.par_statut?.suspendus || 0} étudiants suspendus`,
+    },
+    {
+      type: 'info',
+      icon: CheckCircle,
+      message: `${stats?.students.nouveaux || 0} nouveaux étudiants ce mois`,
+    },
+  ];
 
-      {/* Welcome Section */}
-      <div className="mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full blur-3xl opacity-30 -mr-32 -mt-32"></div>
-        
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-900 bg-clip-text text-transparent mb-1">
-                Bienvenue, {user?.full_name || user?.username} ! 👋
-              </h1>
-              <p className="text-gray-600 text-base">
-                Voici un aperçu de votre système de gestion universitaire
-              </p>
-            </div>
+  const getAlertColor = (type: string) => {
+    const colors = {
+      danger: 'bg-red-50 border-red-200 text-red-700',
+      warning: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+      info: 'bg-blue-50 border-blue-200 text-blue-700',
+    };
+    return colors[type as keyof typeof colors] || colors.info;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* En-tête */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Bienvenue sur le Dashboard
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Vue d'ensemble de votre système de gestion universitaire
+            </p>
           </div>
-          <div className="hidden lg:block">
-            <div className="text-right bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-500 font-medium">Aujourd'hui</p>
-              <p className="text-base font-bold text-gray-900">
-                {new Date().toLocaleDateString('fr-FR', { 
-                  weekday: 'long', 
-                  day: 'numeric',
-                  month: 'long',
-                })}
-              </p>
-            </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Clock className="w-4 h-4" />
+            <span>{new Date().toLocaleDateString('fr-FR', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</span>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        {stats.map((stat, index) => {
+      {/* Statistiques principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {mainStats.map((stat, index) => {
           const Icon = stat.icon;
-          
           return (
-            <Card
+            <div
               key={index}
-              padding="md"
-              variant="default"
-              hoverable
-              className="group relative overflow-hidden"
+              onClick={() => navigate(stat.path)}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-3">
-                  <div className={`${stat.lightBg} p-2.5 rounded-lg group-hover:bg-white/20 transition-colors duration-300`}>
-                    <Icon className={`w-7 h-7 ${stat.iconColor} group-hover:text-white transition-colors duration-300`} strokeWidth={2.5} />
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                    <Icon className={`w-6 h-6 ${stat.iconColor}`} />
                   </div>
-                  <Badge variant="success" size="sm" className="group-hover:bg-white/20 group-hover:text-white group-hover:border-white/30">
-                    {stat.change}
-                  </Badge>
+                  <ArrowRight className="w-5 h-5 text-gray-400" />
                 </div>
-                
-                <p className="text-base font-medium text-gray-600 group-hover:text-white/90 mb-2 transition-colors duration-300">
-                  {stat.label}
-                </p>
-                <p className="text-4xl font-bold text-gray-900 group-hover:text-white tracking-tight transition-colors duration-300">
-                  {stat.value}
-                </p>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</p>
+                  <p className="text-sm text-gray-500 flex items-center gap-1">
+                    {stat.change.startsWith('+') ? (
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4 text-gray-400" />
+                    )}
+                    {stat.change}
+                  </p>
+                </div>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>
 
-      {/* NOUVEAU : Section Module Académique */}
-      <Card padding="md" className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-blue-600" />
-            Module Académique
+      {/* Répartition et Actions rapides */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Répartition */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Répartition des étudiants
           </h2>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate('/admin/academic/structure')}
-          >
-            <ArrowRight className="w-4 h-4" />
-            Vue complète
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {academicShortcuts.map((shortcut, index) => {
-            const Icon = shortcut.icon;
-            return (
-              <button
-                key={index}
-                onClick={() => navigate(shortcut.path)}
-                className="group text-left bg-white border-2 border-gray-100 hover:border-blue-200 rounded-xl p-4 transition-all duration-300 hover:shadow-md"
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`p-2.5 bg-gradient-to-br ${shortcut.gradient} rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
+          <div className="grid grid-cols-2 gap-4">
+            {detailedStats.map((item, index) => {
+              const percentage = item.total > 0 
+                ? Math.round((item.value / item.total) * 100) 
+                : 0;
+              
+              return (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                    <span className="text-2xl font-bold text-gray-900">{item.value}</span>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 mb-0.5 group-hover:text-blue-600 transition-colors">
-                      {shortcut.label}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      {shortcut.description}
-                    </p>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`bg-${item.color}-500 h-2 rounded-full transition-all`}
+                      style={{ width: `${percentage}%` }}
+                    />
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                  <p className="text-xs text-gray-500 mt-1">{percentage}% du total</p>
                 </div>
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </Card>
 
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-        
-        {/* Recent Activities */}
-        <Card
-          padding="none"
-          variant="default"
-          className="hover:shadow-md transition-shadow duration-300"
-        >
-          <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 px-5 py-3.5 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-600" />
-              Activités récentes
-            </h2>
-          </div>
-          
-          <div className="p-5">
-            <div className="space-y-2.5">
-              {recentActivities.map((activity, index) => {
-                const Icon = activity.icon;
-                return (
-                  <div 
-                    key={index} 
-                    className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors duration-200 group cursor-pointer"
-                  >
-                    <div className={`${activity.bgColor} p-2 rounded-lg group-hover:scale-110 transition-transform duration-200 shadow-sm`}>
-                      <Icon className={`w-4 h-4 ${activity.color}`} strokeWidth={2.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 font-medium leading-snug">{activity.text}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Il y a {activity.time}
-                      </p>
-                    </div>
+        {/* Actions rapides */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Actions rapides
+          </h2>
+          <div className="space-y-3">
+            {quickActions.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={index}
+                  onClick={() => navigate(action.path)}
+                  className="w-full flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+                >
+                  <div className={`w-10 h-10 bg-${action.color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`w-5 h-5 text-${action.color}-600`} />
                   </div>
-                );
-              })}
-            </div>
-            
-            <Button variant="ghost" fullWidth className="mt-3 border-2 border-transparent hover:border-blue-200">
-              Voir toutes les activités →
-            </Button>
-          </div>
-        </Card>
-
-        {/* Alerts */}
-        <Card
-          padding="none"
-          variant="default"
-          className="hover:shadow-md transition-shadow duration-300"
-        >
-          <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 px-5 py-3.5 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-orange-600" />
-              Alertes & Actions requises
-            </h2>
-          </div>
-          
-          <div className="p-5">
-            <div className="space-y-2.5">
-              {alerts.map((alert, index) => {
-                const Icon = alert.icon;
-                
-                return (
-                  <div 
-                    key={index} 
-                    className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-200 group cursor-pointer"
-                  >
-                    <div className="flex-shrink-0">
-                      <Icon className="w-4 h-4 text-gray-600" strokeWidth={2.5} />
-                    </div>
-                    <p className="flex-1 text-sm text-gray-900 font-medium leading-snug">{alert.text}</p>
-                    <Button variant="ghost" size="sm" className="flex-shrink-0">
-                      Traiter
-                    </Button>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm">{action.title}</p>
+                    <p className="text-xs text-gray-500 truncate">{action.description}</p>
                   </div>
-                );
-              })}
-            </div>
+                </button>
+              );
+            })}
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Quick Actions */}
-      <Card padding="md">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
-          Actions rapides
-        </h2>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-          {quickActions.map((action, index) => {
-            const Icon = action.icon;
-            return (
-              <button 
-                key={index}
-                onClick={action.onClick}
-                className={`group relative bg-gradient-to-br ${action.gradient} ${action.hoverGradient} text-white rounded-xl p-5 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="relative flex flex-col items-center text-center gap-2.5">
-                  <div className="bg-white/20 p-2.5 rounded-lg group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
-                    <Icon className="w-7 h-7" strokeWidth={2.5} />
-                  </div>
-                  <span className="font-semibold text-sm leading-tight">{action.label}</span>
+      {/* Alertes et Activités */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Alertes */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Alertes & Notifications
+          </h2>
+          <div className="space-y-3">
+            {alerts.map((alert, index) => {
+              const Icon = alert.icon;
+              return (
+                <div
+                  key={index}
+                  className={`flex items-start gap-3 p-4 rounded-lg border ${getAlertColor(alert.type)}`}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm">{alert.message}</p>
                 </div>
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </Card>
+
+        {/* Statistiques financières */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Aperçu financier
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Total payé</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats?.finance.total_paye 
+                    ? `${(stats.finance.total_paye / 1000000).toFixed(1)}M`
+                    : '0'} FCFA
+                </p>
+              </div>
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Montant impayé</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {stats?.finance.montant_impaye 
+                    ? `${(stats.finance.montant_impaye / 1000000).toFixed(1)}M`
+                    : '0'} FCFA
+                </p>
+              </div>
+              <XCircle className="w-10 h-10 text-red-600" />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Total à percevoir</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {stats?.finance.total_a_payer 
+                    ? `${(stats.finance.total_a_payer / 1000000).toFixed(1)}M`
+                    : '0'} FCFA
+                </p>
+              </div>
+              <DollarSign className="w-10 h-10 text-blue-600" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

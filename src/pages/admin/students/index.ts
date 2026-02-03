@@ -1,6 +1,5 @@
-// Export all student components for easy import
+// Export barrel pour le module étudiants
 
 export { default as StudentsList } from './StudentsList';
 export { default as StudentForm } from './StudentForm';
 export { default as StudentProfile } from './StudentProfile';
-export { default as StudentImport } from './StudentImport';
