@@ -8,7 +8,6 @@ import Unauthorized from '@/pages/Unauthorized';
 
 // Dashboards
 import AdminDashboard from '@/pages/admin/Dashboard';
-// import TeacherDashboard from '@/pages/teacher/Dashboard';
 
 // Pages Académiques
 import {
@@ -34,6 +33,11 @@ import {
   TeacherProfile,
 } from '@/pages/admin/teachers';
 
+// Pages Évaluations - AJOUT
+import {
+  EvaluationsList,
+  GradeEntry,
+} from '@/pages/admin/evaluations';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -219,17 +223,27 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // ==================== ROUTES ENSEIGNANT ====================
-  // {
-  //   path: ROUTES.TEACHER_DASHBOARD,
-  //   element: (
-  //     <RoleRoute allowedRoles={[USER_ROLES.TEACHER]}>
-  //       <MainLayout>
-  //         <TeacherDashboard />
-  //       </MainLayout>
-  //     </RoleRoute>
-  //   ),
-  // },
+  // ==================== ROUTES ÉVALUATIONS ====================
+  {
+    path: '/admin/evaluations',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <EvaluationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/:id/saisie-notes',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <GradeEntry />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
 
   // Page 404 - Not Found (doit être en dernier)
   {

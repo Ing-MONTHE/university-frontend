@@ -99,7 +99,7 @@ const mainMenuItems: MenuItem[] = [
     icon: ClipboardList,
     label: 'Évaluations',
     path: '/admin/evaluations',
-    roles: ['ADMIN'],
+    roles: ['ADMIN', 'TEACHER'],
   },
   {
     icon: Calendar,

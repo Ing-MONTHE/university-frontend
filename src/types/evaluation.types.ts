@@ -1,363 +1,341 @@
 /**
  * Types TypeScript pour le module Évaluations
- * Mapped depuis les modèles Django Backend
+ * VERSION CORRIGÉE - Sans erreurs de types en double
  */
 
-import { Matiere } from './academic.types';
-import { Etudiant, Enseignant } from './student.types';
+// ============ ENUMS & TYPES ============
 
-// ============== STATUTS ==============
+export type TypeEvaluationCode = 'DEVOIR' | 'EXAMEN' | 'RATTRAPAGE' | 'TD' | 'TP' | 'PROJET';
 
-export type StatutResultat = 'ADMIS' | 'AJOURNÉ' | 'RATTRAPAGE';
-export type Mention = 'EXCELLENT' | 'TRES_BIEN' | 'BIEN' | 'ASSEZ_BIEN' | 'PASSABLE' | 'INSUFFISANT';
+export type DecisionType = 'ADMIS' | 'ADMIS_RESERVE' | 'AJOURNE' | 'REDOUBLEMENT' | 'EXCLUSION';
 
-// ============== TYPE D'ÉVALUATION ==============
+export type MentionType = 'EXCELLENT' | 'TRES_BIEN' | 'BIEN' | 'ASSEZ_BIEN' | 'PASSABLE' | '';
+
+export type StatutResultat = 'ADMIS' | 'AJOURNE' | 'RATTRAPAGE';
+
+// ============ INTERFACES PRINCIPALES ============
 
 export interface TypeEvaluation {
   id: number;
-  nom: string; // "Devoir", "Examen", "TP", "Projet"
-  code: string; // "DEV", "EX", "TP", "PRJ"
+  code: TypeEvaluationCode;
+  nom: string;
+  coefficient_min: number;
+  coefficient_max: number;
   description?: string;
-  pourcentage_note_finale?: number; // Si défini
   created_at: string;
   updated_at: string;
 }
-
-export interface TypeEvaluationCreate {
-  nom: string;
-  code: string;
-  description?: string;
-  pourcentage_note_finale?: number;
-}
-
-// ============== ÉVALUATION ==============
 
 export interface Evaluation {
   id: number;
-  matiere: number; // ID
-  matiere_details?: Matiere;
-  type_evaluation: number; // ID
-  type_evaluation_details?: TypeEvaluation;
   titre: string;
-  description?: string;
-  date_evaluation: string; // ISO date
-  heure_debut?: string; // HH:MM
-  heure_fin?: string; // HH:MM
-  duree_minutes?: number;
-  lieu?: string;
-  bareme: number; // Note maximale (ex: 20, 100)
+  type_evaluation: number;
+  type_evaluation_details?: TypeEvaluation;
+  matiere: number;
+  matiere_details?: {
+    id: number;
+    code: string;
+    nom: string;
+    coefficient: number;
+    credits: number;
+    filiere?: {
+      id: number;
+      code: string;
+      nom: string;
+    };
+  };
+  annee_academique: number;
+  annee_academique_details?: {
+    id: number;
+    annee: string;
+    libelle: string;
+  };
+  date: string;
   coefficient: number;
-  is_rattrapage: boolean;
+  note_totale: number;
+  duree?: number;
+  description?: string;
   created_at: string;
   updated_at: string;
-  
-  // Stats calculées
-  nombre_notes_saisies?: number;
-  nombre_etudiants_total?: number;
+  nb_notes_saisies?: number;
+  nb_etudiants_total?: number;
   moyenne_classe?: number;
 }
 
-export interface EvaluationCreate {
-  matiere: number;
-  type_evaluation: number;
-  titre: string;
-  description?: string;
-  date_evaluation: string;
-  heure_debut?: string;
-  heure_fin?: string;
-  duree_minutes?: number;
-  lieu?: string;
-  bareme: number;
-  coefficient: number;
-  is_rattrapage?: boolean;
-}
-
-export interface EvaluationUpdate {
-  matiere?: number;
-  type_evaluation?: number;
-  titre?: string;
-  description?: string;
-  date_evaluation?: string;
-  heure_debut?: string;
-  heure_fin?: string;
-  duree_minutes?: number;
-  lieu?: string;
-  bareme?: number;
-  coefficient?: number;
-  is_rattrapage?: boolean;
-}
-
-// ============== NOTE ==============
-
 export interface Note {
   id: number;
-  evaluation: number; // ID
-  evaluation_details?: Evaluation;
-  etudiant: number; // ID
-  etudiant_details?: Etudiant;
-  note?: number; // null si absent
-  absent: boolean;
-  justifie: boolean;
-  remarque?: string;
-  saisi_par?: number; // ID Enseignant
+  evaluation: number;
+  etudiant: number;
+  etudiant_details?: {
+    id: number;
+    matricule: string;
+    nom: string;
+    prenom: string;
+    photo_url?: string;
+  };
+  note_obtenue?: number;
+  note_sur: number;
+  appreciations?: string;
+  absence: boolean;
   date_saisie: string;
   created_at: string;
   updated_at: string;
-  
-  // Calculé
-  note_sur_20?: number; // Convertie si barème différent
 }
 
-export interface NoteCreate {
-  evaluation: number;
-  etudiant: number;
-  note?: number;
-  absent?: boolean;
-  justifie?: boolean;
-  remarque?: string;
+export interface NoteInput {
+  etudiant_id: number;
+  note_obtenue?: number;
+  absence: boolean;
 }
 
-export interface NoteUpdate {
-  note?: number;
-  absent?: boolean;
-  justifie?: boolean;
-  remarque?: string;
+export interface SaisieNotesLotPayload {
+  notes: NoteInput[];
 }
 
-// Pour saisie en lot
-export interface NoteBulk {
-  etudiant: number;
-  note?: number;
-  absent?: boolean;
-  justifie?: boolean;
-  remarque?: string;
+export interface SaisieNotesLotResponse {
+  success: boolean;
+  created: number;
+  updated: number;
+  total_processed: number;
+  errors: Array<{
+    etudiant_id?: number;
+    error: string;
+  }>;
 }
 
-export interface NoteBulkCreate {
-  evaluation: number;
-  notes: NoteBulk[];
+export interface EvaluationStats {
+  moyenne_classe: number;
+  note_min: number;
+  note_max: number;
+  nb_notes: number;
+  nb_absents: number;
+  nb_total: number;
+  nb_reussis: number;
+  taux_reussite: number;
+  distribution: {
+    excellent: number;
+    tres_bien: number;
+    bien: number;
+    assez_bien: number;
+    passable: number;
+    insuffisant: number;
+  };
+  bareme: number;
 }
-
-// ============== RÉSULTAT ==============
 
 export interface Resultat {
   id: number;
-  etudiant: number; // ID
-  etudiant_details?: Etudiant;
-  matiere: number; // ID
-  matiere_details?: Matiere;
-  annee_academique: number; // ID
-  semestre: number;
-  
-  // Moyennes
-  moyenne_controle_continu?: number;
-  moyenne_examen?: number;
-  moyenne_generale: number;
-  
-  // Crédits
-  credits_obtenus: number;
-  credits_possibles: number;
-  
-  // Statut
-  statut: StatutResultat;
-  mention?: Mention;
-  
-  // Métadonnées
-  date_deliberation?: string;
-  valide_par?: number; // ID Enseignant/Admin
-  remarque?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ResultatCreate {
   etudiant: number;
   matiere: number;
   annee_academique: number;
-  semestre: number;
-  moyenne_controle_continu?: number;
-  moyenne_examen?: number;
   moyenne_generale: number;
-  credits_obtenus: number;
-  credits_possibles: number;
+  rang?: number;
   statut: StatutResultat;
-  mention?: Mention;
-  remarque?: string;
+  mention?: MentionType;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface ResultatUpdate {
-  moyenne_controle_continu?: number;
-  moyenne_examen?: number;
-  moyenne_generale?: number;
-  credits_obtenus?: number;
-  statut?: StatutResultat;
-  mention?: Mention;
-  remarque?: string;
+export interface CalculerMoyennePayload {
+  etudiant_id: number;
+  matiere_id: number;
+  annee_academique_id: number;
 }
 
-// ============== DÉLIBÉRATION ==============
+export interface CalculerMoyenneResponse {
+  success: boolean;
+  moyenne: number;
+  matiere_id: number;
+  matiere_nom: string;
+  etudiant_id: number;
+  nb_evaluations: number;
+  evaluations: Array<{
+    evaluation: string;
+    note: number;
+    bareme: number;
+    note_sur_20: number;
+    coefficient: number;
+  }>;
+  created: boolean;
+}
+
+export interface BulletinEtudiant {
+  etudiant: {
+    id: number;
+    matricule: string;
+    nom_complet: string;
+    photo_url?: string;
+    filiere: string;
+    code_filiere: string;
+    niveau: number;
+  };
+  annee_academique: {
+    id: number;
+    libelle: string;
+    annee: string;
+  };
+  matieres: Array<{
+    matiere_code: string;
+    matiere_nom: string;
+    notes: Array<{
+      evaluation: string;
+      type: string;
+      note: number;
+      bareme: number;
+      note_sur_20: number;
+      coefficient: number;
+      date: string;
+    }>;
+    moyenne: number | null;
+    coefficient: number;
+    credits_ects: number;
+    acquis: boolean;
+  }>;
+  moyenne_generale: number;
+  total_credits: number;
+  credits_obtenus: number;
+  decision: DecisionType;
+  mention: MentionType | null;
+  nb_matieres: number;
+  nb_matieres_acquises: number;
+}
 
 export interface SessionDeliberation {
   id: number;
-  titre: string;
-  annee_academique: number; // ID
-  semestre: number;
-  filiere: number; // ID
-  filiere_details?: any;
-  date_deliberation: string;
-  lieu: string;
-  statut: 'PLANIFIÉE' | 'EN_COURS' | 'TERMINÉE';
-  president_jury?: number; // ID Enseignant
-  observations?: string;
-  created_at: string;
-  updated_at: string;
-  
-  // Stats
-  nombre_etudiants?: number;
-  nombre_admis?: number;
-  nombre_ajournes?: number;
-  nombre_rattrapage?: number;
-}
-
-export interface SessionDeliberationCreate {
-  titre: string;
   annee_academique: number;
-  semestre: number;
+  annee_academique_details?: {
+    id: number;
+    annee: string;
+    libelle: string;
+  };
   filiere: number;
+  filiere_details?: {
+    id: number;
+    code: string;
+    nom: string;
+  };
+  niveau: number;
+  semestre: 1 | 2;
   date_deliberation: string;
   lieu: string;
-  statut?: 'PLANIFIÉE' | 'EN_COURS' | 'TERMINÉE';
-  president_jury?: number;
-  observations?: string;
-}
-
-export interface MembreJury {
-  id: number;
-  session_deliberation: number; // ID
-  enseignant: number; // ID
-  enseignant_details?: Enseignant;
-  role: 'PRÉSIDENT' | 'MEMBRE' | 'SECRÉTAIRE';
-  created_at: string;
-}
-
-export interface MembreJuryCreate {
-  session_deliberation: number;
-  enseignant: number;
-  role: 'PRÉSIDENT' | 'MEMBRE' | 'SECRÉTAIRE';
-}
-
-export interface DecisionJury {
-  id: number;
-  session_deliberation: number; // ID
-  etudiant: number; // ID
-  etudiant_details?: Etudiant;
-  statut_final: StatutResultat;
-  mention?: Mention;
-  moyenne_generale: number;
-  credits_obtenus: number;
-  credits_totaux: number;
-  remarques?: string;
+  president_jury: string;
+  statut: 'PREVUE' | 'EN_COURS' | 'TERMINEE' | 'VALIDEE';
+  proces_verbal?: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface DecisionJuryCreate {
-  session_deliberation: number;
+export interface DecisionJuryItem {
+  id: number;
+  session: number;
   etudiant: number;
-  statut_final: StatutResultat;
-  mention?: Mention;
+  etudiant_details?: {
+    id: number;
+    matricule: string;
+    nom: string;
+    prenom: string;
+    photo_url?: string;
+  };
   moyenne_generale: number;
-  credits_obtenus: number;
-  credits_totaux: number;
-  remarques?: string;
+  total_credits_obtenus: number;
+  total_credits_requis: number;
+  decision: DecisionType;
+  mention?: MentionType;
+  rang_classe?: number;
+  observations?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-// ============== TYPES DE FILTRES ==============
+export interface GenererDecisionsResponse {
+  success: boolean;
+  message: string;
+  session_id: number;
+  decisions_creees: number;
+  decisions_mises_a_jour: number;
+  total: number;
+  erreurs: Array<{
+    etudiant_id: number;
+    matricule: string;
+    error: string;
+  }>;
+}
+
+export interface StatistiquesSession {
+  session: {
+    id: number;
+    filiere: string;
+    niveau: number;
+    annee_academique: string;
+  };
+  statistiques: {
+    total_etudiants: number;
+    admis: number;
+    admis_reserve: number;
+    ajourne: number;
+    redoublement: number;
+    exclusion: number;
+    taux_reussite: number;
+  };
+  mentions: {
+    excellent: number;
+    tres_bien: number;
+    bien: number;
+    assez_bien: number;
+    passable: number;
+  };
+  moyenne_promotion: number;
+}
+
+// ============ FILTERS ============
 
 export interface EvaluationFilters {
+  page?: number;
+  page_size?: number;
   search?: string;
   matiere?: number;
   type_evaluation?: number;
-  date_debut?: string;
-  date_fin?: string;
-  is_rattrapage?: boolean;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
+  annee_academique?: number;
+  date?: string;
+  date_min?: string;
+  date_max?: string;
 }
 
 export interface NoteFilters {
-  evaluation?: number;
-  etudiant?: number;
-  absent?: boolean;
-  ordering?: string;
   page?: number;
   page_size?: number;
+  evaluation?: number;
+  etudiant?: number;
+  absence?: boolean;
 }
 
 export interface ResultatFilters {
+  page?: number;
+  page_size?: number;
   etudiant?: number;
   matiere?: number;
   annee_academique?: number;
-  semestre?: number;
   statut?: StatutResultat;
-  mention?: Mention;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
 }
 
-export interface SessionDeliberationFilters {
-  annee_academique?: number;
-  semestre?: number;
-  filiere?: number;
-  statut?: 'PLANIFIÉE' | 'EN_COURS' | 'TERMINÉE';
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
+// ============ FORM DATA ============
 
-// ============== TYPES POUR UI ==============
-
-// Bulletin de notes
-export interface BulletinNote {
-  matiere: Matiere;
-  notes: Note[];
-  moyenne_matiere: number;
+export interface EvaluationFormData {
+  titre: string;
+  type_evaluation: number;
+  matiere: number;
+  annee_academique: number;
+  date: string;
   coefficient: number;
-  credits: number;
-  statut: StatutResultat;
+  note_totale: number;
+  duree?: number;
+  description?: string;
 }
 
-export interface Bulletin {
-  etudiant: Etudiant;
-  annee_academique: any;
-  semestre: number;
-  notes_par_matiere: BulletinNote[];
-  moyenne_generale: number;
-  credits_obtenus: number;
-  credits_totaux: number;
-  statut_final: StatutResultat;
-  mention?: Mention;
-  rang?: number;
-  effectif?: number;
-}
-
-// Relevé de notes (multi-semestres)
-export interface ReleveNotes {
-  etudiant: Etudiant;
-  bulletins: Bulletin[];
-  moyenne_cumulative: number;
-  credits_cumules: number;
-  credits_totaux_cursus: number;
-}
-
-// Stats évaluations
-export interface EvaluationStats {
-  total_evaluations: number;
-  evaluations_a_venir: number;
-  evaluations_passees: number;
-  notes_en_attente: number;
-  moyenne_generale_classe: number;
-  taux_reussite: number;
+export interface NoteFormData {
+  evaluation: number;
+  etudiant: number;
+  note_obtenue?: number;
+  absence: boolean;
+  appreciations?: string;
 }

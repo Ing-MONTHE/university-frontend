@@ -6,11 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users,
   GraduationCap,
-  BookOpen,
   DollarSign,
   TrendingUp,
   TrendingDown,
-  Calendar,
   Award,
   Clock,
   AlertCircle,
@@ -21,7 +19,6 @@ import {
   FileText,
 } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboard';
-import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 
 export default function DashboardPage() {
