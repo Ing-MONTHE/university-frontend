@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, CheckCircle, AlertCircle, Search, Users } from 'lucide-react';
-import { useEvaluation, useNotesByEvaluation, useSaisieNotesLot, useEvaluationStats } from '@/hooks/useEvaluations';
+import { useEvaluation, useEvaluationNotes, useSaisieNotesLot, useEvaluationStats } from '@/hooks/useEvaluations';
 import type { Note, NoteInput } from '@/types/evaluation.types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -18,7 +18,7 @@ export default function GradeEntryPage() {
   const navigate = useNavigate();
 
   const { data: evaluation, isLoading: evalLoading } = useEvaluation(Number(id));
-  const { data: notesData, isLoading: notesLoading } = useNotesByEvaluation(Number(id));
+  const { data: notesData, isLoading: notesLoading } = useEvaluationNotes(Number(id));
   const { data: stats, refetch: refetchStats } = useEvaluationStats(Number(id));
   const saisieNotesLotMutation = useSaisieNotesLot();
 
@@ -29,9 +29,9 @@ export default function GradeEntryPage() {
 
   // Initialiser les notes depuis l'API
   useEffect(() => {
-    if (notesData?.notes) {
+    if (notesData) {
       const initialNotes: Record<number, NoteInput> = {};
-      notesData.notes.forEach((note: Note) => {
+      notesData.forEach((note: Note) => {
         if (note.etudiant_details) {
           initialNotes[note.etudiant] = {
             etudiant_id: note.etudiant,
@@ -113,15 +113,15 @@ export default function GradeEntryPage() {
 
   // Filtrer étudiants selon recherche
   const filteredNotes = useMemo(() => {
-    if (!notesData?.notes) return [];
+    if (!notesData) return [];
 
-    return notesData.notes.filter((note: Note) => {
+    return notesData.filter((note: Note) => {
       if (!searchTerm) return true;
       const search = searchTerm.toLowerCase();
       return (
-        note.etudiant_details?.matricule.toLowerCase().includes(search) ||
-        note.etudiant_details?.nom.toLowerCase().includes(search) ||
-        note.etudiant_details?.prenom.toLowerCase().includes(search)
+        note.etudiant_details?.matricule?.toLowerCase().includes(search) ||
+        note.etudiant_details?.nom?.toLowerCase().includes(search) ||
+        note.etudiant_details?.prenom?.toLowerCase().includes(search)
       );
     });
   }, [notesData, searchTerm]);
@@ -280,12 +280,12 @@ export default function GradeEntryPage() {
               {filteredNotes.map((note: Note) => {
                 const etudiantId = note.etudiant;
                 const currentNote = notes[etudiantId];
-                const isAbsent = currentNote?.absence || false;
-                const noteValue = currentNote?.note_obtenue;
+                const isAbsent = currentNote?.absence || note.absence || false;
+                const noteValue = currentNote?.note_obtenue ?? note.note_obtenue;
 
                 return (
                   <tr
-                    key={note.id}
+                    key={note.id || `etudiant-${etudiantId}`}
                     className={`${getRowColor(noteValue)} hover:bg-gray-100 transition-colors`}
                   >
                     <td className="px-6 py-4">

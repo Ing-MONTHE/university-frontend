@@ -37,6 +37,8 @@ import {
 import {
   EvaluationsList,
   GradeEntry,
+  EvaluationForm,
+  DeliberationSession,
 } from '@/pages/admin/evaluations';
 
 // Components
@@ -240,6 +242,36 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
         <MainLayout>
           <GradeEntry />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/sessions/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DeliberationSession />
         </MainLayout>
       </RoleRoute>
     ),
