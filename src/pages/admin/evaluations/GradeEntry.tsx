@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /**
  * GradeEntry - Saisie des notes avec auto-save
- * PAGE CRITIQUE DU MODULE
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';

@@ -16,9 +16,15 @@ import type {
   Evaluation,
   EvaluationFormData,
   EvaluationFilters,
+  NoteFormData,
+  SessionFormData,
+  SessionUpdateData,
+  SessionFilters,
+  DecisionUpdateData,
   SaisieNotesLotPayload,
   CalculerMoyennePayload,
 } from '@/types/evaluation.types';
+import type { AxiosError } from 'axios';
 
 // ============ QUERY KEYS ============
 
@@ -42,7 +48,7 @@ export const resultatKeys = {
 export const sessionKeys = {
   all: ['sessions-deliberation'] as const,
   lists: () => [...sessionKeys.all, 'list'] as const,
-  list: (filters?: any) => [...sessionKeys.lists(), { filters }] as const,
+  list: (filters?: SessionFilters) => [...sessionKeys.lists(), { filters }] as const,
   details: () => [...sessionKeys.all, 'detail'] as const,
   detail: (id: number) => [...sessionKeys.details(), id] as const,
   decisions: (id: number) => [...sessionKeys.all, 'decisions', id] as const,
@@ -75,7 +81,10 @@ export function useEvaluations(filters?: EvaluationFilters) {
 /**
  * Hook pour récupérer une évaluation
  */
-export function useEvaluation(id: number, options?: UseQueryOptions<Evaluation>) {
+export function useEvaluation(
+  id: number,
+  options?: Omit<UseQueryOptions<Evaluation>, 'queryKey' | 'queryFn'>
+) {
   return useQuery({
     queryKey: evaluationKeys.detail(id),
     queryFn: () => evaluationApi.getEvaluation(id),
@@ -118,8 +127,8 @@ export function useCreateEvaluation() {
       queryClient.invalidateQueries({ queryKey: evaluationKeys.lists() });
       toast.success('Évaluation créée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la création';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la création';
       toast.error(message);
     },
   });
@@ -139,8 +148,8 @@ export function useUpdateEvaluation() {
       queryClient.invalidateQueries({ queryKey: evaluationKeys.detail(variables.id) });
       toast.success('Évaluation modifiée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la modification';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la modification';
       toast.error(message);
     },
   });
@@ -158,8 +167,8 @@ export function useDeleteEvaluation() {
       queryClient.invalidateQueries({ queryKey: evaluationKeys.lists() });
       toast.success('Évaluation supprimée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la suppression';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la suppression';
       toast.error(message);
     },
   });
@@ -178,8 +187,8 @@ export function useDuplicateEvaluation() {
       queryClient.invalidateQueries({ queryKey: evaluationKeys.lists() });
       toast.success('Évaluation dupliquée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la duplication';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la duplication';
       toast.error(message);
     },
   });
@@ -205,8 +214,8 @@ export function useSaisieNotesLot() {
         toast.success(`${data.total_processed} notes enregistrées avec succès`);
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la saisie des notes';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la saisie des notes';
       toast.error(message);
     },
   });
@@ -221,7 +230,7 @@ export function useCreateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => noteApi.createNote(data),
+    mutationFn: (data: NoteFormData) => noteApi.createNote(data),
     onSuccess: (_, variables) => {
       // Invalider toutes les queries de notes pour cette évaluation
       if (variables.evaluation) {
@@ -231,8 +240,8 @@ export function useCreateNote() {
       queryClient.invalidateQueries({ queryKey: [...evaluationKeys.all, 'notes'] });
       toast.success('Note enregistrée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de l\'enregistrement';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de l\'enregistrement';
       toast.error(message);
     },
   });
@@ -245,18 +254,18 @@ export function useUpdateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => noteApi.updateNote(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<NoteFormData> }) => noteApi.updateNote(id, data),
     onSuccess: (_, variables) => {
       // Invalider toutes les queries de notes pour cette évaluation
-      if (variables.data.evaluation) {
+      if (variables.data.evaluation !== undefined) {
         queryClient.invalidateQueries({ queryKey: evaluationKeys.notes(variables.data.evaluation) });
       }
       // Invalider aussi toutes les queries de notes en général
       queryClient.invalidateQueries({ queryKey: [...evaluationKeys.all, 'notes'] });
       toast.success('Note modifiée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la modification';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la modification';
       toast.error(message);
     },
   });
@@ -276,8 +285,8 @@ export function useCalculerMoyenne() {
       queryClient.invalidateQueries({ queryKey: resultatKeys.all });
       toast.success(`Moyenne calculée: ${data.moyenne}/20`);
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors du calcul';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors du calcul';
       toast.error(message);
     },
   });
@@ -299,7 +308,7 @@ export function useBulletinEtudiant(etudiantId: number, anneeAcademiqueId?: numb
 /**
  * Hook pour récupérer la liste des sessions
  */
-export function useSessions(filters?: any) {
+export function useSessions(filters?: SessionFilters) {
   return useQuery({
     queryKey: sessionKeys.list(filters),
     queryFn: () => sessionDeliberationApi.getSessions(filters),
@@ -336,13 +345,13 @@ export function useCreateSession() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => sessionDeliberationApi.createSession(data),
+    mutationFn: (data: SessionFormData) => sessionDeliberationApi.createSession(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
       toast.success('Session créée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la création';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la création';
       toast.error(message);
     },
   });
@@ -355,15 +364,15 @@ export function useUpdateSession() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) =>
+    mutationFn: ({ id, data }: { id: number; data: SessionUpdateData }) =>
       sessionDeliberationApi.updateSession(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: sessionKeys.detail(variables.id) });
       toast.success('Session modifiée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la modification';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la modification';
       toast.error(message);
     },
   });
@@ -381,8 +390,8 @@ export function useDeleteSession() {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
       toast.success('Session supprimée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la suppression';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la suppression';
       toast.error(message);
     },
   });
@@ -406,8 +415,8 @@ export function useGenererDecisions() {
         toast.success(`${data.total} décisions générées avec succès`);
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la génération';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la génération';
       toast.error(message);
     },
   });
@@ -426,8 +435,8 @@ export function useCloturerSession() {
       queryClient.invalidateQueries({ queryKey: sessionKeys.detail(sessionId) });
       toast.success('Session clôturée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la clôture';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la clôture';
       toast.error(message);
     },
   });
@@ -446,8 +455,8 @@ export function useValiderSession() {
       queryClient.invalidateQueries({ queryKey: sessionKeys.detail(sessionId) });
       toast.success('Session validée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la validation';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la validation';
       toast.error(message);
     },
   });
@@ -462,7 +471,7 @@ export function useUpdateDecision() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) =>
+    mutationFn: ({ id, data }: { id: number; data: DecisionUpdateData }) =>
       decisionJuryApi.updateDecision(id, data),
     onSuccess: (_, variables) => {
       // Invalider les décisions de la session si on a l'ID de session
@@ -473,8 +482,8 @@ export function useUpdateDecision() {
       queryClient.invalidateQueries({ queryKey: [...sessionKeys.all, 'decisions'] });
       toast.success('Décision modifiée avec succès');
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Erreur lors de la modification';
+    onError: (error: unknown) => {
+      const message = (error as AxiosError<{ message?: string }>)?.response?.data?.message || 'Erreur lors de la modification';
       toast.error(message);
     },
   });

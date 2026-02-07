@@ -16,7 +16,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useEvaluations, useDeleteEvaluation } from '@/hooks/useEvaluations';
-import type { EvaluationFilters } from '@/types/evaluation.types';
+import type { Evaluation, EvaluationFilters } from '@/types/evaluation.types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Pagination from '@/components/ui/Pagination';
@@ -32,7 +32,7 @@ export default function EvaluationsListPage() {
     page_size: DEFAULT_PAGE_SIZE,
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; item: any }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; item: Evaluation | null }>({
     isOpen: false,
     item: null,
   });
@@ -76,8 +76,8 @@ export default function EvaluationsListPage() {
   // Stats calculées
   const stats = {
     total: data?.count || 0,
-    en_attente: data?.results?.filter((e: any) => !e.nb_notes_saisies || e.nb_notes_saisies < (e.nb_etudiants_total || 0)).length || 0,
-    terminees: data?.results?.filter((e: any) => e.nb_notes_saisies === e.nb_etudiants_total && e.nb_etudiants_total > 0).length || 0,
+    en_attente: data?.results?.filter((e: Evaluation) => !e.nb_notes_saisies || e.nb_notes_saisies < (e.nb_etudiants_total || 0)).length || 0,
+    terminees: data?.results?.filter((e: Evaluation) => e.nb_notes_saisies === e.nb_etudiants_total && e.nb_etudiants_total > 0).length || 0,
     moyenne_globale: 0,
   };
 
@@ -177,7 +177,7 @@ export default function EvaluationsListPage() {
       {!isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {data?.results && data.results.length > 0 ? (
-            data.results.map((evaluation: any) => {
+            data.results.map((evaluation: Evaluation) => {
               const progress = calculateProgress(
                 evaluation.nb_notes_saisies || 0,
                 evaluation.nb_etudiants_total || 0

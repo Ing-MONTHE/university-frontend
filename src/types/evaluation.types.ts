@@ -318,6 +318,48 @@ export interface ResultatFilters {
   statut?: StatutResultat;
 }
 
+export interface SessionFilters {
+  page?: number;
+  page_size?: number;
+  annee_academique?: number;
+  filiere?: number;
+  niveau?: number;
+  semestre?: number;
+  statut?: string;
+}
+
+export interface SessionFormData {
+  annee_academique: number;
+  filiere: number;
+  niveau: number;
+  semestre: number;
+  date_deliberation: string;
+  lieu: string;
+  president_jury: string;
+  statut?: string;
+}
+
+export interface SessionUpdateData {
+  date_deliberation?: string;
+  lieu?: string;
+  president_jury?: string;
+  statut?: string;
+  proces_verbal?: string;
+}
+
+export interface DecisionUpdateData {
+  decision?: DecisionType;
+  observations?: string;
+  session?: number;
+}
+
+export interface SaisieMultipleNoteItem {
+  etudiant_id: number;
+  note_obtenue?: number;
+  absence?: boolean;
+  appreciations?: string;
+}
+
 // ============ FORM DATA ============
 
 export interface EvaluationFormData {

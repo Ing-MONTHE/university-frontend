@@ -3,11 +3,11 @@
  * VERSION COMPLÈTE avec validation et cascade
  */
 
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   ArrowLeft,
   Save,
@@ -17,39 +17,40 @@ import {
   FileText,
   Award,
   Clock,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   useEvaluation,
   useCreateEvaluation,
   useUpdateEvaluation,
   useTypesEvaluations,
-} from '@/hooks/useEvaluations';
-import { useMatieres } from '@/hooks/useMatieres';
-import { useAnneeAcademiques } from '@/hooks/useAnneeAcademiques';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import Select from '@/components/ui/Select';
-import Spinner from '@/components/ui/Spinner';
+} from "@/hooks/useEvaluations";
+import { useMatieres } from "@/hooks/useMatieres";
+import { useAnneeAcademiques } from "@/hooks/useAnneeAcademiques";
+import type { Matiere } from "@/types/academic.types";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Spinner from "@/components/ui/Spinner";
 
 // Schéma de validation Zod
 const evaluationSchema = z.object({
-  titre: z.string().min(3, 'Le titre doit contenir au moins 3 caractères'),
-  type_evaluation: z.number({ message: 'Le type est requis' }),
-  matiere: z.number({ message: 'La matière est requise' }),
-  annee_academique: z.number({ message: 'L\'année académique est requise' }),
-  date: z.string().min(1, 'La date est requise'),
+  titre: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
+  type_evaluation: z.number({ message: "Le type est requis" }),
+  matiere: z.number({ message: "La matière est requise" }),
+  annee_academique: z.number({ message: "L'année académique est requise" }),
+  date: z.string().min(1, "La date est requise"),
   coefficient: z
-    .number({ message: 'Le coefficient est requis' })
-    .min(0.5, 'Le coefficient doit être au moins 0.5')
-    .max(10, 'Le coefficient ne peut pas dépasser 10'),
+    .number({ message: "Le coefficient est requis" })
+    .min(0.5, "Le coefficient doit être au moins 0.5")
+    .max(10, "Le coefficient ne peut pas dépasser 10"),
   note_totale: z
-    .number({ message: 'Le barème est requis' })
-    .positive('Le barème doit être positif')
-    .max(100, 'Le barème ne peut pas dépasser 100'),
+    .number({ message: "Le barème est requis" })
+    .positive("Le barème doit être positif")
+    .max(100, "Le barème ne peut pas dépasser 100"),
   duree: z
     .number()
-    .int('La durée doit être un nombre entier')
-    .positive('La durée doit être positive')
+    .int("La durée doit être un nombre entier")
+    .positive("La durée doit être positive")
     .optional()
     .or(z.literal(undefined)),
   description: z.string().optional(),
@@ -67,7 +68,7 @@ export default function EvaluationFormPage() {
   // Queries
   const { data: evaluation, isLoading: loadingEvaluation } = useEvaluation(
     Number(id),
-    { enabled: isEditing }
+    { enabled: isEditing },
   );
   const { data: typesData, isLoading: loadingTypes } = useTypesEvaluations();
   const { data: matieresData, isLoading: loadingMatieres } = useMatieres({
@@ -97,8 +98,8 @@ export default function EvaluationFormPage() {
     },
   });
 
-  const watchTypeEvaluation = watch('type_evaluation');
-  const watchMatiere = watch('matiere');
+  const watchTypeEvaluation = watch("type_evaluation");
+  const watchMatiere = watch("matiere");
 
   // Charger les données de l'évaluation en mode édition
   useEffect(() => {
@@ -115,9 +116,10 @@ export default function EvaluationFormPage() {
         description: evaluation.description,
       });
 
-      // Set filiere for cascade
-      if (evaluation.matiere_details?.filiere) {
-        setSelectedFiliere(evaluation.matiere_details.filiere.id);
+      // Set filiere for cascade (API may return filiere or first of filieres)
+      const filiere = evaluation.matiere_details?.filiere;
+      if (filiere) {
+        setSelectedFiliere(typeof filiere === 'object' && 'id' in filiere ? filiere.id : Number(filiere));
       }
     }
   }, [evaluation, isEditing, reset]);
@@ -127,24 +129,29 @@ export default function EvaluationFormPage() {
     if (watchTypeEvaluation && typesData) {
       const typeEval = typesData.find((t) => t.id === watchTypeEvaluation);
       if (typeEval) {
-        const currentCoef = watch('coefficient');
+        const currentCoef = watch("coefficient");
         if (currentCoef < typeEval.coefficient_min) {
-          setValue('coefficient', typeEval.coefficient_min);
+          setValue("coefficient", typeEval.coefficient_min);
         }
         if (currentCoef > typeEval.coefficient_max) {
-          setValue('coefficient', typeEval.coefficient_max);
+          setValue("coefficient", typeEval.coefficient_max);
         }
       }
     }
   }, [watchTypeEvaluation, typesData, setValue, watch]);
 
-  // Cascade: Récupérer la filière de la matière sélectionnée
+  // Cascade: Récupérer la filière de la matière sélectionnée (Matiere a filieres[] ou filiere selon l'API)
   useEffect(() => {
     if (watchMatiere && matieresData) {
-      const matiere = matieresData.results?.find((m: any) => m.id === watchMatiere);
-      if (matiere?.filiere) {
-        setSelectedFiliere(matiere.filiere);
-      }
+      type MatiereApi = (Matiere | { id: number; filiere?: number | { id: number }; filieres?: Array<number | { id: number }> }) & { filiere?: number | { id: number }; filieres?: Array<number | { id: number }> };
+      const matiere = matieresData.results?.find((m: MatiereApi) => m.id === watchMatiere) as MatiereApi | undefined;
+      if (!matiere) return;
+      const filiereId = matiere.filiere != null
+        ? (typeof matiere.filiere === "object" ? matiere.filiere.id : matiere.filiere)
+        : matiere.filieres?.[0] != null
+          ? (typeof matiere.filieres[0] === "object" ? matiere.filieres[0].id : matiere.filieres[0])
+          : undefined;
+      if (filiereId != null) setSelectedFiliere(Number(filiereId));
     }
   }, [watchMatiere, matieresData]);
 
@@ -152,18 +159,23 @@ export default function EvaluationFormPage() {
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({ id: Number(id), data });
-        navigate('/admin/evaluations');
+        navigate("/admin/evaluations");
       } else {
         await createMutation.mutateAsync(data);
-        navigate('/admin/evaluations');
+        navigate("/admin/evaluations");
       }
     } catch (error) {
-      console.error('Erreur lors de la soumission:', error);
+      console.error("Erreur lors de la soumission:", error);
     }
   };
 
   // Loading state
-  if ((isEditing && loadingEvaluation) || loadingTypes || loadingMatieres || loadingAnnees) {
+  if (
+    (isEditing && loadingEvaluation) ||
+    loadingTypes ||
+    loadingMatieres ||
+    loadingAnnees
+  ) {
     return (
       <div className="flex justify-center items-center py-12">
         <Spinner size="lg" />
@@ -181,18 +193,21 @@ export default function EvaluationFormPage() {
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="secondary" onClick={() => navigate('/admin/evaluations')}>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/admin/evaluations")}
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {isEditing ? 'Modifier l\'évaluation' : 'Nouvelle Évaluation'}
+                {isEditing ? "Modifier l'évaluation" : "Nouvelle Évaluation"}
               </h1>
               <p className="text-gray-600 mt-1">
                 {isEditing
-                  ? 'Modifiez les informations de l\'évaluation'
-                  : 'Créez une nouvelle évaluation pour une matière'}
+                  ? "Modifiez les informations de l'évaluation"
+                  : "Créez une nouvelle évaluation pour une matière"}
               </p>
             </div>
           </div>
@@ -210,7 +225,7 @@ export default function EvaluationFormPage() {
                 Titre de l'évaluation *
               </label>
               <Input
-                {...register('titre')}
+                {...register("titre")}
                 placeholder="Ex: Examen Final Algorithmique"
                 error={errors.titre?.message}
               />
@@ -227,23 +242,21 @@ export default function EvaluationFormPage() {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    {...field}
-                    value={field.value?.toString() || ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value?.toString() ?? ""}
+                    onChange={(val) => field.onChange(Number(val))}
+                    options={[
+                      { value: "", label: "-- Sélectionner --" },
+                      ...(typesData?.map((type) => ({ value: type.id, label: type.nom })) ?? []),
+                    ]}
+                    placeholder="-- Sélectionner --"
                     error={errors.type_evaluation?.message}
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {typesData?.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.nom}
-                      </option>
-                    ))}
-                  </Select>
+                  />
                 )}
               />
               {selectedTypeEval && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Coefficient: {selectedTypeEval.coefficient_min} - {selectedTypeEval.coefficient_max}
+                  Coefficient: {selectedTypeEval.coefficient_min} -{" "}
+                  {selectedTypeEval.coefficient_max}
                 </p>
               )}
             </div>
@@ -259,19 +272,21 @@ export default function EvaluationFormPage() {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    {...field}
-                    value={field.value?.toString() || ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value?.toString() ?? ""}
+                    onChange={(val) => field.onChange(Number(val))}
+                    options={[
+                      { value: "", label: "-- Sélectionner --" },
+                      ...(matieresData?.results?.map((matiere: Matiere & { filiere?: { id?: number; code?: string }; filieres?: Array<{ id?: number; code?: string }> }) => {
+                        const filiereLabel = (matiere.filieres?.[0] && typeof matiere.filieres[0] === 'object' ? (matiere.filieres[0] as { code?: string }).code : null) ?? (matiere.filiere && typeof matiere.filiere === 'object' ? (matiere.filiere as { code?: string }).code : null) ?? "";
+                        return {
+                          value: matiere.id,
+                          label: `${matiere.code} - ${matiere.nom}${filiereLabel ? ` (${filiereLabel})` : ""}`,
+                        };
+                      }) ?? []),
+                    ]}
+                    placeholder="-- Sélectionner --"
                     error={errors.matiere?.message}
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {matieresData?.results?.map((matiere: any) => (
-                      <option key={matiere.id} value={matiere.id}>
-                        {matiere.code} - {matiere.nom}
-                        {matiere.filiere && ` (${matiere.filiere.code})`}
-                      </option>
-                    ))}
-                  </Select>
+                  />
                 )}
               />
             </div>
@@ -287,18 +302,15 @@ export default function EvaluationFormPage() {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    {...field}
-                    value={field.value?.toString() || ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value?.toString() ?? ""}
+                    onChange={(val) => field.onChange(Number(val))}
+                    options={[
+                      { value: "", label: "-- Sélectionner --" },
+                      ...(anneesData?.results?.map((annee: { id: number; libelle?: string; code?: string }) => ({ value: annee.id, label: annee.libelle ?? annee.code ?? String(annee.id) })) ?? []),
+                    ]}
+                    placeholder="-- Sélectionner --"
                     error={errors.annee_academique?.message}
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {anneesData?.results?.map((annee: any) => (
-                      <option key={annee.id} value={annee.id}>
-                        {annee.libelle}
-                      </option>
-                    ))}
-                  </Select>
+                  />
                 )}
               />
             </div>
@@ -310,7 +322,7 @@ export default function EvaluationFormPage() {
               </label>
               <Input
                 type="date"
-                {...register('date')}
+                {...register("date")}
                 error={errors.date?.message}
               />
             </div>
@@ -328,7 +340,7 @@ export default function EvaluationFormPage() {
                     type="number"
                     step="0.5"
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     placeholder="20"
                     error={errors.note_totale?.message}
@@ -351,7 +363,7 @@ export default function EvaluationFormPage() {
                     type="number"
                     step="0.5"
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     error={errors.coefficient?.message}
                   />
@@ -373,9 +385,11 @@ export default function EvaluationFormPage() {
                     type="number"
                     step="15"
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     onChange={(e) =>
-                      field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
                     }
                     placeholder="120"
                     error={errors.duree?.message}
@@ -390,7 +404,7 @@ export default function EvaluationFormPage() {
                 Consignes / Description
               </label>
               <textarea
-                {...register('description')}
+                {...register("description")}
                 placeholder="Consignes pour l'évaluation..."
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
@@ -421,7 +435,7 @@ export default function EvaluationFormPage() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => navigate('/admin/evaluations')}
+            onClick={() => navigate("/admin/evaluations")}
             disabled={isSubmitting}
           >
             Annuler
@@ -430,10 +444,10 @@ export default function EvaluationFormPage() {
             type="submit"
             variant="primary"
             disabled={isSubmitting}
-            loading={isSubmitting}
+            isLoading={isSubmitting}
           >
             <Save className="w-4 h-4 mr-2" />
-            {isEditing ? 'Enregistrer' : 'Créer l\'évaluation'}
+            {isEditing ? "Enregistrer" : "Créer l'évaluation"}
           </Button>
         </div>
       </form>

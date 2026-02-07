@@ -7,8 +7,6 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
-  Users,
-  Award,
   Download,
   CheckCircle,
   XCircle,
@@ -16,7 +14,6 @@ import {
   AlertCircle,
   RefreshCw,
   Lock,
-  FileText,
 } from 'lucide-react';
 import {
   useSession,
@@ -88,7 +85,7 @@ export default function DeliberationSessionPage() {
   const handleUpdateDecision = (
     decisionId: number,
     field: 'decision' | 'observations',
-    value: any
+    value: string
   ) => {
     setLocalDecisions((prev) => ({
       ...prev,
@@ -120,17 +117,6 @@ export default function DeliberationSessionPage() {
     }
   };
 
-  const getDecisionColor = (decision: DecisionType) => {
-    const colors: Record<DecisionType, string> = {
-      ADMIS: 'bg-green-100 text-green-800 border-green-300',
-      ADMIS_RESERVE: 'bg-blue-100 text-blue-800 border-blue-300',
-      AJOURNE: 'bg-orange-100 text-orange-800 border-orange-300',
-      REDOUBLEMENT: 'bg-red-100 text-red-800 border-red-300',
-      EXCLUSION: 'bg-gray-800 text-white border-gray-900',
-    };
-    return colors[decision] || 'bg-gray-100 text-gray-800 border-gray-300';
-  };
-
   const getMentionColor = (mention?: MentionType) => {
     if (!mention) return 'text-gray-400';
     const colors: Record<MentionType, string> = {
@@ -139,8 +125,9 @@ export default function DeliberationSessionPage() {
       BIEN: 'text-blue-600',
       ASSEZ_BIEN: 'text-yellow-600',
       PASSABLE: 'text-gray-600',
+      '': 'text-gray-400',
     };
-    return colors[mention] || 'text-gray-600';
+    return colors[mention] ?? 'text-gray-600';
   };
 
   // Stats calculées
@@ -391,17 +378,18 @@ export default function DeliberationSessionPage() {
                         {isEditing && !isSessionValidated ? (
                           <Select
                             value={currentDecision}
-                            onChange={(e) =>
-                              handleUpdateDecision(decision.id, 'decision', e.target.value)
+                            onChange={(val) =>
+                              handleUpdateDecision(decision.id, 'decision', String(val))
                             }
+                            options={[
+                              { value: 'ADMIS', label: 'Admis' },
+                              { value: 'ADMIS_RESERVE', label: 'Admis avec réserve' },
+                              { value: 'AJOURNE', label: 'Ajourné' },
+                              { value: 'REDOUBLEMENT', label: 'Redoublement' },
+                              { value: 'EXCLUSION', label: 'Exclusion' },
+                            ]}
                             className="w-40"
-                          >
-                            <option value="ADMIS">Admis</option>
-                            <option value="ADMIS_RESERVE">Admis avec réserve</option>
-                            <option value="AJOURNE">Ajourné</option>
-                            <option value="REDOUBLEMENT">Redoublement</option>
-                            <option value="EXCLUSION">Exclusion</option>
-                          </Select>
+                          />
                         ) : (
                           <Badge
                             variant={

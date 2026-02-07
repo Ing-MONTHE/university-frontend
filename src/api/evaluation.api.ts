@@ -10,6 +10,13 @@ import type {
   EvaluationFilters,
   Note,
   NoteFormData,
+  NoteFilters,
+  ResultatFilters,
+  SessionFilters,
+  SessionFormData,
+  SessionUpdateData,
+  DecisionUpdateData,
+  SaisieMultipleNoteItem,
   SaisieNotesLotPayload,
   SaisieNotesLotResponse,
   EvaluationStats,
@@ -73,7 +80,7 @@ export const evaluationApi = {
     id: number,
     data: Partial<EvaluationFormData>
   ): Promise<Evaluation> => {
-    const payload: any = {};
+    const payload: Record<string, string | number | undefined> = {};
     if (data.titre) payload.titre = data.titre;
     if (data.type_evaluation) payload.type_evaluation_id = data.type_evaluation;
     if (data.matiere) payload.matiere_id = data.matiere;
@@ -135,7 +142,7 @@ export const evaluationApi = {
 
 export const noteApi = {
   // Liste des notes
-  getNotes: async (filters?: any): Promise<PaginatedResponse<Note>> => {
+  getNotes: async (filters?: NoteFilters): Promise<PaginatedResponse<Note>> => {
     const response = await axios.get(`${API_BASE_URL}/notes/`, {
       params: filters,
     });
@@ -157,7 +164,7 @@ export const noteApi = {
 
   // Modifier une note
   updateNote: async (id: number, data: Partial<NoteFormData>): Promise<Note> => {
-    const payload: any = {};
+    const payload: Record<string, number | boolean | string | undefined> = {};
     if (data.note_obtenue !== undefined) payload.note_obtenue = data.note_obtenue;
     if (data.absence !== undefined) payload.absence = data.absence;
     if (data.appreciations !== undefined) payload.appreciations = data.appreciations;
@@ -172,7 +179,10 @@ export const noteApi = {
   },
 
   // Saisie multiple de notes
-  saisieMultiple: async (evaluationId: number, notes: any[]): Promise<any> => {
+  saisieMultiple: async (
+    evaluationId: number,
+    notes: SaisieMultipleNoteItem[]
+  ): Promise<{ success: boolean; processed?: number; errors?: unknown[] }> => {
     const response = await axios.post(`${API_BASE_URL}/notes/saisie-multiple/`, {
       evaluation_id: evaluationId,
       notes,
@@ -185,7 +195,7 @@ export const noteApi = {
 
 export const resultatApi = {
   // Liste des résultats
-  getResultats: async (filters?: any): Promise<PaginatedResponse<Resultat>> => {
+  getResultats: async (filters?: ResultatFilters): Promise<PaginatedResponse<Resultat>> => {
     const response = await axios.get(`${API_BASE_URL}/resultats/`, {
       params: filters,
     });
@@ -202,10 +212,8 @@ export const resultatApi = {
 
   // ✨ NOUVEAU: Bulletin d'un étudiant
   getBulletin: async (etudiantId: number, anneeAcademiqueId?: number): Promise<BulletinEtudiant> => {
-    const params: any = { etudiant_id: etudiantId };
-    if (anneeAcademiqueId) {
-      params.annee_academique_id = anneeAcademiqueId;
-    }
+    const params: { etudiant_id: number; annee_academique_id?: number } = { etudiant_id: etudiantId };
+    if (anneeAcademiqueId !== undefined) params.annee_academique_id = anneeAcademiqueId;
     const response = await axios.get(`${API_BASE_URL}/resultats/bulletin/`, {
       params,
     });
@@ -217,7 +225,7 @@ export const resultatApi = {
 
 export const sessionDeliberationApi = {
   // Liste des sessions
-  getSessions: async (filters?: any): Promise<PaginatedResponse<SessionDeliberation>> => {
+  getSessions: async (filters?: SessionFilters): Promise<PaginatedResponse<SessionDeliberation>> => {
     const response = await axios.get(`${API_BASE_URL}/sessions-deliberation/`, {
       params: filters,
     });
@@ -231,7 +239,7 @@ export const sessionDeliberationApi = {
   },
 
   // Créer une session
-  createSession: async (data: any): Promise<SessionDeliberation> => {
+  createSession: async (data: SessionFormData): Promise<SessionDeliberation> => {
     const payload = {
       annee_academique_id: data.annee_academique,
       filiere_id: data.filiere,
@@ -247,8 +255,8 @@ export const sessionDeliberationApi = {
   },
 
   // Modifier une session
-  updateSession: async (id: number, data: any): Promise<SessionDeliberation> => {
-    const payload: any = {};
+  updateSession: async (id: number, data: SessionUpdateData): Promise<SessionDeliberation> => {
+    const payload: Record<string, string | undefined> = {};
     if (data.date_deliberation) payload.date_deliberation = data.date_deliberation;
     if (data.lieu) payload.lieu = data.lieu;
     if (data.president_jury) payload.president_jury = data.president_jury;
@@ -307,7 +315,7 @@ export const sessionDeliberationApi = {
 
 export const decisionJuryApi = {
   // Liste des décisions
-  getDecisions: async (filters?: any): Promise<PaginatedResponse<DecisionJuryItem>> => {
+  getDecisions: async (filters?: Record<string, unknown>): Promise<PaginatedResponse<DecisionJuryItem>> => {
     const response = await axios.get(`${API_BASE_URL}/decisions-jury/`, {
       params: filters,
     });
@@ -315,7 +323,15 @@ export const decisionJuryApi = {
   },
 
   // Créer une décision
-  createDecision: async (data: any): Promise<DecisionJuryItem> => {
+  createDecision: async (data: {
+    session: number;
+    etudiant: number;
+    moyenne_generale?: number;
+    total_credits_obtenus?: number;
+    total_credits_requis?: number;
+    decision?: string;
+    observations?: string;
+  }): Promise<DecisionJuryItem> => {
     const payload = {
       session_id: data.session,
       etudiant_id: data.etudiant,
@@ -330,8 +346,8 @@ export const decisionJuryApi = {
   },
 
   // Modifier une décision
-  updateDecision: async (id: number, data: any): Promise<DecisionJuryItem> => {
-    const payload: any = {};
+  updateDecision: async (id: number, data: DecisionUpdateData): Promise<DecisionJuryItem> => {
+    const payload: Record<string, string | number | undefined> = {};
     if (data.decision) payload.decision = data.decision;
     if (data.observations !== undefined) payload.observations = data.observations;
 
