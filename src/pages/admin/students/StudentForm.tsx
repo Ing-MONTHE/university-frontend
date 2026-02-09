@@ -1,94 +1,126 @@
-/**
- * Formulaire Étudiant - Style Module Académique
- */
+// Formulaire de création/édition d'étudiant (3 étapes)
 
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Upload, X, User, GraduationCap, FileText } from 'lucide-react';
 import { useStudent, useCreateStudent, useUpdateStudent } from '@/hooks/useStudents';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import Select from '@/components/ui/Select';
-import Spinner from '@/components/ui/Spinner';
+import { Card, Button, Input, Select, Spinner } from '@/components/ui';
+import type { EtudiantCreate } from '@/types/student.types';
 
-const studentSchema = z.object({
-  nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
-  sexe: z.enum(['M', 'F']),
-  date_naissance: z.string().min(1, 'La date de naissance est requise'),
-  lieu_naissance: z.string().min(2, 'Le lieu de naissance est requis'),
-  nationalite: z.string().default('Camerounaise'),
-  telephone: z.string().min(8, 'Le téléphone doit contenir au moins 8 chiffres'),
-  email: z.string().email('Email invalide'),
-  adresse: z.string().optional(),
-  ville: z.string().optional(),
-  pays: z.string().default('Cameroun'),
-  tuteur_nom: z.string().optional(),
-  tuteur_telephone: z.string().optional(),
-  tuteur_email: z.string().email('Email invalide').optional().or(z.literal('')),
-  statut: z.enum(['ACTIF', 'SUSPENDU', 'DIPLOME', 'EXCLU', 'ABANDONNE']).default('ACTIF'),
-});
-
-type FormData = z.infer<typeof studentSchema>;
-
-export default function StudentFormPage() {
+const StudentForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
 
+  // Queries
   const { data: student, isLoading: loadingStudent } = useStudent(Number(id));
-  const createMutation = useCreateStudent();
-  const updateMutation = useUpdateStudent();
+  const createStudent = useCreateStudent();
+  const updateStudent = useUpdateStudent();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<FormData>({
-    resolver: zodResolver(studentSchema),
-    defaultValues: {
-      sexe: 'M',
-      nationalite: 'Camerounaise',
-      pays: 'Cameroun',
-      statut: 'ACTIF',
-    },
+  // États
+  const [currentStep, setCurrentStep] = useState(1);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Partial<EtudiantCreate>>({
+    sexe: 'M',
+    nationalite: 'Camerounaise',
+    pays: 'Cameroun',
+    statut: 'ACTIF',
   });
 
+  // Charger les données en mode édition
   useEffect(() => {
     if (student && isEditMode) {
-      setValue('nom', student.nom);
-      setValue('prenom', student.prenom);
-      setValue('sexe', student.sexe);
-      setValue('date_naissance', student.date_naissance);
-      setValue('lieu_naissance', student.lieu_naissance);
-      setValue('nationalite', student.nationalite);
-      setValue('telephone', student.telephone);
-      setValue('email', student.email_personnel || student.email);
-      setValue('adresse', student.adresse || '');
-      setValue('ville', student.ville || '');
-      setValue('pays', student.pays || 'Cameroun');
-      setValue('tuteur_nom', student.tuteur_nom || '');
-      setValue('tuteur_telephone', student.tuteur_telephone || '');
-      setValue('tuteur_email', student.tuteur_email || '');
-      setValue('statut', student.statut);
+      setFormData({
+        nom: student.nom,
+        prenom: student.prenom,
+        sexe: student.sexe,
+        date_naissance: student.date_naissance,
+        lieu_naissance: student.lieu_naissance,
+        nationalite: student.nationalite,
+        telephone: student.telephone,
+        email: student.email_personnel || student.email,
+        adresse: student.adresse,
+        ville: student.ville,
+        pays: student.pays,
+        tuteur_nom: student.tuteur_nom,
+        tuteur_telephone: student.tuteur_telephone,
+        tuteur_email: student.tuteur_email,
+        statut: student.statut,
+      });
+      if (student.photo_url) {
+        setPhotoPreview(student.photo_url);
+      }
     }
-  }, [student, isEditMode, setValue]);
+  }, [student, isEditMode]);
 
-  const onSubmit = async (data: FormData) => {
+  // Handlers
+  const handleChange = <K extends keyof Partial<EtudiantCreate>>(
+    field: K,
+    value: Partial<EtudiantCreate>[K]
+  ) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleChange('photo', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const validateStep = (step: number): boolean => {
+    if (step === 1) {
+      return !!(
+        formData.nom &&
+        formData.prenom &&
+        formData.sexe &&
+        formData.date_naissance &&
+        formData.lieu_naissance &&
+        formData.nationalite
+      );
+    }
+    if (step === 2) {
+      return !!(formData.telephone && formData.email);
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      alert('Veuillez remplir tous les champs obligatoires');
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
+  const handleSubmit = async () => {
     try {
+      const submitData = {
+        ...formData,
+        email: formData.email!,
+        telephone: formData.telephone!,
+      };
+      
       if (isEditMode) {
-        await updateMutation.mutateAsync({ id: Number(id), data: data as any });
+        await updateStudent.mutateAsync({
+          id: Number(id),
+          data: submitData,
+        });
       } else {
-        await createMutation.mutateAsync(data as any);
+        await createStudent.mutateAsync(submitData as EtudiantCreate);
       }
       navigate('/admin/students');
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur lors de la soumission:', error);
     }
   };
 
@@ -100,9 +132,16 @@ export default function StudentFormPage() {
     );
   }
 
+  const steps = [
+    { number: 1, title: 'Informations personnelles', icon: User },
+    { number: 2, title: 'Contact & Tuteur', icon: GraduationCap },
+    { number: 3, title: 'Documents', icon: FileText },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="p-6 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-6">
         <button
           onClick={() => navigate('/admin/students')}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
@@ -110,144 +149,307 @@ export default function StudentFormPage() {
           <ArrowLeft className="w-4 h-4" />
           Retour à la liste
         </button>
-
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
           {isEditMode ? 'Modifier un étudiant' : 'Nouvel étudiant'}
         </h1>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Informations personnelles */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Informations personnelles</h2>
+      {/* Stepper */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          {steps.map((step, index) => {
+            const StepIcon = step.icon;
+            const isActive = currentStep === step.number;
+            const isCompleted = currentStep > step.number;
+
+            return (
+              <React.Fragment key={step.number}>
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : isCompleted
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <StepIcon className="w-6 h-6" />
+                  </div>
+                  <p
+                    className={`text-sm font-medium text-center ${
+                      isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-600'
+                    }`}
+                  >
+                    {step.title}
+                  </p>
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-1 mx-4 ${
+                      isCompleted ? 'bg-green-600' : 'bg-gray-200'
+                    }`}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Form Steps */}
+      <Card padding="lg">
+        {/* Étape 1 : Informations personnelles */}
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Informations personnelles
+            </h2>
+
+            {/* Photo */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <img
+                  src={photoPreview || '/default-avatar.png'}
+                  alt="Preview"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                />
+                <label className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700">
+                  <Upload className="w-4 h-4" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <p className="text-sm text-gray-600">Photo de profil (optionnel)</p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 label="Nom *"
-                {...register('nom')}
-                error={errors.nom?.message}
+                value={formData.nom || ''}
+                onChange={(e) => handleChange('nom', e.target.value)}
+                required
               />
               <Input
                 label="Prénom *"
-                {...register('prenom')}
-                error={errors.prenom?.message}
+                value={formData.prenom || ''}
+                onChange={(e) => handleChange('prenom', e.target.value)}
+                required
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
                 label="Sexe *"
-                {...register('sexe')}
+                value={formData.sexe || 'M'}
+                onChange={(value) => handleChange('sexe', value as 'M' | 'F')}
                 options={[
                   { value: 'M', label: 'Masculin' },
                   { value: 'F', label: 'Féminin' },
                 ]}
-                error={errors.sexe?.message}
               />
               <Input
                 label="Date de naissance *"
                 type="date"
-                {...register('date_naissance')}
-                error={errors.date_naissance?.message}
+                value={formData.date_naissance || ''}
+                onChange={(e) => handleChange('date_naissance', e.target.value)}
+                required
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 label="Lieu de naissance *"
-                {...register('lieu_naissance')}
-                error={errors.lieu_naissance?.message}
+                value={formData.lieu_naissance || ''}
+                onChange={(e) => handleChange('lieu_naissance', e.target.value)}
+                required
               />
               <Input
                 label="Nationalité *"
-                {...register('nationalite')}
-                error={errors.nationalite?.message}
+                value={formData.nationalite || ''}
+                onChange={(e) => handleChange('nationalite', e.target.value)}
+                required
               />
             </div>
           </div>
+        )}
 
-          {/* Contact */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Téléphone *"
-                type="tel"
-                {...register('telephone')}
-                placeholder="+237600000000"
-                error={errors.telephone?.message}
-              />
-              <Input
-                label="Email *"
-                type="email"
-                {...register('email')}
-                placeholder="etudiant@example.com"
-                error={errors.email?.message}
-              />
-              <Input
-                label="Ville"
-                {...register('ville')}
-              />
-              <Input
-                label="Pays"
-                {...register('pays')}
-              />
-              <div className="md:col-span-2">
+        {/* Étape 2 : Contact & Tuteur */}
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Contact & Tuteur
+            </h2>
+
+            {/* Contact de l'étudiant */}
+            <div>
+              <h3 className="text-md font-medium text-gray-700 mb-3">Contact de l'étudiant</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Téléphone *"
+                  type="tel"
+                  value={formData.telephone || ''}
+                  onChange={(e) => handleChange('telephone', e.target.value)}
+                  placeholder="+237600000000"
+                  required
+                />
+                <Input
+                  label="Email *"
+                  type="email"
+                  value={formData.email || ''}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  placeholder="etudiant@example.com"
+                  required
+                />
+                <Input
+                  label="Ville"
+                  value={formData.ville || ''}
+                  onChange={(e) => handleChange('ville', e.target.value)}
+                />
+                <Input
+                  label="Pays"
+                  value={formData.pays || 'Cameroun'}
+                  onChange={(e) => handleChange('pays', e.target.value)}
+                />
+              </div>
+              <div className="mt-4">
                 <Input
                   label="Adresse complète"
-                  {...register('adresse')}
+                  value={formData.adresse || ''}
+                  onChange={(e) => handleChange('adresse', e.target.value)}
                   placeholder="Rue, quartier..."
                 />
               </div>
             </div>
-          </div>
 
-          {/* Tuteur */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Informations du tuteur/parent</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Nom du tuteur"
-                {...register('tuteur_nom')}
-              />
-              <Input
-                label="Téléphone du tuteur"
-                type="tel"
-                {...register('tuteur_telephone')}
-              />
-              <Input
-                label="Email du tuteur"
-                type="email"
-                {...register('tuteur_email')}
-                error={errors.tuteur_email?.message}
-              />
-              <Select
-                label="Statut *"
-                {...register('statut')}
-                options={[
-                  { value: 'ACTIF', label: 'Actif' },
-                  { value: 'SUSPENDU', label: 'Suspendu' },
-                  { value: 'DIPLOME', label: 'Diplômé' },
-                  { value: 'EXCLU', label: 'Exclu' },
-                  { value: 'ABANDONNE', label: 'Abandon' },
-                ]}
-                error={errors.statut?.message}
-              />
+            {/* Informations du tuteur */}
+            <div className="pt-4 border-t">
+              <h3 className="text-md font-medium text-gray-700 mb-3">Informations du tuteur/parent</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Nom du tuteur"
+                  value={formData.tuteur_nom || ''}
+                  onChange={(e) => handleChange('tuteur_nom', e.target.value)}
+                />
+                <Input
+                  label="Téléphone du tuteur"
+                  type="tel"
+                  value={formData.tuteur_telephone || ''}
+                  onChange={(e) => handleChange('tuteur_telephone', e.target.value)}
+                />
+                <Input
+                  label="Email du tuteur"
+                  type="email"
+                  value={formData.tuteur_email || ''}
+                  onChange={(e) => handleChange('tuteur_email', e.target.value)}
+                />
+                <Select
+                  label="Statut *"
+                  value={formData.statut || 'ACTIF'}
+                  onChange={(value) => handleChange('statut', value as any)}
+                  options={[
+                    { value: 'ACTIF', label: 'Actif' },
+                    { value: 'SUSPENDU', label: 'Suspendu' },
+                    { value: 'DIPLOME', label: 'Diplômé' },
+                    { value: 'EXCLU', label: 'Exclu' },
+                    { value: 'ABANDONNE', label: 'Abandon' },
+                  ]}
+                />
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Note :</strong> Le matricule sera généré automatiquement lors de la création
+                (format: ETU-ANNÉE-XXX)
+              </p>
             </div>
           </div>
+        )}
 
-          {/* Actions */}
-          <div className="flex justify-end gap-4 pt-6 border-t">
+        {/* Étape 3 : Documents */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Documents</h2>
+
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <label className="cursor-pointer">
+                  <span className="text-blue-600 hover:text-blue-700 font-medium">
+                    Uploader des documents
+                  </span>
+                  <span className="text-gray-600"> ou glisser-déposer</span>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.png"
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-xs text-gray-500 mt-2">PDF, JPG, PNG - max 5MB</p>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Remarque :</strong> Les documents peuvent être uploadés après la création
+                  du profil dans l'onglet "Documents".
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between mt-8 pt-6 border-t">
+          <div>
+            {currentStep > 1 && (
+              <Button
+                variant="secondary"
+                onClick={handlePrevious}
+                icon={<ArrowLeft className="w-4 h-4" />}
+              >
+                Précédent
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-3">
             <Button
-              type="button"
-              variant="secondary"
+              variant="ghost"
               onClick={() => navigate('/admin/students')}
+              icon={<X className="w-4 h-4" />}
             >
               Annuler
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={createMutation.isPending || updateMutation.isPending}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isEditMode ? 'Enregistrer' : 'Créer l\'étudiant'}
-            </Button>
+
+            {currentStep < 3 ? (
+              <Button
+                variant="primary"
+                onClick={handleNext}
+                disabled={!validateStep(currentStep)}
+              >
+                Suivant
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                variant="success"
+                onClick={handleSubmit}
+                disabled={createStudent.isPending || updateStudent.isPending}
+                icon={<Save className="w-4 h-4" />}
+              >
+                {isEditMode ? 'Enregistrer' : 'Créer l\'étudiant'}
+              </Button>
+            )}
           </div>
-        </form>
-      </div>
+        </div>
+      </Card>
     </div>
   );
-}
+};
+
+export default StudentForm;
