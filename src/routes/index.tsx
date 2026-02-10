@@ -33,15 +33,6 @@ import {
   TeacherProfile,
 } from '@/pages/admin/teachers';
 
-// Pages Évaluations - AJOUT
-import {
-  EvaluationsList,
-  GradeEntry,
-  EvaluationForm,
-  DeliberationSession,
-  StudentGrades,
-} from '@/pages/admin/evaluations';
-
 // Pages Emploi de temps
 import {
   BatimentsList,
@@ -192,16 +183,7 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-  {
-    path: '/admin/students/:id/bulletin',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
-        <MainLayout>
-          <StudentGrades />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
+
 
   // Routes Enseignants
   {
@@ -245,57 +227,7 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // ==================== ROUTES ÉVALUATIONS ====================
-  {
-    path: '/admin/evaluations',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
-        <MainLayout>
-          <EvaluationsList />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/:id/saisie-notes',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
-        <MainLayout>
-          <GradeEntry />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/new',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EvaluationForm />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/:id/edit',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EvaluationForm />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/sessions/:id',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <DeliberationSession />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
+
 
   // Routes emploi de temps
   {
