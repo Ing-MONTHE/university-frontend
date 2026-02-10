@@ -1,4 +1,5 @@
-import { InputHTMLAttributes, ReactNode, forwardRef } from 'react';
+import { InputHTMLAttributes, ReactNode, forwardRef, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -18,8 +19,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     iconPosition = 'left',
     fullWidth = false,
     className = '',
+    type,
     ...props 
   }, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPassword = type === 'password';
+    const inputType = isPassword && showPassword ? 'text' : type;
     
     return (
       <div className={`${fullWidth ? 'w-full' : ''}`}>
@@ -43,6 +48,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {/* Input */}
           <input
             ref={ref}
+            type={inputType}
             className={`
               w-full px-4 py-2.5 
               border-2 rounded-lg
@@ -51,6 +57,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               placeholder:text-gray-400
               ${icon && iconPosition === 'left' ? 'pl-10' : ''}
               ${icon && iconPosition === 'right' ? 'pr-10' : ''}
+              ${isPassword ? 'pr-10' : ''}
               ${error 
                 ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                 : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
@@ -62,10 +69,26 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {/* Icon Right */}
-          {icon && iconPosition === 'right' && (
+          {icon && iconPosition === 'right' && !isPassword && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
               {icon}
             </div>
+          )}
+
+          {/* Password Toggle */}
+          {isPassword && (
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
           )}
         </div>
 

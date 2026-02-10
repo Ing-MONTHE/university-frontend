@@ -57,7 +57,23 @@ export const useAuth = () => {
     onError: (error: any) => {
       console.error('❌ Login error:', error);
       setLoading(false);
-      setError(error.message || 'Erreur de connexion');
+      
+      // Messages d'erreur plus explicites
+      let errorMessage = 'Identifiants incorrects. Veuillez vérifier votre nom d\'utilisateur et mot de passe.';
+      
+      if (error.response?.status === 401) {
+        errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Accès refusé. Votre compte est peut-être désactivé.';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Erreur serveur. Veuillez réessayer plus tard.';
+      } else if (!navigator.onLine) {
+        errorMessage = 'Pas de connexion internet. Vérifiez votre réseau.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     },
   });
 

@@ -21,7 +21,7 @@ import Select from '@/components/ui/Select';
 import Modal from '@/components/ui/Modal';
 import Pagination from '@/components/ui/Pagination';
 import Spinner from '@/components/ui/Spinner';
-import { ConfirmModal } from '@/components/ui';
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
 const departementSchema = z.object({

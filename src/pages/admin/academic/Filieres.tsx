@@ -23,7 +23,7 @@ import Modal from '@/components/ui/Modal';
 import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import Spinner from '@/components/ui/Spinner';
-import ConfirmModal from '@/components/layout/ConfirmModal';
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
 const filiereSchema = z.object({
