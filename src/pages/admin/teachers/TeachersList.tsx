@@ -27,7 +27,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Pagination from '@/components/ui/Pagination';
 import Spinner from '@/components/ui/Spinner';
-import ConfirmModal from '@/components/layout/ConfirmModal';
+import { ConfirmModal } from '@/components/ui';
 import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
 export default function TeachersListPage() {

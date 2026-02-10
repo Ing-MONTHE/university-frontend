@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { useAuth } from '@/hooks';
-import { Button, Input, Spinner } from '@/components/ui';
+import { Button, Input, Alert, AlertDescription } from '@/components/ui';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -117,9 +117,9 @@ export default function Login() {
 
               {/* Message d'erreur */}
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                  <p className="text-red-700 text-sm font-medium">{error}</p>
-                </div>
+                <Alert variant="error" dismissible className="mb-6">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
 
               {/* FORMULAIRE */}

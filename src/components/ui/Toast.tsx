@@ -3,6 +3,7 @@
  * Wrapper personnalisé pour une utilisation facile dans toute l'app
  */
 
+import React from 'react';
 import { toast, ToastOptions, ToastContainer as ToastifyContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react';

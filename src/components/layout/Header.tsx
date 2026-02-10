@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { User, LogOut, Settings, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks';
 import { useUIStore } from '@/store';
-import { Button, SearchBar } from '@/components/ui';
-import ConfirmModal from './ConfirmModal';
+import { Button, SearchBar, ConfirmModal } from '@/components/ui';
 
 export default function Header() {
   const { user, logout } = useAuth();

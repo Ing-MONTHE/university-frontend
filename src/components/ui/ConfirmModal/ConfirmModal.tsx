@@ -1,6 +1,6 @@
 import { AlertCircle } from 'lucide-react';
-import Modal from '@/components/ui/Modal';
-import Button from '@/components/ui/Button';
+import Modal from '../Modal';
+import Button from '../Button';
 
 interface ConfirmModalProps {
   isOpen: boolean;

@@ -27,7 +27,7 @@ import type { DecisionJuryItem, DecisionType, MentionType } from '@/types/evalua
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import Spinner from '@/components/ui/Spinner';
-import ConfirmModal from '@/components/layout/ConfirmModal';
+import { ConfirmModal } from '@/components/ui';
 import Badge from '@/components/ui/Badge';
 
 export default function DeliberationSessionPage() {

@@ -1,0 +1,133 @@
+/**
+ * Styles personnalisés pour react-datepicker
+ * Intégration avec Tailwind CSS et DaisyUI
+ */
+
+/* Container principal */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* Popup du calendrier */
+.custom-datepicker {
+  @apply rounded-lg shadow-xl border border-base-300;
+  font-family: inherit;
+}
+
+/* Header */
+.react-datepicker__header {
+  @apply bg-primary text-primary-content rounded-t-lg border-b-0 pt-4 pb-2;
+}
+
+.react-datepicker__current-month {
+  @apply text-primary-content font-semibold text-base mb-2;
+}
+
+/* Navigation */
+.react-datepicker__navigation {
+  top: 12px;
+}
+
+.react-datepicker__navigation--previous {
+  left: 12px;
+}
+
+.react-datepicker__navigation--next {
+  right: 12px;
+}
+
+.react-datepicker__navigation-icon::before {
+  @apply border-primary-content;
+}
+
+.react-datepicker__navigation:hover *::before {
+  @apply border-primary-content;
+}
+
+/* Jours de la semaine */
+.react-datepicker__day-names {
+  @apply bg-primary;
+}
+
+.react-datepicker__day-name {
+  @apply text-primary-content font-medium text-sm w-10 leading-10;
+}
+
+/* Calendrier */
+.react-datepicker__month {
+  @apply m-2;
+}
+
+.react-datepicker__week {
+  @apply flex;
+}
+
+/* Jours */
+.react-datepicker__day {
+  @apply w-10 h-10 leading-10 text-sm rounded-lg m-0.5;
+  @apply hover:bg-base-200 cursor-pointer transition-colors;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  @apply bg-primary text-primary-content font-semibold;
+  @apply hover:bg-primary-focus;
+}
+
+.react-datepicker__day--today {
+  @apply font-bold;
+  @apply ring-2 ring-primary ring-inset;
+}
+
+.react-datepicker__day--disabled {
+  @apply text-base-300 cursor-not-allowed;
+  @apply hover:bg-transparent;
+}
+
+.react-datepicker__day--outside-month {
+  @apply text-base-300;
+}
+
+.react-datepicker__day--in-range,
+.react-datepicker__day--in-selecting-range {
+  @apply bg-primary/20;
+}
+
+/* Triangle du popup */
+.react-datepicker__triangle {
+  display: none;
+}
+
+/* Animation d'entrée */
+.react-datepicker-popper {
+  z-index: 9999;
+}
+
+.react-datepicker-popper[data-placement^='bottom'] {
+  @apply mt-2;
+}
+
+.react-datepicker-popper[data-placement^='top'] {
+  @apply mb-2;
+}
+
+/* Input désactivé */
+.input-disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .custom-datepicker {
+    @apply text-sm;
+  }
+
+  .react-datepicker__day,
+  .react-datepicker__day-name {
+    @apply w-9 h-9 leading-9 text-xs;
+  }
+}
