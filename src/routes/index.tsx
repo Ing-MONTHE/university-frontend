@@ -42,6 +42,15 @@ import {
   StudentGrades,
 } from '@/pages/admin/evaluations';
 
+// Pages Emploi de temps
+import {
+  BatimentsList,
+  SallesList,
+  CreneauxList,
+  CoursPlanning,
+  ConflictsList,
+} from '@/pages/admin/schedule';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -287,6 +296,58 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
+
+  // Routes emploi de temps
+  {
+  path: '/admin/schedule/planning',
+  element: (
+    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+      <MainLayout>
+        <CoursPlanning />
+      </MainLayout>
+    </RoleRoute>
+  ),
+},
+{
+  path: '/admin/schedule/batiments',
+  element: (
+    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+      <MainLayout>
+        <BatimentsList />
+      </MainLayout>
+    </RoleRoute>
+  ),
+},
+{
+  path: '/admin/schedule/salles',
+  element: (
+    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+      <MainLayout>
+        <SallesList />
+      </MainLayout>
+    </RoleRoute>
+  ),
+},
+{
+  path: '/admin/schedule/creneaux',
+  element: (
+    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+      <MainLayout>
+        <CreneauxList />
+      </MainLayout>
+    </RoleRoute>
+  ),
+},
+{
+  path: '/admin/schedule/conflits',
+  element: (
+    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+      <MainLayout>
+        <ConflictsList />
+      </MainLayout>
+    </RoleRoute>
+  ),
+},
 
   // Page 404 - Not Found (doit être en dernier)
   {

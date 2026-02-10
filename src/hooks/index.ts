@@ -3,4 +3,15 @@
  */
 
 // Auth hook
-export { useAuth } from './useAuth';
+export { useAuth } from "./useAuth";
+
+export * from "./useAnneeAcademiques";
+export * from "./useDashboard";
+export * from "./useDepartements";
+export * from "./useEvaluations";
+export * from "./useFacultes";
+export * from "./useFilieres";
+export * from "./useMatieres";
+export * from "./useSchedule";
+export * from "./useStudents";
+export * from "./useTeachers";

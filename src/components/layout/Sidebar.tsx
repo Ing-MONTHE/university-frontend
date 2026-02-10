@@ -20,6 +20,10 @@ import {
   Building,
   Network,
   FileText,
+  DoorOpen,
+  Clock,
+  CalendarDays,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -38,7 +42,7 @@ interface MenuItem {
   children?: SubMenuItem[];
 }
 
-// Menu principal de navigation avec sous-menus pour Académique
+// Menu principal de navigation avec sous-menus
 const mainMenuItems: MenuItem[] = [
   {
     icon: LayoutDashboard,
@@ -104,8 +108,34 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: Calendar,
     label: 'Emploi du temps',
-    path: '/admin/schedule',
     roles: ['ADMIN'],
+    children: [
+      {
+        icon: CalendarDays,
+        label: 'Planning',
+        path: '/admin/schedule/planning',
+      },
+      {
+        icon: Building2,
+        label: 'Bâtiments',
+        path: '/admin/schedule/batiments',
+      },
+      {
+        icon: DoorOpen,
+        label: 'Salles',
+        path: '/admin/schedule/salles',
+      },
+      {
+        icon: Clock,
+        label: 'Créneaux',
+        path: '/admin/schedule/creneaux',
+      },
+      {
+        icon: AlertCircle,
+        label: 'Conflits',
+        path: '/admin/schedule/conflits',
+      },
+    ],
   },
   {
     icon: Library,
@@ -151,14 +181,12 @@ const bottomMenuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['Académique'])); // Académique ouvert par défaut
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['Académique']));
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
-  // Extraire les noms de rôles de l'utilisateur
   const userRoles = user?.roles?.map((role: any) => role.name) || [];
 
-  // Filtrer les items de menu selon le rôle de l'utilisateur
   const filteredMainItems = mainMenuItems.filter((item) => {
     if (!item.roles) return true;
     return item.roles.some((role) => userRoles.includes(role));
@@ -169,7 +197,6 @@ export default function Sidebar() {
     return item.roles.some((role) => userRoles.includes(role));
   });
 
-  // Toggle sous-menu
   const toggleSubmenu = (label: string) => {
     setExpandedMenus((prev) => {
       const newSet = new Set(prev);
@@ -182,7 +209,6 @@ export default function Sidebar() {
     });
   };
 
-  // Vérifier si un sous-menu contient le path actif
   const isSubmenuActive = (children?: SubMenuItem[]) => {
     if (!children) return false;
     return children.some((child) => location.pathname === child.path);
@@ -197,10 +223,8 @@ export default function Sidebar() {
       {/* Header - Logo & Toggle */}
       <div className="px-5 py-5 border-b border-white/10">
         {!isCollapsed ? (
-          // Mode étendu : Logo + nom + bouton à droite
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Logo Shield */}
               <div className="relative w-9 h-11">
                 <svg viewBox="0 0 80 96" className="absolute inset-0 drop-shadow-lg">
                   <defs>
@@ -228,7 +252,6 @@ export default function Sidebar() {
               </div>
             </div>
 
-            {/* Bouton collapse */}
             <button
               onClick={() => setIsCollapsed(true)}
               className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
@@ -238,9 +261,7 @@ export default function Sidebar() {
             </button>
           </div>
         ) : (
-          // Mode réduit : Logo centré + bouton en dessous
           <div className="flex flex-col items-center gap-2">
-            {/* Logo Shield centré */}
             <div className="relative w-9 h-11">
               <svg viewBox="0 0 80 96" className="absolute inset-0 drop-shadow-lg">
                 <defs>
@@ -262,7 +283,6 @@ export default function Sidebar() {
               </div>
             </div>
 
-            {/* Bouton expand visible */}
             <button
               onClick={() => setIsCollapsed(false)}
               className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
@@ -283,11 +303,9 @@ export default function Sidebar() {
           const isActive = item.path ? location.pathname === item.path : false;
           const isChildActive = isSubmenuActive(item.children);
 
-          // Si l'item a des enfants
           if (hasChildren && !isCollapsed) {
             return (
               <div key={item.label}>
-                {/* Parent menu item */}
                 <button
                   onClick={() => toggleSubmenu(item.label)}
                   className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
@@ -307,7 +325,6 @@ export default function Sidebar() {
                   />
                 </button>
 
-                {/* Submenu */}
                 {isExpanded && (
                   <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-white/10 pl-2">
                     {item.children!.map((child) => {
@@ -335,7 +352,6 @@ export default function Sidebar() {
             );
           }
 
-          // Item simple (avec ou sans enfants en mode collapsed)
           return (
             <Link
               key={item.path || item.label}
@@ -354,7 +370,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom Menu - Séparation subtile */}
+      {/* Bottom Menu */}
       <div className="px-3 py-2 space-y-0.5 border-t border-white/10">
         {filteredBottomItems.map((item) => {
           const Icon = item.icon;
@@ -378,17 +394,15 @@ export default function Sidebar() {
         })}
       </div>
 
-      {/* User Profile - Bottom */}
+      {/* User Profile */}
       <div className="px-3 py-3 border-t border-white/10">
         {!isCollapsed ? (
           <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-            {/* Avatar avec dégradé */}
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-400/20">
               <span className="text-xs font-bold text-white">
                 {user?.username?.charAt(0).toUpperCase()}
               </span>
             </div>
-            {/* Info utilisateur */}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-white truncate">
                 {user?.username}
@@ -397,13 +411,11 @@ export default function Sidebar() {
                 {user?.email}
               </p>
             </div>
-            {/* Flèche au hover */}
             <button className="opacity-0 group-hover:opacity-100 transition-opacity">
               <ChevronRight className="w-3.5 h-3.5 text-white/60" />
             </button>
           </div>
         ) : (
-          // Avatar seul en mode collapsed
           <button className="w-full flex justify-center">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-blue-400/20">
               <span className="text-xs font-bold text-white">
