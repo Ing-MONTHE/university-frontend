@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { useAuth } from '@/hooks';
 import { Button, Input, Alert, AlertDescription } from '@/components/ui';
@@ -10,9 +10,16 @@ export default function Login() {
 
   const { login, isLoading, error } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login({ username, password, remember_me: rememberMe });
+    e.stopPropagation();
+    
+    // Validation côté client
+    if (!username.trim() || !password.trim()) {
+      return;
+    }
+    
+    await login({ username, password, remember_me: rememberMe });
   };
 
   return (
@@ -123,7 +130,7 @@ export default function Login() {
               )}
 
               {/* FORMULAIRE */}
-              <form onSubmit={handleSubmit} className="space-y-8 w-full">
+              <form onSubmit={handleSubmit} noValidate className="space-y-8 w-full">
 
                 {/* USERNAME */}
                 <Input
@@ -135,6 +142,7 @@ export default function Login() {
                   required
                   disabled={isLoading}
                   className="text-lg"
+                  autoComplete="username"
                 />
 
                 {/* PASSWORD */}
@@ -147,6 +155,7 @@ export default function Login() {
                   required
                   disabled={isLoading}
                   className="text-lg"
+                  autoComplete="current-password"
                 />
 
                 {/* OPTIONS */}
@@ -164,9 +173,16 @@ export default function Login() {
                     </span>
                   </label>
 
-                  <a href="#" className="text-blue-600 font-medium hover:underline">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // Logique pour mot de passe oublié
+                    }}
+                    className="text-blue-600 font-medium hover:underline"
+                  >
                     Mot de passe oublié ?
-                  </a>
+                  </button>
                 </div>
 
                 {/* BOUTON */}

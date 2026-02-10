@@ -6,8 +6,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { Plus, Search, Building2, Pencil, Trash2, Users, BookOpen } from 'lucide-react';
 import {
   useFacultes,
