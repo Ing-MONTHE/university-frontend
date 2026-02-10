@@ -8,7 +8,6 @@ export { useAuth } from "./useAuth";
 export * from "./useAnneeAcademiques";
 export * from "./useDashboard";
 export * from "./useDepartements";
-export * from "./useEvaluations";
 export * from "./useFacultes";
 export * from "./useFilieres";
 export * from "./useMatieres";

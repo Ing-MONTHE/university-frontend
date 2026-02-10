@@ -8,7 +8,6 @@ export { default as apiClient } from './client';
 export * from './auth.api';
 
 export * from './academic.api';
-export * from './evaluation.api';
 export * from './student.api';
 export * from './teacher.api';
 export * from './schedule.api';
