@@ -1,67 +1,55 @@
-import { Badge, Button, Card, Modal, Select } from "@/components/ui";
-import { useFilieres } from "@/hooks/useFilieres";
-import {
-  useConflits,
-  useCours,
-  useCreneaux,
-  useSalles,
-} from "@/hooks/useSchedule";
-import { useTeachers } from "@/hooks/useTeachers";
-import type { Cours, JourSemaine } from "@/types/schedule.types";
-import { AlertCircle, Calendar, Filter, Plus } from "lucide-react";
-import { useMemo, useState } from "react";
-import CoursForm from "./CoursForm";
+import { useState, useMemo } from 'react';
+import { Plus, Calendar, Filter, AlertCircle } from 'lucide-react';
+import { useCours, useCreneaux, useConflits, useSalles } from '@/hooks/useSchedule';
+import { useFilieres } from '@/hooks/useFilieres';
+import { useTeachers } from '@/hooks/useTeachers';
+import { Card, Button, Select, Modal, Badge } from '@/components/ui';
+import type { Cours, JourSemaine } from '@/types/schedule.types';
+import CoursForm from './CoursForm';
 
-const JOURS: JourSemaine[] = [
-  "LUNDI",
-  "MARDI",
-  "MERCREDI",
-  "JEUDI",
-  "VENDREDI",
-  "SAMEDI",
-];
+const JOURS: JourSemaine[] = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
 const JOUR_LABELS: Record<JourSemaine, string> = {
-  LUNDI: "Lundi",
-  MARDI: "Mardi",
-  MERCREDI: "Mercredi",
-  JEUDI: "Jeudi",
-  VENDREDI: "Vendredi",
-  SAMEDI: "Samedi",
+  LUNDI: 'Lundi',
+  MARDI: 'Mardi',
+  MERCREDI: 'Mercredi',
+  JEUDI: 'Jeudi',
+  VENDREDI: 'Vendredi',
+  SAMEDI: 'Samedi',
 };
 
 // Couleurs par filière (exemple)
 const COLORS = [
-  "bg-blue-100 border-blue-400 text-blue-900",
-  "bg-green-100 border-green-400 text-green-900",
-  "bg-purple-100 border-purple-400 text-purple-900",
-  "bg-orange-100 border-orange-400 text-orange-900",
-  "bg-pink-100 border-pink-400 text-pink-900",
-  "bg-indigo-100 border-indigo-400 text-indigo-900",
+  'bg-blue-100 border-blue-400 text-blue-900',
+  'bg-green-100 border-green-400 text-green-900',
+  'bg-purple-100 border-purple-400 text-purple-900',
+  'bg-orange-100 border-orange-400 text-orange-900',
+  'bg-pink-100 border-pink-400 text-pink-900',
+  'bg-indigo-100 border-indigo-400 text-indigo-900',
 ];
 
 export default function CoursPlanning() {
   const [showForm, setShowForm] = useState(false);
-  const [filiereFilter, setFiliereFilter] = useState("");
-  const [enseignantFilter, setEnseignantFilter] = useState("");
-  const [salleFilter, setSalleFilter] = useState("");
+  const [filiereFilter, setFiliereFilter] = useState('');
+  const [enseignantFilter, setEnseignantFilter] = useState('');
+  const [salleFilter, setSalleFilter] = useState('');
 
   const { data: coursData, isLoading } = useCours({
     page_size: 1000,
-    filiere: filiereFilter ? parseInt(filiereFilter) : undefined,
+    matiere: undefined,
     enseignant: enseignantFilter ? parseInt(enseignantFilter) : undefined,
     salle: salleFilter ? parseInt(salleFilter) : undefined,
   });
 
   const { data: creneauxData } = useCreneaux({ page_size: 100 });
   const { data: conflitsData } = useConflits({ resolu: false });
-  const { data: filieresData } = useFilieres();
-  const { data: enseignantsData } = useTeachers();
-  const { data: sallesData } = useSalles();
+  const { data: filieresData } = useFilieres({ page_size: 100 });
+  const { data: enseignantsData } = useTeachers({ page_size: 1000 });
+  const { data: sallesData } = useSalles({ page_size: 1000 });
 
   // Organiser cours par jour et créneau
   const coursByJourCreneau = useMemo(() => {
     const map: Record<string, Cours[]> = {};
-
+    
     (coursData?.results || []).forEach((cours) => {
       if (cours.creneau_details) {
         const key = `${cours.creneau_details.jour}-${cours.creneau}`;
@@ -69,7 +57,7 @@ export default function CoursPlanning() {
         map[key].push(cours);
       }
     });
-
+    
     return map;
   }, [coursData]);
 
@@ -83,18 +71,20 @@ export default function CoursPlanning() {
       VENDREDI: [],
       SAMEDI: [],
     };
-
-    (creneauxData?.results || []).forEach((creneau) => {
+    
+    if (!creneauxData?.results) return map;
+    
+    creneauxData.results.forEach((creneau) => {
       map[creneau.jour].push(creneau);
     });
-
+    
     // Trier par heure de début
     Object.keys(map).forEach((jour) => {
-      map[jour as JourSemaine].sort((a, b) =>
-        a.heure_debut.localeCompare(b.heure_debut),
+      map[jour as JourSemaine].sort((a, b) => 
+        a.heure_debut.localeCompare(b.heure_debut)
       );
     });
-
+    
     return map;
   }, [creneauxData]);
 
@@ -108,27 +98,21 @@ export default function CoursPlanning() {
   }, [creneauxData]);
 
   const filiereOptions = [
-    { value: "", label: "Toutes les filières" },
-    ...(filieresData?.results || []).map((f) => ({
-      value: f.id.toString(),
-      label: f.nom,
-    })),
+    { value: '', label: 'Toutes les filières' },
+    ...(filieresData?.results || []).map((f) => ({ value: f.id.toString(), label: f.nom })),
   ];
 
   const enseignantOptions = [
-    { value: "", label: "Tous les enseignants" },
-    ...(enseignantsData?.results || []).map((e) => ({
-      value: e.id.toString(),
-      label: `${e.first_name} ${e.last_name}`,
+    { value: '', label: 'Tous les enseignants' },
+    ...(enseignantsData?.results || []).map((e) => ({ 
+      value: e.id.toString(), 
+      label: `${e.first_name} ${e.last_name}` 
     })),
   ];
 
   const salleOptions = [
-    { value: "", label: "Toutes les salles" },
-    ...(sallesData?.results || []).map((s) => ({
-      value: s.id.toString(),
-      label: s.nom,
-    })),
+    { value: '', label: 'Toutes les salles' },
+    ...(sallesData?.results || []).map((s) => ({ value: s.id.toString(), label: s.nom })),
   ];
 
   const getColorForFiliere = (filiereId?: number) => {
@@ -138,7 +122,7 @@ export default function CoursPlanning() {
 
   const hasConflict = (coursId: number) => {
     return (conflitsData?.results || []).some(
-      (c) => c.cours_1 === coursId || c.cours_2 === coursId,
+      (c) => c.cours_1 === coursId || c.cours_2 === coursId
     );
   };
 
@@ -157,9 +141,9 @@ export default function CoursPlanning() {
         </div>
         <div className="flex gap-3">
           {conflitsData && conflitsData.count > 0 && (
-            <Button variant="primary" className="text-red-600">
+            <Button variant="outline" className="text-red-600">
               <AlertCircle className="w-4 h-4 mr-2" />
-              {conflitsData.count} conflit{conflitsData.count > 1 ? "s" : ""}
+              {conflitsData.count} conflit{conflitsData.count > 1 ? 's' : ''}
             </Button>
           )}
           <Button onClick={() => setShowForm(true)}>
@@ -228,27 +212,21 @@ export default function CoursPlanning() {
                 </tr>
               ) : (
                 allCreneaux.map((horaire) => {
-                  const [debut, fin] = horaire.split("-");
-
+                  const [debut, fin] = horaire.split('-');
+                  
                   return (
                     <tr key={horaire} className="border-b hover:bg-gray-50">
                       <td className="sticky left-0 z-10 bg-white px-4 py-3 font-mono text-xs text-gray-600 border-r">
-                        {debut}
-                        <br />-<br />
-                        {fin}
+                        {debut}<br/>-<br/>{fin}
                       </td>
                       {JOURS.map((jour) => {
                         // Trouver le créneau correspondant
                         const creneau = creneauxByJour[jour]?.find(
-                          (c) => `${c.heure_debut}-${c.heure_fin}` === horaire,
+                          (c) => `${c.heure_debut}-${c.heure_fin}` === horaire
                         );
-
-                        const key = creneau
-                          ? `${jour}-${creneau.id}`
-                          : `${jour}-${horaire}`;
-                        const coursList = creneau
-                          ? coursByJourCreneau[key] || []
-                          : [];
+                        
+                        const key = creneau ? `${jour}-${creneau.id}` : `${jour}-${horaire}`;
+                        const coursList = creneau ? coursByJourCreneau[key] || [] : [];
 
                         return (
                           <td
@@ -260,44 +238,32 @@ export default function CoursPlanning() {
                                 <div
                                   key={cours.id}
                                   className={`p-2 rounded border-l-4 text-xs ${getColorForFiliere(
-                                    cours.matiere_details?.filiere,
+                                    cours.matiere_details?.filiere
                                   )} relative group cursor-pointer hover:shadow-md transition-shadow`}
                                 >
                                   {hasConflict(cours.id) && (
-                                    <Badge
-                                      variant="danger"
-                                      className="absolute -top-1 -right-1 text-xs px-1"
-                                    >
+                                    <Badge variant="danger" className="absolute -top-1 -right-1 text-xs px-1">
                                       !
                                     </Badge>
                                   )}
                                   <div className="font-semibold truncate">
-                                    {cours.matiere_details?.nom || "Matière"}
+                                    {cours.matiere_details?.nom || 'Matière'}
                                   </div>
                                   <div className="text-gray-600 truncate">
-                                    {cours.enseignant_details?.first_name || ""}{" "}
-                                    {cours.enseignant_details?.last_name || ""}
+                                    {cours.enseignant_details?.first_name || ''} {cours.enseignant_details?.last_name || ''}
                                   </div>
                                   <div className="text-gray-500 truncate">
-                                    {cours.salle_details?.nom || "Salle"}
+                                    {cours.salle_details?.nom || 'Salle'}
                                   </div>
-
+                                  
                                   {/* Tooltip au hover */}
                                   <div className="absolute hidden group-hover:block top-full left-0 mt-1 p-2 bg-gray-900 text-white rounded shadow-lg z-20 w-64 text-xs">
-                                    <div className="font-semibold mb-1">
-                                      {cours.matiere_details?.nom}
-                                    </div>
-                                    <div>
-                                      Enseignant:{" "}
-                                      {cours.enseignant_details?.first_name}{" "}
-                                      {cours.enseignant_details?.last_name}
-                                    </div>
+                                    <div className="font-semibold mb-1">{cours.matiere_details?.nom}</div>
+                                    <div>Enseignant: {cours.enseignant_details?.first_name} {cours.enseignant_details?.last_name}</div>
                                     <div>Salle: {cours.salle_details?.nom}</div>
                                     <div>Effectif: {cours.effectif_prevu}</div>
                                     {hasConflict(cours.id) && (
-                                      <div className="text-red-400 font-semibold mt-1">
-                                        ⚠️ Conflit détecté
-                                      </div>
+                                      <div className="text-red-400 font-semibold mt-1">⚠️ Conflit détecté</div>
                                     )}
                                   </div>
                                 </div>

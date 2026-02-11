@@ -42,6 +42,16 @@ import {
   ConflictsList,
 } from '@/pages/admin/schedule';
 
+// Pages Évaluations
+import {
+  EvaluationsList,
+  EvaluationForm,
+  GradeEntry,
+  StudentGrades,
+  DeliberationSession,
+  BulletinView,
+} from '@/pages/admin/evaluations';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -280,6 +290,78 @@ export const router = createBrowserRouter([
     </RoleRoute>
   ),
 },
+
+  // Routes Évaluations
+  {
+    path: '/admin/evaluations',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EvaluationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/create',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/evaluations/:id/notes',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <GradeEntry />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/:etudiantId/grades',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentGrades />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/:etudiantId/bulletin/:anneeId?',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BulletinView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/deliberations/:sessionId',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DeliberationSession />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
 
   // Page 404 - Not Found (doit être en dernier)
   {

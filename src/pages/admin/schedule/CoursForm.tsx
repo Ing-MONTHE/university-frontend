@@ -1,15 +1,10 @@
-import { Button, Input, Select } from "@/components/ui";
-import { useAnneeAcademiques } from "@/hooks/useAnneeAcademiques";
-import { useMatieres } from "@/hooks/useMatieres";
-import {
-  useCreateCours,
-  useCreneaux,
-  useSalles,
-  useUpdateCours,
-} from "@/hooks/useSchedule";
-import { useTeachers } from "@/hooks/useTeachers";
-import type { Cours, CoursCreate } from "@/types/schedule.types";
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
+import { useCreateCours, useUpdateCours, useCreneaux, useSalles } from '@/hooks/useSchedule';
+import { useMatieres } from '@/hooks/useMatieres';
+import { useTeachers } from '@/hooks/useTeachers';
+import { useAnneeAcademiques } from '@/hooks/useAnneeAcademiques';
+import { Button, Input, Select } from '@/components/ui';
+import type { Cours, CoursCreate } from '@/types/schedule.types';
 
 interface CoursFormProps {
   cours?: Cours | null;
@@ -18,22 +13,13 @@ interface CoursFormProps {
 }
 
 const RECURRENCE_OPTIONS = [
-  { value: "HEBDOMADAIRE", label: "Hebdomadaire" },
-  { value: "BIHEBDOMADAIRE", label: "Bihebdomadaire" },
-  { value: "PONCTUEL", label: "Ponctuel" },
+  { value: 'HEBDOMADAIRE', label: 'Hebdomadaire' },
+  { value: 'BIHEBDOMADAIRE', label: 'Bihebdomadaire' },
+  { value: 'PONCTUEL', label: 'Ponctuel' },
 ];
 
-export default function CoursForm({
-  cours,
-  onSuccess,
-  onCancel,
-}: CoursFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<CoursCreate>({
+export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps) {
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<CoursCreate>({
     defaultValues: cours || {
       matiere: 0,
       enseignant: 0,
@@ -41,28 +27,26 @@ export default function CoursForm({
       creneau: 0,
       annee_academique: 0,
       semestre: 1,
-      date_debut: "",
-      date_fin: "",
-      recurrence: "HEBDOMADAIRE",
+      date_debut: '',
+      date_fin: '',
+      recurrence: 'HEBDOMADAIRE',
       effectif_prevu: 30,
-      remarques: "",
+      remarques: '',
       is_active: true,
     },
   });
 
-  const { data: matieresData } = useMatieres();
-  const { data: enseignantsData } = useTeachers();
-  const { data: sallesData } = useSalles();
+  const { data: matieresData } = useMatieres({ page_size: 1000 });
+  const { data: enseignantsData } = useTeachers({ page_size: 1000 });
+  const { data: sallesData } = useSalles({ page_size: 1000 });
   const { data: creneauxData } = useCreneaux({ page_size: 100 });
-  const { data: anneesData } = useAnneeAcademiques();
+  const { data: anneesData } = useAnneeAcademiques({ page_size: 100 });
 
   const createMutation = useCreateCours();
   const updateMutation = useUpdateCours();
 
-  const selectedSalle = watch("salle");
-  const salle = sallesData?.results?.find(
-    (s) => s.id === Number(selectedSalle),
-  );
+  const selectedSalle = watch('salle');
+  const salle = sallesData?.results?.find((s) => s.id === Number(selectedSalle));
 
   const matiereOptions = (matieresData?.results || []).map((m) => ({
     value: m.id.toString(),
@@ -98,8 +82,8 @@ export default function CoursForm({
       }
       onSuccess();
     } catch (error: any) {
-      alert(error?.response?.data?.detail || "Erreur lors de l'enregistrement");
-      console.error("Error:", error);
+      alert(error?.response?.data?.detail || 'Erreur lors de l\'enregistrement');
+      console.error('Error:', error);
     }
   };
 
@@ -111,10 +95,7 @@ export default function CoursForm({
             Matière <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("matiere", {
-              required: "La matière est requise",
-              valueAsNumber: true,
-            })}
+            {...register('matiere', { required: 'La matière est requise', valueAsNumber: true })}
             options={matiereOptions}
           />
         </div>
@@ -124,10 +105,7 @@ export default function CoursForm({
             Enseignant <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("enseignant", {
-              required: "L'enseignant est requis",
-              valueAsNumber: true,
-            })}
+            {...register('enseignant', { required: 'L\'enseignant est requis', valueAsNumber: true })}
             options={enseignantOptions}
           />
         </div>
@@ -139,10 +117,7 @@ export default function CoursForm({
             Salle <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("salle", {
-              required: "La salle est requise",
-              valueAsNumber: true,
-            })}
+            {...register('salle', { required: 'La salle est requise', valueAsNumber: true })}
             options={salleOptions}
           />
           {salle && (
@@ -157,10 +132,7 @@ export default function CoursForm({
             Créneau <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("creneau", {
-              required: "Le créneau est requis",
-              valueAsNumber: true,
-            })}
+            {...register('creneau', { required: 'Le créneau est requis', valueAsNumber: true })}
             options={creneauOptions}
           />
         </div>
@@ -172,10 +144,7 @@ export default function CoursForm({
             Année Académique <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("annee_academique", {
-              required: "L'année est requise",
-              valueAsNumber: true,
-            })}
+            {...register('annee_academique', { required: 'L\'année est requise', valueAsNumber: true })}
             options={anneeOptions}
           />
         </div>
@@ -185,13 +154,10 @@ export default function CoursForm({
             Semestre <span className="text-red-500">*</span>
           </label>
           <Select
-            {...register("semestre", {
-              required: "Le semestre est requis",
-              valueAsNumber: true,
-            })}
+            {...register('semestre', { required: 'Le semestre est requis', valueAsNumber: true })}
             options={[
-              { value: "1", label: "Semestre 1" },
-              { value: "2", label: "Semestre 2" },
+              { value: '1', label: 'Semestre 1' },
+              { value: '2', label: 'Semestre 2' },
             ]}
           />
         </div>
@@ -204,9 +170,7 @@ export default function CoursForm({
           </label>
           <Input
             type="date"
-            {...register("date_debut", {
-              required: "La date de début est requise",
-            })}
+            {...register('date_debut', { required: 'La date de début est requise' })}
             error={errors.date_debut?.message}
           />
         </div>
@@ -217,9 +181,7 @@ export default function CoursForm({
           </label>
           <Input
             type="date"
-            {...register("date_fin", {
-              required: "La date de fin est requise",
-            })}
+            {...register('date_fin', { required: 'La date de fin est requise' })}
             error={errors.date_fin?.message}
           />
         </div>
@@ -230,7 +192,10 @@ export default function CoursForm({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Récurrence
           </label>
-          <Select {...register("recurrence")} options={RECURRENCE_OPTIONS} />
+          <Select
+            {...register('recurrence')}
+            options={RECURRENCE_OPTIONS}
+          />
         </div>
 
         <div>
@@ -239,11 +204,7 @@ export default function CoursForm({
           </label>
           <Input
             type="number"
-            {...register("effectif_prevu", {
-              required: "L'effectif est requis",
-              valueAsNumber: true,
-              min: 1,
-            })}
+            {...register('effectif_prevu', { required: 'L\'effectif est requis', valueAsNumber: true, min: 1 })}
             error={errors.effectif_prevu?.message}
           />
         </div>
@@ -254,7 +215,7 @@ export default function CoursForm({
           Remarques
         </label>
         <textarea
-          {...register("remarques")}
+          {...register('remarques')}
           rows={3}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Notes supplémentaires..."
@@ -264,7 +225,7 @@ export default function CoursForm({
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
-          {...register("is_active")}
+          {...register('is_active')}
           id="is_active"
           className="rounded"
         />
@@ -274,14 +235,14 @@ export default function CoursForm({
       </div>
 
       <div className="flex justify-end gap-3 pt-4 border-t">
-        <Button type="button" variant="primary" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel}>
           Annuler
         </Button>
         <Button
           type="submit"
           isLoading={createMutation.isPending || updateMutation.isPending}
         >
-          {cours ? "Modifier" : "Créer"}
+          {cours ? 'Modifier' : 'Créer'}
         </Button>
       </div>
     </form>

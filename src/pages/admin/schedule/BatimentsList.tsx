@@ -1,25 +1,20 @@
-import {
-  Button,
-  Card,
-  ConfirmModal,
-  DataTable,
-  Input,
-  Modal,
-} from "@/components/ui";
-import { useBatiments, useDeleteBatiment } from "@/hooks/useSchedule";
-import type { Batiment } from "@/types/schedule.types";
-import { Building2, Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import BatimentForm from "./BatimentForm";
+import { useState } from 'react';
+import { Plus, Building2, Edit, Trash2 } from 'lucide-react';
+import { useBatiments, useDeleteBatiment } from '@/hooks/useSchedule';
+import { DataTable, Button, Card, Modal, Input, ConfirmModal } from '@/components/ui';
+import type { ColumnDef } from '@/components/ui/DataTable/DataTable';
+import type { Batiment } from '@/types/schedule.types';
+import BatimentForm from './BatimentForm';
 
 export default function BatimentsList() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [editingBatiment, setEditingBatiment] = useState<Batiment | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const { data, isLoading } = useBatiments({ search, page, page_size: 10 });
+  const { data, isLoading } = useBatiments({ search, page, page_size: pageSize });
   const deleteMutation = useDeleteBatiment();
 
   const handleDelete = async () => {
@@ -29,18 +24,18 @@ export default function BatimentsList() {
     }
   };
 
-  const columns = [
+  const columns: ColumnDef<Batiment>[] = [
     {
-      key: "code",
-      label: "Code",
-      render: (batiment: Batiment) => (
+      key: 'code',
+      header: 'Code',
+      render: (_, batiment: Batiment) => (
         <span className="font-mono text-sm font-medium">{batiment.code}</span>
       ),
     },
     {
-      key: "nom",
-      label: "Nom",
-      render: (batiment: Batiment) => (
+      key: 'nom',
+      header: 'Nom',
+      render: (_, batiment: Batiment) => (
         <div>
           <div className="font-medium">{batiment.nom}</div>
           {batiment.adresse && (
@@ -50,40 +45,40 @@ export default function BatimentsList() {
       ),
     },
     {
-      key: "nombre_etages",
-      label: "Étages",
-      render: (batiment: Batiment) => (
+      key: 'nombre_etages',
+      header: 'Étages',
+      render: (_, batiment: Batiment) => (
         <span className="text-sm">{batiment.nombre_etages}</span>
       ),
     },
     {
-      key: "nombre_salles",
-      label: "Salles",
-      render: (batiment: Batiment) => (
+      key: 'nombre_salles',
+      header: 'Salles',
+      render: (_, batiment: Batiment) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
           {batiment.nombre_salles || 0}
         </span>
       ),
     },
     {
-      key: "is_active",
-      label: "Statut",
-      render: (batiment: Batiment) => (
+      key: 'is_active',
+      header: 'Statut',
+      render: (_, batiment: Batiment) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             batiment.is_active
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
+              ? 'bg-green-100 text-green-800'
+              : 'bg-gray-100 text-gray-800'
           }`}
         >
-          {batiment.is_active ? "Actif" : "Inactif"}
+          {batiment.is_active ? 'Actif' : 'Inactif'}
         </span>
       ),
     },
     {
-      key: "actions",
-      label: "Actions",
-      render: (batiment: Batiment) => (
+      key: 'actions',
+      header: 'Actions',
+      render: (_, batiment: Batiment) => (
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -143,9 +138,11 @@ export default function BatimentsList() {
           data={data?.results || []}
           isLoading={isLoading}
           pagination={{
-            currentPage: page,
-            totalPages: data ? Math.ceil(data.count / 10) : 1,
+            page: page,
+            pageSize: pageSize,
+            total: data?.count || 0,
             onPageChange: setPage,
+            onPageSizeChange: setPageSize,
           }}
         />
       </Card>
@@ -157,7 +154,7 @@ export default function BatimentsList() {
           setShowForm(false);
           setEditingBatiment(null);
         }}
-        title={editingBatiment ? "Modifier le Bâtiment" : "Nouveau Bâtiment"}
+        title={editingBatiment ? 'Modifier le Bâtiment' : 'Nouveau Bâtiment'}
       >
         <BatimentForm
           batiment={editingBatiment}

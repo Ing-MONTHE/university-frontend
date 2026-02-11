@@ -1,24 +1,24 @@
-import { Button, Card, DataTable, Modal } from "@/components/ui";
-import { useConflits, useResolveConflit } from "@/hooks/useSchedule";
-import type { ConflitSalle } from "@/types/schedule.types";
-import { AlertCircle, CheckCircle } from "lucide-react";
-import { useState } from "react";
+import { useState } from 'react';
+import { AlertCircle, CheckCircle } from 'lucide-react';
+import { useConflits, useResolveConflit } from '@/hooks/useSchedule';
+import { DataTable, Button, Card, Modal } from '@/components/ui';
+import type { ColumnDef } from '@/components/ui/DataTable/DataTable';
+import type { ConflitSalle } from '@/types/schedule.types';
 
 const CONFLIT_TYPE_LABELS = {
-  DOUBLE_BOOKING: "Salle occupée",
-  CONFLIT_ENSEIGNANT: "Enseignant occupé",
-  CAPACITE_DEPASSEE: "Capacité dépassée",
+  DOUBLE_BOOKING: 'Salle occupée',
+  CONFLIT_ENSEIGNANT: 'Enseignant occupé',
+  CAPACITE_DEPASSEE: 'Capacité dépassée',
 };
 
 export default function ConflictsList() {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [showResolve, setShowResolve] = useState(false);
-  const [selectedConflit, setSelectedConflit] = useState<ConflitSalle | null>(
-    null,
-  );
-  const [resolutionNote, setResolutionNote] = useState("");
+  const [selectedConflit, setSelectedConflit] = useState<ConflitSalle | null>(null);
+  const [resolutionNote, setResolutionNote] = useState('');
 
-  const { data, isLoading } = useConflits({ page, page_size: 20 });
+  const { data, isLoading } = useConflits({ page, page_size: pageSize });
   const resolveMutation = useResolveConflit();
 
   const handleResolve = async () => {
@@ -27,30 +27,30 @@ export default function ConflictsList() {
         id: selectedConflit.id,
         data: {
           resolu: true,
-          date_resolution: new Date().toISOString().split("T")[0],
+          date_resolution: new Date().toISOString().split('T')[0],
           resolution_note: resolutionNote,
         },
       });
       setShowResolve(false);
       setSelectedConflit(null);
-      setResolutionNote("");
+      setResolutionNote('');
     }
   };
 
-  const columns = [
+  const columns: ColumnDef<ConflitSalle>[] = [
     {
-      key: "type",
-      label: "Type",
-      render: (conflit: ConflitSalle) => (
+      key: 'type',
+      header: 'Type',
+      render: (_, conflit: ConflitSalle) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
           {CONFLIT_TYPE_LABELS[conflit.type_conflit]}
         </span>
       ),
     },
     {
-      key: "description",
-      label: "Description",
-      render: (conflit: ConflitSalle) => (
+      key: 'description',
+      header: 'Description',
+      render: (_, conflit: ConflitSalle) => (
         <div className="max-w-md">
           <p className="text-sm text-gray-900">{conflit.description}</p>
           {conflit.cours_1_details && (
@@ -67,36 +67,36 @@ export default function ConflictsList() {
       ),
     },
     {
-      key: "date_detection",
-      label: "Détecté le",
-      render: (conflit: ConflitSalle) => (
+      key: 'date_detection',
+      header: 'Détecté le',
+      render: (_, conflit: ConflitSalle) => (
         <span className="text-sm text-gray-600">
-          {new Date(conflit.date_detection).toLocaleDateString("fr-FR")}
+          {new Date(conflit.date_detection).toLocaleDateString('fr-FR')}
         </span>
       ),
     },
     {
-      key: "statut",
-      label: "Statut",
-      render: (conflit: ConflitSalle) => (
+      key: 'statut',
+      header: 'Statut',
+      render: (_, conflit: ConflitSalle) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             conflit.resolu
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
+              ? 'bg-green-100 text-green-800'
+              : 'bg-yellow-100 text-yellow-800'
           }`}
         >
-          {conflit.resolu ? "Résolu" : "En attente"}
+          {conflit.resolu ? 'Résolu' : 'En attente'}
         </span>
       ),
     },
     {
-      key: "actions",
-      label: "Actions",
-      render: (conflit: ConflitSalle) =>
+      key: 'actions',
+      header: 'Actions',
+      render: (_, conflit: ConflitSalle) => (
         !conflit.resolu && (
           <Button
-            variant="primary"
+            variant="outline"
             size="sm"
             onClick={() => {
               setSelectedConflit(conflit);
@@ -106,7 +106,8 @@ export default function ConflictsList() {
             <CheckCircle className="w-4 h-4 mr-1" />
             Résoudre
           </Button>
-        ),
+        )
+      ),
     },
   ];
 
@@ -124,11 +125,10 @@ export default function ConflictsList() {
           <p className="text-sm text-gray-600 mt-1">
             {nonResolus > 0 ? (
               <span className="text-red-600 font-medium">
-                {nonResolus} conflit{nonResolus > 1 ? "s" : ""} non résolu
-                {nonResolus > 1 ? "s" : ""}
+                {nonResolus} conflit{nonResolus > 1 ? 's' : ''} non résolu{nonResolus > 1 ? 's' : ''}
               </span>
             ) : (
-              "Aucun conflit en attente"
+              'Aucun conflit en attente'
             )}
           </p>
         </div>
@@ -184,9 +184,11 @@ export default function ConflictsList() {
           data={data?.results || []}
           isLoading={isLoading}
           pagination={{
-            currentPage: page,
-            totalPages: data ? Math.ceil(data.count / 20) : 1,
+            page: page,
+            pageSize: pageSize,
+            total: data?.count || 0,
             onPageChange: setPage,
+            onPageSizeChange: setPageSize,
           }}
         />
       </Card>
@@ -197,7 +199,7 @@ export default function ConflictsList() {
         onClose={() => {
           setShowResolve(false);
           setSelectedConflit(null);
-          setResolutionNote("");
+          setResolutionNote('');
         }}
         title="Résoudre le Conflit"
       >
@@ -223,11 +225,11 @@ export default function ConflictsList() {
 
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button
-              variant="primary"
+              variant="outline"
               onClick={() => {
                 setShowResolve(false);
                 setSelectedConflit(null);
-                setResolutionNote("");
+                setResolutionNote('');
               }}
             >
               Annuler

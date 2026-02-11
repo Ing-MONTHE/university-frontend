@@ -1,31 +1,25 @@
-import {
-  Button,
-  Card,
-  ConfirmModal,
-  DataTable,
-  Input,
-  Modal,
-  Select,
-} from "@/components/ui";
-import { useBatiments, useDeleteSalle, useSalles } from "@/hooks/useSchedule";
-import type { Salle, TypeSalle } from "@/types/schedule.types";
-import { DoorOpen, Edit, Filter, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import SalleForm from "./SalleForm";
+import { useState } from 'react';
+import { Plus, DoorOpen, Edit, Trash2, Filter } from 'lucide-react';
+import { useSalles, useDeleteSalle, useBatiments } from '@/hooks/useSchedule';
+import { DataTable, Button, Card, Modal, Input, Select, ConfirmModal } from '@/components/ui';
+import type { ColumnDef } from '@/components/ui/DataTable/DataTable';
+import type { Salle, TypeSalle } from '@/types/schedule.types';
+import SalleForm from './SalleForm';
 
 const TYPE_SALLE_OPTIONS = [
-  { value: "", label: "Tous les types" },
-  { value: "COURS", label: "Cours" },
-  { value: "TD", label: "TD" },
-  { value: "TP", label: "TP" },
-  { value: "AMPHI", label: "Amphithéâtre" },
+  { value: '', label: 'Tous les types' },
+  { value: 'COURS', label: 'Cours' },
+  { value: 'TD', label: 'TD' },
+  { value: 'TP', label: 'TP' },
+  { value: 'AMPHI', label: 'Amphithéâtre' },
 ];
 
 export default function SallesList() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [batimentFilter, setBatimentFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [batimentFilter, setBatimentFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingSalle, setEditingSalle] = useState<Salle | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -33,16 +27,16 @@ export default function SallesList() {
   const { data, isLoading } = useSalles({
     search,
     page,
-    page_size: 10,
+    page_size: pageSize,
     batiment: batimentFilter ? parseInt(batimentFilter) : undefined,
-    type_salle: (typeFilter as TypeSalle) || undefined,
+    type_salle: typeFilter as TypeSalle || undefined,
   });
 
   const { data: batimentsData } = useBatiments();
   const deleteMutation = useDeleteSalle();
 
   const batimentOptions = [
-    { value: "", label: "Tous les bâtiments" },
+    { value: '', label: 'Tous les bâtiments' },
     ...(batimentsData?.results || []).map((b) => ({
       value: b.id.toString(),
       label: `${b.code} - ${b.nom}`,
@@ -56,18 +50,18 @@ export default function SallesList() {
     }
   };
 
-  const columns = [
+  const columns: ColumnDef<Salle>[] = [
     {
-      key: "code",
-      label: "Code",
-      render: (salle: Salle) => (
+      key: 'code',
+      header: 'Code',
+      render: (_, salle: Salle) => (
         <span className="font-mono text-sm font-medium">{salle.code}</span>
       ),
     },
     {
-      key: "nom",
-      label: "Nom",
-      render: (salle: Salle) => (
+      key: 'nom',
+      header: 'Nom',
+      render: (_, salle: Salle) => (
         <div>
           <div className="font-medium">{salle.nom}</div>
           {salle.batiment_details && (
@@ -79,60 +73,56 @@ export default function SallesList() {
       ),
     },
     {
-      key: "type_salle",
-      label: "Type",
-      render: (salle: Salle) => (
+      key: 'type_salle',
+      header: 'Type',
+      render: (_, salle: Salle) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
           {salle.type_salle}
         </span>
       ),
     },
     {
-      key: "capacite",
-      label: "Capacité",
-      render: (salle: Salle) => (
+      key: 'capacite',
+      header: 'Capacité',
+      render: (_, salle: Salle) => (
         <span className="text-sm font-medium">{salle.capacite} places</span>
       ),
     },
     {
-      key: "taux_occupation",
-      label: "Occupation",
-      render: (salle: Salle) => {
+      key: 'taux_occupation',
+      header: 'Occupation',
+      render: (_, salle: Salle) => {
         const taux = salle.taux_occupation || 0;
         const color =
-          taux > 80
-            ? "bg-red-100 text-red-800"
-            : taux > 50
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-green-100 text-green-800";
+          taux > 80 ? 'bg-red-100 text-red-800' :
+          taux > 50 ? 'bg-yellow-100 text-yellow-800' :
+          'bg-green-100 text-green-800';
         return (
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}
-          >
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
             {taux}%
           </span>
         );
       },
     },
     {
-      key: "is_active",
-      label: "Statut",
-      render: (salle: Salle) => (
+      key: 'is_active',
+      header: 'Statut',
+      render: (_, salle: Salle) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             salle.is_active
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
+              ? 'bg-green-100 text-green-800'
+              : 'bg-gray-100 text-gray-800'
           }`}
         >
-          {salle.is_active ? "Active" : "Inactive"}
+          {salle.is_active ? 'Active' : 'Inactive'}
         </span>
       ),
     },
     {
-      key: "actions",
-      label: "Actions",
-      render: (salle: Salle) => (
+      key: 'actions',
+      header: 'Actions',
+      render: (_, salle: Salle) => (
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -207,9 +197,11 @@ export default function SallesList() {
           data={data?.results || []}
           isLoading={isLoading}
           pagination={{
-            currentPage: page,
-            totalPages: data ? Math.ceil(data.count / 10) : 1,
+            page: page,
+            pageSize: pageSize,
+            total: data?.count || 0,
             onPageChange: setPage,
+            onPageSizeChange: setPageSize,
           }}
         />
       </Card>
@@ -221,7 +213,7 @@ export default function SallesList() {
           setShowForm(false);
           setEditingSalle(null);
         }}
-        title={editingSalle ? "Modifier la Salle" : "Nouvelle Salle"}
+        title={editingSalle ? 'Modifier la Salle' : 'Nouvelle Salle'}
       >
         <SalleForm
           salle={editingSalle}

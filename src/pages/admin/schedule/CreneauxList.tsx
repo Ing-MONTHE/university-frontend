@@ -1,26 +1,28 @@
-import { Button, Card, ConfirmModal, DataTable, Modal } from "@/components/ui";
-import { useCreneaux, useDeleteCreneau } from "@/hooks/useSchedule";
-import type { Creneau, JourSemaine } from "@/types/schedule.types";
-import { Clock, Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import CreneauForm from "./CreneauForm";
+import { useState } from 'react';
+import { Plus, Clock, Edit, Trash2 } from 'lucide-react';
+import { useCreneaux, useDeleteCreneau } from '@/hooks/useSchedule';
+import { DataTable, Button, Card, Modal, ConfirmModal } from '@/components/ui';
+import type { ColumnDef } from '@/components/ui/DataTable/DataTable';
+import type { Creneau, JourSemaine } from '@/types/schedule.types';
+import CreneauForm from './CreneauForm';
 
 const JOUR_LABELS: Record<JourSemaine, string> = {
-  LUNDI: "Lundi",
-  MARDI: "Mardi",
-  MERCREDI: "Mercredi",
-  JEUDI: "Jeudi",
-  VENDREDI: "Vendredi",
-  SAMEDI: "Samedi",
+  LUNDI: 'Lundi',
+  MARDI: 'Mardi',
+  MERCREDI: 'Mercredi',
+  JEUDI: 'Jeudi',
+  VENDREDI: 'Vendredi',
+  SAMEDI: 'Samedi',
 };
 
 export default function CreneauxList() {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [showForm, setShowForm] = useState(false);
   const [editingCreneau, setEditingCreneau] = useState<Creneau | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const { data, isLoading } = useCreneaux({ page, page_size: 20 });
+  const { data, isLoading } = useCreneaux({ page, page_size: pageSize });
   const deleteMutation = useDeleteCreneau();
 
   const handleDelete = async () => {
@@ -30,17 +32,17 @@ export default function CreneauxList() {
     }
   };
 
-  const columns = [
+  const columns: ColumnDef<Creneau>[] = [
     {
-      key: "jour",
-      label: "Jour",
+      key: 'jour',
+      label: 'Jour',
       render: (creneau: Creneau) => (
         <span className="font-medium">{JOUR_LABELS[creneau.jour]}</span>
       ),
     },
     {
-      key: "horaire",
-      label: "Horaire",
+      key: 'horaire',
+      label: 'Horaire',
       render: (creneau: Creneau) => (
         <span className="font-mono text-sm">
           {creneau.heure_debut} - {creneau.heure_fin}
@@ -48,21 +50,21 @@ export default function CreneauxList() {
       ),
     },
     {
-      key: "duree",
-      label: "Durée",
+      key: 'duree',
+      label: 'Durée',
       render: (creneau: Creneau) => {
         const heures = Math.floor(creneau.duree_minutes / 60);
         const minutes = creneau.duree_minutes % 60;
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            {heures}h{minutes > 0 ? `${minutes}min` : ""}
+            {heures}h{minutes > 0 ? `${minutes}min` : ''}
           </span>
         );
       },
     },
     {
-      key: "actions",
-      label: "Actions",
+      key: 'actions',
+      label: 'Actions',
       render: (creneau: Creneau) => (
         <div className="flex gap-2">
           <Button
@@ -111,9 +113,11 @@ export default function CreneauxList() {
           data={data?.results || []}
           isLoading={isLoading}
           pagination={{
-            currentPage: page,
-            totalPages: data ? Math.ceil(data.count / 20) : 1,
+            page: page,
+            pageSize: pageSize,
+            total: data?.count || 0,
             onPageChange: setPage,
+            onPageSizeChange: setPageSize,
           }}
         />
       </Card>
@@ -124,7 +128,7 @@ export default function CreneauxList() {
           setShowForm(false);
           setEditingCreneau(null);
         }}
-        title={editingCreneau ? "Modifier le Créneau" : "Nouveau Créneau"}
+        title={editingCreneau ? 'Modifier le Créneau' : 'Nouveau Créneau'}
       >
         <CreneauForm
           creneau={editingCreneau}

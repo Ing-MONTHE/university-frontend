@@ -11,6 +11,6 @@ export * from "./useDepartements";
 export * from "./useFacultes";
 export * from "./useFilieres";
 export * from "./useMatieres";
+export * from './useEvaluations';
 export * from "./useSchedule";
-export * from "./useStudents";
 export * from "./useTeachers";
