@@ -52,6 +52,18 @@ import {
   BulletinView,
 } from '@/pages/admin/evaluations';
 
+// Pages Finances
+import {
+  FinanceDashboard,
+  FraisScolariteList,
+  FraisScolariteForm,
+  PaiementsList,
+  PaiementForm,
+  BoursesList,
+  BourseForm,
+  StudentPaymentsView,
+} from '@/pages/admin/finance';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -358,6 +370,119 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <DeliberationSession />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES FINANCES ====================
+  // Dashboard Finance
+  {
+    path: '/admin/finance',
+    element: <Navigate to="/admin/finance/dashboard" replace />,
+  },
+  {
+    path: '/admin/finance/dashboard',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FinanceDashboard />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Frais de Scolarité
+  {
+    path: '/admin/finance/frais-scolarite',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FraisScolariteList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/frais-scolarite/nouveau',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FraisScolariteForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/frais-scolarite/:id/modifier',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <FraisScolariteForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Paiements
+  {
+    path: '/admin/finance/paiements',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <PaiementsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/paiements/nouveau',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <PaiementForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/paiements/etudiant/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentPaymentsView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Bourses
+  {
+    path: '/admin/finance/bourses',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BoursesList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/bourses/nouveau',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BourseForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/finance/bourses/:id/modifier',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BourseForm />
         </MainLayout>
       </RoleRoute>
     ),

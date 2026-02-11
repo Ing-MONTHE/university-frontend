@@ -24,6 +24,9 @@ import {
   Clock,
   CalendarDays,
   AlertCircle,
+  Receipt,
+  CreditCard,
+  Award,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -146,8 +149,29 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: DollarSign,
     label: 'Finance',
-    path: '/admin/finance',
     roles: ['ADMIN'],
+    children: [
+      {
+        icon: LayoutDashboard,
+        label: 'Dashboard',
+        path: '/admin/finance/dashboard',
+      },
+      {
+        icon: Receipt,
+        label: 'Frais de Scolarité',
+        path: '/admin/finance/frais-scolarite',
+      },
+      {
+        icon: CreditCard,
+        label: 'Paiements',
+        path: '/admin/finance/paiements',
+      },
+      {
+        icon: Award,
+        label: 'Bourses',
+        path: '/admin/finance/bourses',
+      },
+    ],
   },
   {
     icon: BarChart3,
