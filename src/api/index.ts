@@ -13,3 +13,4 @@ export * from './student.api';
 export * from './teacher.api';
 export * from './schedule.api';
 export * from './finance.api';
+export * from './library.api';

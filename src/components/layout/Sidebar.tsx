@@ -27,6 +27,9 @@ import {
   Receipt,
   CreditCard,
   Award,
+  BookMarked,
+  BookCopy,
+  TrendingUp,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -143,8 +146,24 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: Library,
     label: 'Bibliothèque',
-    path: '/admin/library',
     roles: ['ADMIN'],
+    children: [
+      {
+        icon: TrendingUp,
+        label: 'Statistiques',
+        path: '/admin/library/stats',
+      },
+      {
+        icon: BookMarked,
+        label: 'Catalogue',
+        path: '/admin/library/books',
+      },
+      {
+        icon: BookCopy,
+        label: 'Emprunts',
+        path: '/admin/library/borrowings',
+      },
+    ],
   },
   {
     icon: DollarSign,
@@ -235,7 +254,7 @@ export default function Sidebar() {
 
   const isSubmenuActive = (children?: SubMenuItem[]) => {
     if (!children) return false;
-    return children.some((child) => location.pathname === child.path);
+    return children.some((child) => location.pathname === child.path || location.pathname.startsWith(child.path));
   };
 
   return (
@@ -353,7 +372,7 @@ export default function Sidebar() {
                   <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-white/10 pl-2">
                     {item.children!.map((child) => {
                       const ChildIcon = child.icon;
-                      const isChildActive = location.pathname === child.path;
+                      const isChildActive = location.pathname === child.path || location.pathname.startsWith(child.path);
 
                       return (
                         <Link

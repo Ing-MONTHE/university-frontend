@@ -64,6 +64,15 @@ import {
   StudentPaymentsView,
 } from '@/pages/admin/finance';
 
+// Pages Bibliothèque
+import {
+  BooksList,
+  BookForm,
+  BorrowingsList,
+  BorrowingForm,
+  LibraryStats,
+} from '@/pages/admin/library';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -206,7 +215,6 @@ export const router = createBrowserRouter([
     ),
   },
 
-
   // Routes Enseignants
   {
     path: '/admin/teachers',
@@ -249,59 +257,57 @@ export const router = createBrowserRouter([
     ),
   },
 
-
-
   // Routes emploi de temps
   {
-  path: '/admin/schedule/planning',
-  element: (
-    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-      <MainLayout>
-        <CoursPlanning />
-      </MainLayout>
-    </RoleRoute>
-  ),
-},
-{
-  path: '/admin/schedule/batiments',
-  element: (
-    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-      <MainLayout>
-        <BatimentsList />
-      </MainLayout>
-    </RoleRoute>
-  ),
-},
-{
-  path: '/admin/schedule/salles',
-  element: (
-    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-      <MainLayout>
-        <SallesList />
-      </MainLayout>
-    </RoleRoute>
-  ),
-},
-{
-  path: '/admin/schedule/creneaux',
-  element: (
-    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-      <MainLayout>
-        <CreneauxList />
-      </MainLayout>
-    </RoleRoute>
-  ),
-},
-{
-  path: '/admin/schedule/conflits',
-  element: (
-    <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-      <MainLayout>
-        <ConflictsList />
-      </MainLayout>
-    </RoleRoute>
-  ),
-},
+    path: '/admin/schedule/planning',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <CoursPlanning />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/schedule/batiments',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BatimentsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/schedule/salles',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <SallesList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/schedule/creneaux',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <CreneauxList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/schedule/conflits',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ConflictsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
 
   // Routes Évaluations
   {
@@ -483,6 +489,72 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <BourseForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES BIBLIOTHÈQUE ====================
+  {
+    path: '/admin/library',
+    element: <Navigate to="/admin/library/stats" replace />,
+  },
+  {
+    path: '/admin/library/stats',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <LibraryStats />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/library/books',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BooksList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/library/books/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BookForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/library/books/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BookForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/library/borrowings',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BorrowingsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/library/borrowings/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BorrowingForm />
         </MainLayout>
       </RoleRoute>
     ),
