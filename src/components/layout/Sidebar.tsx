@@ -37,6 +37,9 @@ import {
   CalendarCheck,
   Wrench,
   CalendarClock,
+  FilePlus,
+  FileStack,
+  FileType,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -245,6 +248,28 @@ const mainMenuItems: MenuItem[] = [
         icon: Award,
         label: 'Bourses',
         path: '/admin/finance/bourses',
+      },
+    ],
+  },
+  {
+    icon: FileText,
+    label: 'Documents',
+    roles: ['ADMIN'],
+    children: [
+      {
+        icon: FilePlus,
+        label: 'Générer',
+        path: '/admin/documents/generate',
+      },
+      {
+        icon: FileStack,
+        label: 'Documents générés',
+        path: '/admin/documents/list',
+      },
+      {
+        icon: FileType,
+        label: 'Templates',
+        path: '/admin/documents/templates',
       },
     ],
   },

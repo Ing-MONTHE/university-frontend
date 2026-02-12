@@ -17,3 +17,5 @@ export * from "./useTeachers";
 export * from './useFinances';
 export * from './useLibrary';
 export * from './useAttendance';
+export * from './useResources';
+export * from './useDocuments';

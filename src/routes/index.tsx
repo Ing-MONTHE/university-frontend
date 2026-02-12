@@ -83,7 +83,7 @@ import {
   AttendanceStats,
 } from '@/pages/admin/attendance';
 
-// Pages Ressources (NOUVEAU MODULE)
+// Pages Ressources
 import {
   EquipmentsList,
   EquipmentForm,
@@ -93,6 +93,14 @@ import {
   MaintenancesList,
   MaintenanceScheduler,
 } from '@/pages/admin/resources';
+
+// Pages Documents
+import {
+  DocumentsList,
+  DocumentGenerator,
+  TemplatesList,
+  TemplateEditor,
+} from '@/pages/admin/documents';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -636,7 +644,7 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // ==================== ROUTES RESSOURCES (NOUVEAU MODULE) ====================
+  // ==================== ROUTES RESSOURCES ====================
   {
     path: '/admin/resources',
     element: <Navigate to="/admin/resources/equipments" replace />,
@@ -717,6 +725,62 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <MaintenanceScheduler />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES DOCUMENTS ====================
+  {
+    path: '/admin/documents',
+    element: <Navigate to="/admin/documents/list" replace />,
+  },
+  {
+    path: '/admin/documents/list',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DocumentsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/documents/generate',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DocumentGenerator />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/documents/templates',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TemplatesList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/documents/templates/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TemplateEditor />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/documents/templates/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TemplateEditor />
         </MainLayout>
       </RoleRoute>
     ),
