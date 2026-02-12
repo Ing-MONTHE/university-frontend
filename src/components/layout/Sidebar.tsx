@@ -439,7 +439,7 @@ export default function Sidebar() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+                    <Icon className="w-4 h-4 flex-none" strokeWidth={2} />
                     <span>{item.label}</span>
                   </div>
                   <ChevronDown
@@ -465,7 +465,7 @@ export default function Sidebar() {
                               : 'text-white/80 hover:bg-white/5 hover:text-white'
                           }`}
                         >
-                          <ChildIcon className="w-[16px] h-[16px] flex-shrink-0" strokeWidth={2} />
+                          <ChildIcon className="w-4 h-4 flex-none" strokeWidth={2} />
                           <span>{child.label}</span>
                         </Link>
                       );
@@ -487,7 +487,7 @@ export default function Sidebar() {
               } ${isCollapsed ? 'justify-center' : ''}`}
               title={isCollapsed ? item.label : ''}
             >
-              <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+              <Icon className="w-4 h-4 flex-none" strokeWidth={2} />
               {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );
@@ -511,7 +511,7 @@ export default function Sidebar() {
               } ${isCollapsed ? 'justify-center' : ''}`}
               title={isCollapsed ? item.label : ''}
             >
-              <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={2} />
+              <Icon className="w-4 h-4 flex-none" strokeWidth={2} />
               {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );
@@ -522,7 +522,7 @@ export default function Sidebar() {
       <div className="px-3 py-3 border-t border-white/10">
         {!isCollapsed ? (
           <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-400/20">
+            <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-none ring-2 ring-blue-400/20">
               <span className="text-xs font-bold text-white">
                 {user?.username?.charAt(0).toUpperCase()}
               </span>
@@ -541,7 +541,7 @@ export default function Sidebar() {
           </div>
         ) : (
           <button className="w-full flex justify-center">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-blue-400/20">
+            <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center ring-2 ring-blue-400/20">
               <span className="text-xs font-bold text-white">
                 {user?.username?.charAt(0).toUpperCase()}
               </span>
