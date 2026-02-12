@@ -233,18 +233,18 @@ const TeacherForm: React.FC = () => {
                   />
                 </label>
               </div>
-              <p className="text-sm text-gray-600">Photo de profil (optionnel)</p>
+              <p className="text-sm text-gray-600">Photo de profil</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Nom *"
+                label="Nom"
                 value={formData.nom || ''}
                 onChange={(e) => handleChange('nom', e.target.value)}
                 required
               />
               <Input
-                label="Prénom *"
+                label="Prénom"
                 value={formData.prenom || ''}
                 onChange={(e) => handleChange('prenom', e.target.value)}
                 required
@@ -253,7 +253,7 @@ const TeacherForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                label="Sexe *"
+                label="Sexe"
                 value={formData.sexe || 'M'}
                 onChange={(value) => handleChange('sexe', value)}
                 options={[
@@ -262,7 +262,7 @@ const TeacherForm: React.FC = () => {
                 ]}
               />
               <Input
-                label="Date de naissance *"
+                label="Date de naissance"
                 type="date"
                 value={formData.date_naissance || ''}
                 onChange={(e) => handleChange('date_naissance', e.target.value)}
@@ -271,7 +271,7 @@ const TeacherForm: React.FC = () => {
             </div>
 
             <Input
-              label="Nationalité *"
+              label="Nationalité"
               value={formData.nationalite || ''}
               onChange={(e) => handleChange('nationalite', e.target.value)}
               required
@@ -279,7 +279,7 @@ const TeacherForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Téléphone *"
+                label="Téléphone"
                 type="tel"
                 value={formData.telephone || ''}
                 onChange={(e) => handleChange('telephone', e.target.value)}
@@ -287,7 +287,7 @@ const TeacherForm: React.FC = () => {
                 required
               />
               <Input
-                label="Email *"
+                label="Email"
                 type="email"
                 value={formData.email || ''}
                 onChange={(e) => handleChange('email', e.target.value)}
@@ -314,7 +314,7 @@ const TeacherForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                label="Grade *"
+                label="Grade"
                 value={formData.grade || ''}
                 onChange={(value) => handleChange('grade', value)}
                 options={[
@@ -324,7 +324,7 @@ const TeacherForm: React.FC = () => {
                 ]}
               />
               <Input
-                label="Spécialité *"
+                label="Spécialité"
                 value={formData.specialite || ''}
                 onChange={(e) => handleChange('specialite', e.target.value)}
                 placeholder="Ex: Informatique, Mathématiques..."
@@ -333,7 +333,7 @@ const TeacherForm: React.FC = () => {
             </div>
 
             <Select
-              label="Département *"
+              label="Département"
               value={formData.departement_id || ''}
               onChange={(value) => handleChange('departement_id', Number(value))}
               options={[
@@ -347,14 +347,13 @@ const TeacherForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Date de recrutement *"
+                label="Date de recrutement"
                 type="date"
                 value={formData.date_embauche || ''}
                 onChange={(e) => handleChange('date_embauche', e.target.value)}
-                required
               />
               <Select
-                label="Statut *"
+                label="Statut"
                 value={formData.statut || 'ACTIF'}
                 onChange={(value) => handleChange('statut', value)}
                 options={[
@@ -381,27 +380,29 @@ const TeacherForm: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Documents</h2>
 
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <label className="cursor-pointer">
-                  <span className="text-purple-600 hover:text-purple-700 font-medium">
-                    Uploader le CV
-                  </span>
-                  <span className="text-gray-600"> ou glisser-déposer</span>
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleCVChange}
-                    className="hidden"
-                  />
-                </label>
-                <p className="text-xs text-gray-500 mt-2">PDF uniquement, max 5MB</p>
-                {formData.cv && (
-                  <p className="text-sm text-green-600 mt-2">
-                    ✓ Fichier sélectionné : {(formData.cv as File).name}
-                  </p>
-                )}
-              </div>
+              <label className="cursor-pointer">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <label className="cursor-pointer">
+                    <span className="text-purple-600 hover:text-purple-700 font-medium">
+                      Uploader le CV
+                    </span>
+                    <span className="text-gray-600"> ou glisser-déposer</span>
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleCVChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2">PDF uniquement, max 5MB</p>
+                  {formData.cv && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ Fichier sélectionné : {(formData.cv as File).name}
+                    </p>
+                  )}
+                </div>
+              </label>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm text-yellow-800">

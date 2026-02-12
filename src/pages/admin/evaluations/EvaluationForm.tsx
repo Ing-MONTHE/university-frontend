@@ -149,7 +149,7 @@ export default function EvaluationForm() {
               {/* Matière */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Matière *
+                  Matière <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('matiere', { valueAsNumber: true })}
@@ -170,7 +170,7 @@ export default function EvaluationForm() {
               {/* Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type d'évaluation *
+                  Type d'évaluation <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('type_evaluation', { valueAsNumber: true })}
@@ -191,7 +191,7 @@ export default function EvaluationForm() {
               {/* Titre */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Titre *
+                  Titre <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -207,7 +207,7 @@ export default function EvaluationForm() {
               {/* Année académique */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Année académique *
+                  Année académique <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('annee_academique', { valueAsNumber: true })}
@@ -236,7 +236,7 @@ export default function EvaluationForm() {
               {/* Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date *
+                  Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -251,7 +251,7 @@ export default function EvaluationForm() {
               {/* Coefficient */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Coefficient *
+                  Coefficient <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -272,7 +272,7 @@ export default function EvaluationForm() {
               {/* Barème */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Barème (note totale) *
+                  Barème (note totale) <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"

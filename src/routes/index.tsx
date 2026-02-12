@@ -83,6 +83,17 @@ import {
   AttendanceStats,
 } from '@/pages/admin/attendance';
 
+// Pages Ressources (NOUVEAU MODULE)
+import {
+  EquipmentsList,
+  EquipmentForm,
+  ReservationsList,
+  ReservationCalendar,
+  ReservationForm,
+  MaintenancesList,
+  MaintenanceScheduler,
+} from '@/pages/admin/resources';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -620,6 +631,92 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <BorrowingForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES RESSOURCES (NOUVEAU MODULE) ====================
+  {
+    path: '/admin/resources',
+    element: <Navigate to="/admin/resources/equipments" replace />,
+  },
+  {
+    path: '/admin/resources/equipments',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EquipmentsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/equipments/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EquipmentForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/equipments/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <EquipmentForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/calendar',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ReservationCalendar />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/reservations',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ReservationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/reservations/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ReservationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/maintenances',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <MaintenancesList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/resources/maintenances/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <MaintenanceScheduler />
         </MainLayout>
       </RoleRoute>
     ),

@@ -224,18 +224,18 @@ const StudentForm: React.FC = () => {
                   />
                 </label>
               </div>
-              <p className="text-sm text-gray-600">Photo de profil (optionnel)</p>
+              <p className="text-sm text-gray-600">Photo de profil</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Nom *"
+                label="Nom"
                 value={formData.nom || ''}
                 onChange={(e) => handleChange('nom', e.target.value)}
                 required
               />
               <Input
-                label="Prénom *"
+                label="Prénom"
                 value={formData.prenom || ''}
                 onChange={(e) => handleChange('prenom', e.target.value)}
                 required
@@ -244,7 +244,7 @@ const StudentForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                label="Sexe *"
+                label="Sexe"
                 value={formData.sexe || 'M'}
                 onChange={(value) => handleChange('sexe', value as 'M' | 'F')}
                 options={[
@@ -253,7 +253,7 @@ const StudentForm: React.FC = () => {
                 ]}
               />
               <Input
-                label="Date de naissance *"
+                label="Date de naissance"
                 type="date"
                 value={formData.date_naissance || ''}
                 onChange={(e) => handleChange('date_naissance', e.target.value)}
@@ -263,13 +263,13 @@ const StudentForm: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Lieu de naissance *"
+                label="Lieu de naissance"
                 value={formData.lieu_naissance || ''}
                 onChange={(e) => handleChange('lieu_naissance', e.target.value)}
                 required
               />
               <Input
-                label="Nationalité *"
+                label="Nationalité"
                 value={formData.nationalite || ''}
                 onChange={(e) => handleChange('nationalite', e.target.value)}
                 required
@@ -290,7 +290,7 @@ const StudentForm: React.FC = () => {
               <h3 className="text-md font-medium text-gray-700 mb-3">Contact de l'étudiant</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
-                  label="Téléphone *"
+                  label="Téléphone"
                   type="tel"
                   value={formData.telephone || ''}
                   onChange={(e) => handleChange('telephone', e.target.value)}
@@ -298,7 +298,7 @@ const StudentForm: React.FC = () => {
                   required
                 />
                 <Input
-                  label="Email *"
+                  label="Email"
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => handleChange('email', e.target.value)}
@@ -348,7 +348,7 @@ const StudentForm: React.FC = () => {
                   onChange={(e) => handleChange('tuteur_email', e.target.value)}
                 />
                 <Select
-                  label="Statut *"
+                  label="Statut"
                   value={formData.statut || 'ACTIF'}
                   onChange={(value) => handleChange('statut', value as any)}
                   options={[
@@ -377,22 +377,24 @@ const StudentForm: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Documents</h2>
 
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <label className="cursor-pointer">
-                  <span className="text-blue-600 hover:text-blue-700 font-medium">
-                    Uploader des documents
-                  </span>
-                  <span className="text-gray-600"> ou glisser-déposer</span>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.png"
-                    className="hidden"
-                  />
-                </label>
-                <p className="text-xs text-gray-500 mt-2">PDF, JPG, PNG - max 5MB</p>
-              </div>
-
+              <label className="cursor-pointer">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <label className="cursor-pointer">
+                    <span className="text-blue-600 hover:text-blue-700 font-medium">
+                      Uploader des documents
+                    </span>
+                    <span className="text-gray-600"> ou glisser-déposer</span>
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.png"
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2">PDF, JPG, PNG - max 5MB</p>
+                </div>
+              </label>
+              
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm text-yellow-800">
                   <strong>Remarque :</strong> Les documents peuvent être uploadés après la création

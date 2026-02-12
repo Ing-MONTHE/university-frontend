@@ -33,6 +33,10 @@ import {
   CheckSquare,
   FileCheck,
   PieChart,
+  Package,
+  CalendarCheck,
+  Wrench,
+  CalendarClock,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -165,6 +169,33 @@ const mainMenuItems: MenuItem[] = [
         icon: AlertCircle,
         label: 'Conflits',
         path: '/admin/schedule/conflits',
+      },
+    ],
+  },
+  {
+    icon: Package,
+    label: 'Ressources',
+    roles: ['ADMIN'],
+    children: [
+      {
+        icon: Package,
+        label: 'Équipements',
+        path: '/admin/resources/equipments',
+      },
+      {
+        icon: CalendarClock,
+        label: 'Calendrier',
+        path: '/admin/resources/calendar',
+      },
+      {
+        icon: CalendarCheck,
+        label: 'Réservations',
+        path: '/admin/resources/reservations',
+      },
+      {
+        icon: Wrench,
+        label: 'Maintenances',
+        path: '/admin/resources/maintenances',
       },
     ],
   },
