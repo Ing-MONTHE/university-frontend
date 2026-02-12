@@ -16,3 +16,4 @@ export * from "./useSchedule";
 export * from "./useTeachers";
 export * from './useFinances';
 export * from './useLibrary';
+export * from './useAttendance';

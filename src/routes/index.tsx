@@ -73,6 +73,16 @@ import {
   LibraryStats,
 } from '@/pages/admin/library';
 
+// Pages Présences
+import {
+  AttendanceSheetsList,
+  AttendanceSheetView,
+  AttendanceForm,
+  JustificationsList,
+  StudentAttendanceView,
+  AttendanceStats,
+} from '@/pages/admin/attendance';
+
 // Components
 import RoleRoute from '@/components/RoleRoute';
 import { MainLayout } from '@/components/layout';
@@ -214,6 +224,16 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
+  {
+    path: '/admin/students/:id/attendance',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentAttendanceView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
 
   // Routes Enseignants
   {
@@ -252,6 +272,58 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <TeacherForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES PRÉSENCES ====================
+  {
+    path: '/admin/attendance',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AttendanceSheetsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/attendance/create',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AttendanceForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/attendance/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AttendanceSheetView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/attendance/justifications',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <JustificationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/attendance/stats',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AttendanceStats />
         </MainLayout>
       </RoleRoute>
     ),
@@ -382,7 +454,6 @@ export const router = createBrowserRouter([
   },
 
   // ==================== ROUTES FINANCES ====================
-  // Dashboard Finance
   {
     path: '/admin/finance',
     element: <Navigate to="/admin/finance/dashboard" replace />,
@@ -397,8 +468,6 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-
-  // Frais de Scolarité
   {
     path: '/admin/finance/frais-scolarite',
     element: (
@@ -429,8 +498,6 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-
-  // Paiements
   {
     path: '/admin/finance/paiements',
     element: (
@@ -461,8 +528,6 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-
-  // Bourses
   {
     path: '/admin/finance/bourses',
     element: (

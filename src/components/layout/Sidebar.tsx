@@ -30,6 +30,9 @@ import {
   BookMarked,
   BookCopy,
   TrendingUp,
+  CheckSquare,
+  FileCheck,
+  PieChart,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -110,6 +113,28 @@ const mainMenuItems: MenuItem[] = [
     label: 'Évaluations',
     path: '/admin/evaluations',
     roles: ['ADMIN', 'TEACHER'],
+  },
+  {
+    icon: CheckSquare,
+    label: 'Présences',
+    roles: ['ADMIN'],
+    children: [
+      {
+        icon: CheckSquare,
+        label: 'Feuilles de présence',
+        path: '/admin/attendance',
+      },
+      {
+        icon: FileCheck,
+        label: 'Justificatifs',
+        path: '/admin/attendance/justifications',
+      },
+      {
+        icon: PieChart,
+        label: 'Statistiques',
+        path: '/admin/attendance/stats',
+      },
+    ],
   },
   {
     icon: Calendar,
