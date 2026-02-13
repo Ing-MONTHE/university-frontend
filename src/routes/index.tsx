@@ -33,6 +33,19 @@ import {
   TeacherProfile,
 } from '@/pages/admin/teachers';
 
+// Pages Évaluations
+import {
+  TypesEvaluationList,
+  EvaluationsList,
+  EvaluationForm,
+  GradeEntryPage,
+  StudentGradesView,
+  BulletinView,
+  ResultatsFiliere,
+  DeliberationSession,
+  DeliberationsList,
+} from '@/pages/admin/evaluations';
+
 // Pages Emploi de temps
 import {
   BatimentsList,
@@ -302,6 +315,142 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
+
+  // ==================== ROUTES ÉVALUATIONS ====================
+  
+  // Liste des évaluations (page principale)
+  {
+    path: '/admin/evaluations',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <EvaluationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Types d'évaluation
+  {
+    path: '/admin/evaluations/types',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <TypesEvaluationList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Formulaire nouvelle évaluation
+  {
+    path: '/admin/evaluations/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Formulaire édition évaluation
+  {
+    path: '/admin/evaluations/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Saisie des notes
+  {
+    path: '/admin/evaluations/:id/saisie-notes',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <GradeEntryPage />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Vue des notes d'un étudiant
+  {
+    path: '/admin/students/:id/notes',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <StudentGradesView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Bulletin d'un étudiant
+  {
+    path: '/admin/students/:id/bulletin',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <BulletinView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Résultats par filière
+  {
+    path: '/admin/evaluations/resultats',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ResultatsFiliere />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Liste des sessions de délibération
+  {
+    path: '/admin/evaluations/deliberations',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DeliberationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Nouvelle session de délibération
+  {
+    path: '/admin/evaluations/deliberations/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DeliberationSession />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Vue/édition session de délibération
+  {
+    path: '/admin/evaluations/deliberations/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <DeliberationSession />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== FIN ROUTES ÉVALUATIONS ====================
 
   // ==================== ROUTES PRÉSENCES ====================
   {

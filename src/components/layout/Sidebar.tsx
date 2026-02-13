@@ -125,8 +125,29 @@ const mainMenuItems: MenuItem[] = [
   {
     icon: ClipboardList,
     label: 'Évaluations',
-    path: '/admin/evaluations',
     roles: ['ADMIN', 'TEACHER'],
+    children: [
+      {
+        icon: FileText,
+        label: 'Liste Évaluations',
+        path: '/admin/evaluations',
+      },
+      {
+        icon: FileCheck,
+        label: 'Types Évaluation',
+        path: '/admin/evaluations/types',
+      },
+      {
+        icon: TrendingUp,
+        label: 'Résultats',
+        path: '/admin/evaluations/resultats',
+      },
+      {
+        icon: Award,
+        label: 'Délibérations',
+        path: '/admin/evaluations/deliberations',
+      },
+    ],
   },
   {
     icon: CheckSquare,

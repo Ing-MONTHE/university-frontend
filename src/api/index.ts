@@ -17,3 +17,5 @@ export * from './attendance.api';
 export * from './resources.api';
 export * from './documents.api';
 export * from './analytics.api';
+export * from './communications.api';
+export * from './evaluation.api';

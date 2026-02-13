@@ -19,3 +19,5 @@ export * from './useAttendance';
 export * from './useResources';
 export * from './useDocuments';
 export * from './useAnalytics';
+export * from './useEvaluations';
+export * from './useCommunications';
