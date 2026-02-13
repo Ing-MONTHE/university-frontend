@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Send, Users, User, Eye, ChevronRight } from 'lucide-react';
+import { FileText, Send, Users, User, ChevronRight } from 'lucide-react';
 import { useDocuments } from '@/hooks/useDocuments';
 import { useStudents } from '@/hooks/useStudents';
 import {
@@ -15,7 +15,6 @@ import {
 import {
   Button,
   Card,
-  Select,
   Spinner,
   Badge,
 } from '@/components/ui';
@@ -197,7 +196,7 @@ export default function DocumentGenerator() {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <FileText className={`w-5 h-5 flex-shrink-0 ${
+                  <FileText className={`w-5 h-5 flex-none ${
                     selectedType === key ? 'text-blue-600' : 'text-gray-400'
                   }`} />
                   <div>
@@ -322,7 +321,7 @@ export default function DocumentGenerator() {
           )}
 
           <div className="flex justify-between mt-6">
-            <Button variant="outline" onClick={() => setStep(1)}>
+            <Button variant="primary" onClick={() => setStep(1)}>
               Retour
             </Button>
             <Button
@@ -391,7 +390,7 @@ export default function DocumentGenerator() {
           </div>
 
           <div className="flex justify-between mt-6">
-            <Button variant="outline" onClick={() => setStep(2)}>
+            <Button variant="primary" onClick={() => setStep(2)}>
               Retour
             </Button>
             <Button

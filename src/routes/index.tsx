@@ -42,15 +42,6 @@ import {
   ConflictsList,
 } from '@/pages/admin/schedule';
 
-// Pages Évaluations
-import {
-  EvaluationsList,
-  EvaluationForm,
-  GradeEntry,
-  StudentGrades,
-  DeliberationSession,
-  BulletinView,
-} from '@/pages/admin/evaluations';
 
 // Pages Finances
 import {
@@ -101,6 +92,14 @@ import {
   TemplatesList,
   TemplateEditor,
 } from '@/pages/admin/documents';
+
+// Pages Analytics
+import {
+  AnalyticsDashboard,
+  ReportsList,
+  ReportBuilder,
+  KPIView,
+} from '@/pages/admin/analytics';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -400,77 +399,7 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // Routes Évaluations
-  {
-    path: '/admin/evaluations',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EvaluationsList />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/create',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EvaluationForm />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/:id/edit',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <EvaluationForm />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/evaluations/:id/notes',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <GradeEntry />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/students/:etudiantId/grades',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <StudentGrades />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/students/:etudiantId/bulletin/:anneeId?',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <BulletinView />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
-  {
-    path: '/admin/deliberations/:sessionId',
-    element: (
-      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
-        <MainLayout>
-          <DeliberationSession />
-        </MainLayout>
-      </RoleRoute>
-    ),
-  },
+
 
   // ==================== ROUTES FINANCES ====================
   {
@@ -781,6 +710,48 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <TemplateEditor />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES ANALYTICS ====================
+  {
+    path: '/admin/analytics',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AnalyticsDashboard />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/analytics/reports',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ReportsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/analytics/reports/builder',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <ReportBuilder />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/analytics/kpi/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <KPIView />
         </MainLayout>
       </RoleRoute>
     ),

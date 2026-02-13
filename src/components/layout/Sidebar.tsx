@@ -40,6 +40,9 @@ import {
   FilePlus,
   FileStack,
   FileType,
+  LineChart,
+  FileBarChart,
+  Activity,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -275,9 +278,25 @@ const mainMenuItems: MenuItem[] = [
   },
   {
     icon: BarChart3,
-    label: 'Statistiques',
-    path: '/admin/analytics',
+    label: 'Analytics',
     roles: ['ADMIN'],
+    children: [
+      {
+        icon: LineChart,
+        label: 'Dashboard',
+        path: '/admin/analytics',
+      },
+      {
+        icon: FileBarChart,
+        label: 'Rapports',
+        path: '/admin/analytics/reports',
+      },
+      {
+        icon: Activity,
+        label: 'Créer un rapport',
+        path: '/admin/analytics/reports/builder',
+      },
+    ],
   },
 ];
 
@@ -305,7 +324,7 @@ const bottomMenuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['Académique']));
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
