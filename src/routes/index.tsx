@@ -42,7 +42,6 @@ import {
   ConflictsList,
 } from '@/pages/admin/schedule';
 
-
 // Pages Finances
 import {
   FinanceDashboard,
@@ -100,6 +99,15 @@ import {
   ReportBuilder,
   KPIView,
 } from '@/pages/admin/analytics';
+
+// Pages Communications
+import {
+  AnnouncementsList,
+  AnnouncementForm,
+  NotificationsList,
+  MessagingView,
+  PreferencesNotifications,
+} from '@/pages/admin/communications';
 
 // Components
 import RoleRoute from '@/components/RoleRoute';
@@ -398,8 +406,6 @@ export const router = createBrowserRouter([
       </RoleRoute>
     ),
   },
-
-
 
   // ==================== ROUTES FINANCES ====================
   {
@@ -710,6 +716,72 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <TemplateEditor />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // ==================== ROUTES COMMUNICATIONS ====================
+  {
+    path: '/admin/communications',
+    element: <Navigate to="/admin/communications/announcements" replace />,
+  },
+  {
+    path: '/admin/communications/announcements',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AnnouncementsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/communications/announcements/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AnnouncementForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/communications/announcements/:id/edit',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <AnnouncementForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/communications/notifications',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <NotificationsList />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/communications/messages',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <MessagingView />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/communications/preferences',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <PreferencesNotifications />
         </MainLayout>
       </RoleRoute>
     ),

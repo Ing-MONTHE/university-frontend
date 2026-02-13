@@ -43,6 +43,10 @@ import {
   LineChart,
   FileBarChart,
   Activity,
+  MessageSquare,
+  Megaphone,
+  Mail,
+  BellDot,
 } from 'lucide-react';
 import { useAuthStore } from '@/store';
 import { ROUTES } from '@/config/constants';
@@ -273,6 +277,33 @@ const mainMenuItems: MenuItem[] = [
         icon: FileType,
         label: 'Templates',
         path: '/admin/documents/templates',
+      },
+    ],
+  },
+  {
+    icon: MessageSquare,
+    label: 'Communications',
+    roles: ['ADMIN'],
+    children: [
+      {
+        icon: Megaphone,
+        label: 'Annonces',
+        path: '/admin/communications/announcements',
+      },
+      {
+        icon: BellDot,
+        label: 'Notifications',
+        path: '/admin/communications/notifications',
+      },
+      {
+        icon: Mail,
+        label: 'Messagerie',
+        path: '/admin/communications/messages',
+      },
+      {
+        icon: Settings,
+        label: 'Préférences',
+        path: '/admin/communications/preferences',
       },
     ],
   },
