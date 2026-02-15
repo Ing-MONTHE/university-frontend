@@ -11,6 +11,7 @@ import {
 } from '@/hooks/useTeachers';
 import { useDepartements } from '@/hooks/useDepartements';
 import { Card, Button, Input, Select, Spinner } from '@/components/ui';
+import { Avatar } from '@/components/ui/Avatar';
 import type { EnseignantCreate } from '@/types/teacher.types';
 
 const TeacherForm: React.FC = () => {
@@ -124,6 +125,14 @@ const TeacherForm: React.FC = () => {
           id: Number(id),
           data: formData as any,
         });
+        
+        // Upload photo séparément si elle a changé
+        if (formData.photo instanceof File) {
+          await uploadPhoto.mutateAsync({
+            id: Number(id),
+            photo: formData.photo,
+          });
+        }
       } else {
         await createTeacher.mutateAsync(formData as EnseignantCreate);
       }
@@ -218,11 +227,19 @@ const TeacherForm: React.FC = () => {
             {/* Photo */}
             <div className="flex flex-col items-center gap-4">
               <div className="relative">
-                <img
-                  src={photoPreview || '/default-avatar.png'}
-                  alt="Preview"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
-                />
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-gray-200"
+                  />
+                ) : (
+                  <Avatar
+                    name={`${formData.prenom || ''} ${formData.nom || ''}`}
+                    size="2xl"
+                    variant="rounded"
+                  />
+                )}
                 <label className="absolute bottom-0 right-0 p-2 bg-purple-600 text-white rounded-full cursor-pointer hover:bg-purple-700">
                   <Upload className="w-4 h-4" />
                   <input

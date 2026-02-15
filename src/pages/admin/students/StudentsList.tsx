@@ -29,6 +29,7 @@ import Input from '@/components/ui/Input';
 import Pagination from '@/components/ui/Pagination';
 import Spinner from '@/components/ui/Spinner';
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { Avatar } from '@/components/ui/Avatar';
 import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
 export default function StudentsListPage() {
@@ -149,10 +150,11 @@ export default function StudentsListPage() {
                 <div className="p-6">
                   {/* Header avec photo */}
                   <div className="flex items-start gap-4 mb-4">
-                    <img
-                      src={student.photo_url || '/default-avatar.png'}
-                      alt={student.prenom}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+                    <Avatar
+                      src={student.photo_url || undefined}
+                      name={`${student.prenom} ${student.nom}`}
+                      size="xl"
+                      variant="rounded"
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">

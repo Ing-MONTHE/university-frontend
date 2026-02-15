@@ -168,4 +168,7 @@ NGONO,Marie,F,2001-03-20,marie.ngono@email.com,+237677777777,Yaoundé,Camerounai
   },
 };
 
+// Exporter uploadPhoto séparément pour utilisation directe
+export const uploadPhoto = studentApi.uploadPhoto;
+
 export default studentApi;

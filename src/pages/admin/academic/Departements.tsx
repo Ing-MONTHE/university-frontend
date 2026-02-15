@@ -2,7 +2,7 @@
  * Page Liste des Départements
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -64,22 +64,25 @@ export default function DepartementsPage() {
     resolver: zodResolver(departementSchema),
   });
 
+  // Charger les données quand editingItem change
+  useEffect(() => {
+    if (editingItem) {
+      setValue('code', editingItem.code);
+      setValue('nom', editingItem.nom);
+      setValue('description', editingItem.description || '');
+      setValue('faculte_id', Number(editingItem.faculte));
+      setValue('chef_departement', editingItem.chef_departement || '');
+    } else {
+      reset();
+    }
+  }, [editingItem, setValue, reset]);
+
   const handleSearch = () => {
     setFilters({ ...filters, search: searchTerm, page: 1 });
   };
 
   const handleOpenModal = (item?: Departement) => {
-    if (item) {
-      setEditingItem(item);
-      setValue('code', item.code);
-      setValue('nom', item.nom);
-      setValue('description', item.description || '');
-      setValue('faculte_id', item.faculte);
-      setValue('chef_departement', item.chef_departement || '');
-    } else {
-      setEditingItem(null);
-      reset();
-    }
+    setEditingItem(item || null);
     setIsModalOpen(true);
   };
 

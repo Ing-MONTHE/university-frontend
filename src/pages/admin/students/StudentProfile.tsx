@@ -20,6 +20,7 @@ import {
 import { useStudent, useStudentInscriptions } from '@/hooks/useStudents';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import { Avatar } from '@/components/ui/Avatar';
 
 export default function StudentProfilePage() {
   const navigate = useNavigate();
@@ -75,10 +76,11 @@ export default function StudentProfilePage() {
         </button>
 
         <div className="flex items-start gap-6">
-          <img
-            src={student.photo_url || '/default-avatar.png'}
-            alt={student.prenom}
-            className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
+          <Avatar
+            src={student.photo_url || undefined}
+            name={`${student.prenom} ${student.nom}`}
+            size="2xl"
+            variant="rounded"
           />
 
           <div className="flex-1">

@@ -22,6 +22,7 @@ import {
 import { useTeacher, useTeacherAttributions, useTeacherChargeHoraire } from '@/hooks/useTeachers';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import { Avatar } from '@/components/ui/Avatar';
 
 export default function TeacherProfilePage() {
   const navigate = useNavigate();
@@ -86,10 +87,11 @@ export default function TeacherProfilePage() {
         </button>
 
         <div className="flex items-start gap-6">
-          <img
-            src={teacher.photo_url || '/default-avatar.png'}
-            alt={teacher.prenom}
-            className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
+          <Avatar
+            src={teacher.photo_url || undefined}
+            name={`${teacher.prenom} ${teacher.nom}`}
+            size="2xl"
+            variant="rounded"
           />
 
           <div className="flex-1">

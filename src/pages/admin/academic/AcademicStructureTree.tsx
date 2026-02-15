@@ -192,6 +192,8 @@ export default function AcademicStructureTree() {
 
   // Expand all
   const expandAll = () => {
+    if (!treeData || treeData.length === 0) return;
+    
     const allNodeIds = new Set<string>();
     const collectIds = (nodes: TreeNode[]) => {
       nodes.forEach(node => {
@@ -279,22 +281,22 @@ export default function AcademicStructureTree() {
     return (
       <div key={node.id} className="select-none">
         <div
-          className={`flex items-center gap-2 p-3 rounded-lg border ${config.borderColor} ${config.bgColor} transition-all duration-200 cursor-pointer group mb-2`}
+          className={`flex items-center justify-between gap-2 p-3 rounded-lg border ${config.borderColor} ${config.bgColor} transition-all duration-200 group mb-2`}
           style={{ marginLeft: `${level * 24}px` }}
-          onClick={() => hasChildren && toggleNode(node.id)}
         >
-          {/* Expand/Collapse Icon */}
-          {hasChildren ? (
+          <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => hasChildren && toggleNode(node.id)}>
+            {/* Expand/Collapse Icon */}
             <button className="flex-shrink-0 p-1 hover:bg-white/50 rounded transition-colors">
-              {isExpanded ? (
-                <ChevronDown className="w-4 h-4 text-gray-600" />
+              {hasChildren ? (
+                isExpanded ? (
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                )
               ) : (
-                <ChevronRight className="w-4 h-4 text-gray-600" />
+                <div className="w-4 h-4" />
               )}
             </button>
-          ) : (
-            <div className="w-6" />
-          )}
 
           {/* Icon */}
           <div className={`p-2 rounded-lg bg-white shadow-sm`}>
@@ -359,6 +361,7 @@ export default function AcademicStructureTree() {
                 </>
               )}
             </div>
+          </div>
           </div>
 
           {/* Actions (visible au hover) */}
