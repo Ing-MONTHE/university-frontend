@@ -12,3 +12,4 @@ export { default as BulletinView } from './BulletinView';
 export { default as ResultatsFiliere } from './ResultatsFiliere';
 export { default as DeliberationSession } from './DeliberationSession';
 export { default as DeliberationsList } from './DeliberationsList';
+export {default as EvaluationDetailPage} from './EvaluationDetailPage';

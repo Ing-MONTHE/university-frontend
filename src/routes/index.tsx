@@ -38,6 +38,7 @@ import {
   TypesEvaluationList,
   EvaluationsList,
   EvaluationForm,
+  EvaluationDetailPage,  // ✅ AJOUT
   GradeEntryPage,
   StudentGradesView,
   BulletinView,
@@ -361,6 +362,18 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
         <MainLayout>
           <EvaluationForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+
+  // Vue détaillée d'une évaluation
+  {
+    path: '/admin/evaluations/:id',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.TEACHER]}>
+        <MainLayout>
+          <EvaluationDetailPage />
         </MainLayout>
       </RoleRoute>
     ),

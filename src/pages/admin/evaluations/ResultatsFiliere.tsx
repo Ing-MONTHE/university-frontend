@@ -8,8 +8,7 @@ import { useResultatsFiliere, useExportResultatsExcel } from '@/hooks/useEvaluat
 import { useFilieres } from '@/hooks/useFilieres';
 import { useAnneeAcademiques } from '@/hooks/useAnneeAcademiques';
 import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
-import Spinner from '@/components/ui/Spinner';
+import NativeSelect from '@/components/ui/NativeSelect';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 
@@ -44,22 +43,22 @@ export default function ResultatsFiliere() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <Select label="Filière" value={filiere || ''} onChange={(e) => setFiliere(Number(e.target.value))}>
+          <NativeSelect label="Filière" value={filiere || ''} onChange={(e) => setFiliere(Number(e.target.value))}>
             <option value="">Sélectionner</option>
             {filieres?.results.map((f) => (
               <option key={f.id} value={f.id}>{f.code} - {f.nom}</option>
             ))}
-          </Select>
-          <Select label="Semestre" value={semestre} onChange={(e) => setSemestre(Number(e.target.value))}>
+          </NativeSelect>
+          <NativeSelect label="Semestre" value={semestre} onChange={(e) => setSemestre(Number(e.target.value))}>
             <option value={1}>Semestre 1</option>
             <option value={2}>Semestre 2</option>
-          </Select>
-          <Select label="Année" value={anneeAcademique || ''} onChange={(e) => setAnneeAcademique(Number(e.target.value))}>
+          </NativeSelect>
+          <NativeSelect label="Année" value={anneeAcademique || ''} onChange={(e) => setAnneeAcademique(Number(e.target.value))}>
             <option value="">En cours</option>
             {annees?.results.map((a) => (
               <option key={a.id} value={a.id}>{a.code}</option>
             ))}
-          </Select>
+          </NativeSelect>
         </div>
       </div>
 

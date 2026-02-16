@@ -17,7 +17,7 @@ import { useTeachers } from '@/hooks/useTeachers';
 import type { EvaluationCreate } from '@/types/evaluation.types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import Select from '@/components/ui/Select';
+import NativeSelect from '@/components/ui/NativeSelect';
 import Spinner from '@/components/ui/Spinner';
 import { STATUT_EVALUATION_CHOICES } from '@/types/evaluation.types';
 
@@ -29,9 +29,9 @@ export default function EvaluationForm() {
   const { data: evaluation, isLoading: loadingEval } = useEvaluation(
     Number(id),
   );
-  const { data: matieres } = useMatieres({ page_size: 1000 });
-  const { data: typesEval } = useTypesEvaluation({ page_size: 100 });
-  const { data: enseignants } = useTeachers({ page_size: 1000 });
+  const { data: matieres, isLoading: loadingMatieres } = useMatieres({ page_size: 1000 });
+  const { data: typesEval, isLoading: loadingTypes } = useTypesEvaluation({ page_size: 100 });
+  const { data: enseignants, isLoading: loadingEnseignants } = useTeachers({ page_size: 1000 });
 
   const {
     register,
@@ -60,19 +60,20 @@ export default function EvaluationForm() {
         matiere_id: evaluation.matiere,
         type_evaluation_id: evaluation.type_evaluation,
         titre: evaluation.titre,
-        date_evaluation: evaluation.date_evaluation.split('T')[0],
+        date_evaluation: evaluation.date_evaluation ? evaluation.date_evaluation.split('T')[0] : '',
         bareme: evaluation.bareme,
         coefficient: evaluation.coefficient,
         enseignant_id: evaluation.enseignant || undefined,
         statut: evaluation.statut,
-        description: evaluation.description,
+        description: evaluation.description || '',
+        duree: evaluation.duree || undefined,
       });
     }
   }, [evaluation, reset]);
 
   // Valider le coefficient selon le type d'évaluation
   useEffect(() => {
-    if (typeEvalId && typesEval) {
+    if (typeEvalId && typesEval?.results) {
       const type = typesEval.results.find((t) => t.id === Number(typeEvalId));
       if (type) {
         const currentCoef = watch('coefficient');
@@ -87,13 +88,27 @@ export default function EvaluationForm() {
 
   const onSubmit = async (data: EvaluationCreate) => {
     try {
+      // Nettoyer et formater les données
+      const cleanData = {
+        matiere_id: Number(data.matiere_id),
+        type_evaluation_id: Number(data.type_evaluation_id),
+        titre: data.titre,
+        date: data.date_evaluation, // ✅ Backend attend "date" pas "date_evaluation"
+        coefficient: Number(data.coefficient),
+        note_totale: Number(data.bareme), // ✅ Backend attend "note_totale" pas "bareme"
+        enseignant_id: data.enseignant_id ? Number(data.enseignant_id) : undefined,
+        description: data.description || undefined,
+        duree: data.duree ? Number(data.duree) : undefined,
+        annee_academique_id: 1,
+      };
+
       if (isEdit) {
         await updateMutation.mutateAsync({
           id: Number(id),
-          data,
+          data: cleanData,
         });
       } else {
-        await createMutation.mutateAsync(data);
+        await createMutation.mutateAsync(cleanData);
       }
       navigate('/admin/evaluations');
     } catch (error) {
@@ -102,17 +117,17 @@ export default function EvaluationForm() {
   };
 
   const getCoefRange = () => {
-    if (!typeEvalId || !typesEval) return null;
+    if (!typeEvalId || !typesEval?.results) return null;
     const type = typesEval.results.find((t) => t.id === Number(typeEvalId));
     return type
       ? `${type.coefficient_min} - ${type.coefficient_max}`
       : null;
   };
 
-  if (loadingEval && isEdit) {
+  if ((loadingEval && isEdit) || loadingMatieres || loadingTypes || loadingEnseignants) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spinner size="lg" />
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner size="lg" message="Chargement du formulaire..." />
       </div>
     );
   }
@@ -148,7 +163,7 @@ export default function EvaluationForm() {
             </h3>
 
             <div className="grid grid-cols-2 gap-4">
-              <Select
+              <NativeSelect
                 label="Matière"
                 {...register('matiere_id', {
                   required: 'La matière est requise',
@@ -162,9 +177,9 @@ export default function EvaluationForm() {
                     {m.code} - {m.nom}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
 
-              <Select
+              <NativeSelect
                 label="Type d'évaluation"
                 {...register('type_evaluation_id', {
                   required: 'Le type est requis',
@@ -178,7 +193,7 @@ export default function EvaluationForm() {
                     {t.nom}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
             </div>
 
             <Input
@@ -248,7 +263,7 @@ export default function EvaluationForm() {
             </h3>
 
             <div className="grid grid-cols-2 gap-4">
-              <Select
+              <NativeSelect
                 label="Enseignant (optionnel)"
                 {...register('enseignant_id', {
                   setValueAs: (v) => (v === '' ? undefined : Number(v)),
@@ -260,9 +275,9 @@ export default function EvaluationForm() {
                     {e.nom} {e.prenom}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
 
-              <Select
+              <NativeSelect
                 label="Statut"
                 {...register('statut')}
               >
@@ -271,7 +286,7 @@ export default function EvaluationForm() {
                     {s.label}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
             </div>
 
             <div>

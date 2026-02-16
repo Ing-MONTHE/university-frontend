@@ -48,7 +48,7 @@ export const typeEvaluationApi = {
     if (filters?.page_size) params.append('page_size', String(filters.page_size));
     
     const response = await apiClient.get<PaginatedTypesEvaluation>(
-      `/types-evaluation/?${params.toString()}`
+      `/types-evaluations/?${params.toString()}`
     );
     return response.data;
   },
@@ -57,7 +57,7 @@ export const typeEvaluationApi = {
    * Récupérer un type d'évaluation par ID
    */
   getById: async (id: number) => {
-    const response = await apiClient.get<TypeEvaluation>(`/types-evaluation/${id}/`);
+    const response = await apiClient.get<TypeEvaluation>(`/types-evaluations/${id}/`);
     return response.data;
   },
 
@@ -65,7 +65,7 @@ export const typeEvaluationApi = {
    * Créer un nouveau type d'évaluation
    */
   create: async (data: TypeEvaluationCreate) => {
-    const response = await apiClient.post<TypeEvaluation>('/types-evaluation/', data);
+    const response = await apiClient.post<TypeEvaluation>('/types-evaluations/', data);
     return response.data;
   },
 
@@ -73,7 +73,7 @@ export const typeEvaluationApi = {
    * Mettre à jour un type d'évaluation
    */
   update: async (id: number, data: TypeEvaluationUpdate) => {
-    const response = await apiClient.patch<TypeEvaluation>(`/types-evaluation/${id}/`, data);
+    const response = await apiClient.patch<TypeEvaluation>(`/types-evaluations/${id}/`, data);
     return response.data;
   },
 
@@ -81,7 +81,7 @@ export const typeEvaluationApi = {
    * Supprimer un type d'évaluation
    */
   delete: async (id: number) => {
-    await apiClient.delete(`/types-evaluation/${id}/`);
+    await apiClient.delete(`/types-evaluations/${id}/`);
   },
 };
 

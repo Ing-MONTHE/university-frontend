@@ -1,8 +1,9 @@
 /**
  * Page de Saisie des Notes - SAISIE NOTES ⭐
+ * VERSION CORRIGÉE - Gestion sécurisée des tableaux
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -54,7 +55,7 @@ export default function GradeEntryPage() {
 
   // Charger les notes existantes dans l'état local
   useEffect(() => {
-    if (notes) {
+    if (notes && Array.isArray(notes)) {
       const initialData: Record<number, NoteUpdate> = {};
       notes.forEach((note) => {
         initialData[note.etudiant] = {
@@ -67,46 +68,7 @@ export default function GradeEntryPage() {
     }
   }, [notes]);
 
-  // Auto-save avec debounce de 1 seconde
-  useEffect(() => {
-    if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);
-    }
-
-    const timer = setTimeout(() => {
-      handleSaveAll(true); // Silent save
-    }, 1000);
-
-    setAutoSaveTimer(timer);
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [notesData]);
-
-  const handleNoteChange = (etudiantId: number, value: string) => {
-    setNotesData((prev) => ({
-      ...prev,
-      [etudiantId]: {
-        ...prev[etudiantId],
-        note: value ? Number(value) : undefined,
-        est_absent: false,
-      },
-    }));
-  };
-
-  const handleAbsentToggle = (etudiantId: number, checked: boolean) => {
-    setNotesData((prev) => ({
-      ...prev,
-      [etudiantId]: {
-        ...prev[etudiantId],
-        est_absent: checked,
-        note: checked ? undefined : prev[etudiantId]?.note,
-      },
-    }));
-  };
-
-  const handleSaveAll = async (silent = false) => {
+  const handleSaveAll = useCallback(async (silent = false) => {
     if (!evaluation) return;
 
     const notesToSave = Object.entries(notesData)
@@ -131,6 +93,45 @@ export default function GradeEntryPage() {
     } catch (error) {
       if (!silent) toast.error('Erreur lors de l\'enregistrement');
     }
+  }, [evaluation, notesData, saisieLotMutation]);
+
+  // Auto-save avec debounce de 1 seconde
+  useEffect(() => {
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+    }
+
+    const timer = setTimeout(() => {
+      handleSaveAll(true); // Silent save
+    }, 1000);
+
+    setAutoSaveTimer(timer);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [notesData]); // Removed handleSaveAll from dependencies to avoid infinite loop
+
+  const handleNoteChange = (etudiantId: number, value: string) => {
+    setNotesData((prev) => ({
+      ...prev,
+      [etudiantId]: {
+        ...prev[etudiantId],
+        note: value ? Number(value) : undefined,
+        est_absent: false,
+      },
+    }));
+  };
+
+  const handleAbsentToggle = (etudiantId: number, checked: boolean) => {
+    setNotesData((prev) => ({
+      ...prev,
+      [etudiantId]: {
+        ...prev[etudiantId],
+        est_absent: checked,
+        note: checked ? undefined : prev[etudiantId]?.note,
+      },
+    }));
   };
 
   const handleExportExcel = () => {
@@ -138,9 +139,12 @@ export default function GradeEntryPage() {
     toast.success('Export Excel en cours...');
   };
 
-  // Filtrer les notes selon le filtre actif
+  // ✅ CORRECTION PRINCIPALE : Filtrer les notes selon le filtre actif avec vérification robuste
   const filteredNotes = useMemo(() => {
-    if (!notes) return [];
+    // Vérification robuste : notes doit être un tableau
+    if (!notes || !Array.isArray(notes) || notes.length === 0) {
+      return [];
+    }
 
     switch (filter) {
       case 'saisis':
@@ -167,16 +171,73 @@ export default function GradeEntryPage() {
     return note >= 0 && note <= evaluation.bareme;
   };
 
+  // Loading state
   if (loadingEval || loadingNotes) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spinner size="lg" />
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner size="lg" message="Chargement de l'évaluation..." />
       </div>
     );
   }
 
+  // Evaluation not found
   if (!evaluation) {
-    return <div>Évaluation non trouvée</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Évaluation non trouvée
+          </h2>
+          <p className="text-gray-600 mb-4">
+            L'évaluation demandée n'existe pas ou a été supprimée.
+          </p>
+          <Button onClick={() => navigate('/admin/evaluations')}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour aux évaluations
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Notes vides (aucun étudiant inscrit)
+  if (!notes || notes.length === 0) {
+    return (
+      <div className="space-y-6">
+        {/* En-tête */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="secondary"
+              onClick={() => navigate('/admin/evaluations')}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Saisie des notes
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {evaluation.titre} - {evaluation.matiere_details?.nom}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Empty state */}
+        <div className="bg-white rounded-xl shadow-sm p-12">
+          <div className="text-center">
+            <UserX className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Aucun étudiant inscrit
+            </h3>
+            <p className="text-gray-600">
+              Il n'y a aucun étudiant inscrit pour cette évaluation.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -220,7 +281,7 @@ export default function GradeEntryPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <div className="flex items-center justify-between">
             <div>
@@ -281,7 +342,7 @@ export default function GradeEntryPage() {
 
       {/* Filtres */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {[
             { key: 'tous', label: 'Tous', count: notes?.length || 0 },
             {
@@ -316,107 +377,116 @@ export default function GradeEntryPage() {
 
       {/* Tableau de saisie */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Étudiant
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                  Note /{evaluation.bareme}
-                </th>
-                {evaluation.bareme !== 20 && (
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                    Note /20
+        {filteredNotes.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">
+              Aucun étudiant ne correspond aux filtres sélectionnés
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Étudiant
                   </th>
-                )}
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                  Absent
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                  Statut
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredNotes.map((note) => {
-                const currentNote = notesData[note.etudiant]?.note;
-                const isAbsent = notesData[note.etudiant]?.est_absent;
-                const isValid = isNoteValid(currentNote);
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Note /{evaluation.bareme}
+                  </th>
+                  {evaluation.bareme !== 20 && (
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      Note /20
+                    </th>
+                  )}
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Absent
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Statut
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredNotes.map((note) => {
+                  const currentNote = notesData[note.etudiant]?.note;
+                  const isAbsent = notesData[note.etudiant]?.est_absent;
+                  const isValid = isNoteValid(currentNote);
 
-                return (
-                  <tr key={note.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={note.etudiant_details?.photo}
-                          alt={note.etudiant_details?.nom}
-                          size="sm"
-                        />
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {note.etudiant_details?.nom}{' '}
-                            {note.etudiant_details?.prenom}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {note.etudiant_details?.matricule}
+                  return (
+                    <tr key={note.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={note.etudiant_details?.photo}
+                            alt={note.etudiant_details?.nom}
+                            size="sm"
+                          />
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {note.etudiant_details?.nom}{' '}
+                              {note.etudiant_details?.prenom}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {note.etudiant_details?.matricule}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        max={evaluation.bareme}
-                        value={currentNote || ''}
-                        onChange={(e) =>
-                          handleNoteChange(note.etudiant, e.target.value)
-                        }
-                        disabled={isAbsent}
-                        className={`w-24 px-3 py-2 text-center border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                          !isValid
-                            ? 'border-red-500'
-                            : currentNote
-                            ? 'border-green-500'
-                            : 'border-gray-300'
-                        }`}
-                      />
-                    </td>
-                    {evaluation.bareme !== 20 && (
-                      <td className="px-6 py-4 text-center">
-                        <span className="text-sm font-semibold text-gray-700">
-                          {calculateNoteSur20(currentNote) || '-'}
-                        </span>
                       </td>
-                    )}
-                    <td className="px-6 py-4 text-center">
-                      <input
-                        type="checkbox"
-                        checked={isAbsent || false}
-                        onChange={(e) =>
-                          handleAbsentToggle(note.etudiant, e.target.checked)
-                        }
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {isAbsent ? (
-                        <Badge variant="error">Absent</Badge>
-                      ) : currentNote ? (
-                        <Badge variant="success">Saisi</Badge>
-                      ) : (
-                        <Badge variant="gray">Non saisi</Badge>
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          max={evaluation.bareme}
+                          value={currentNote || ''}
+                          onChange={(e) =>
+                            handleNoteChange(note.etudiant, e.target.value)
+                          }
+                          disabled={isAbsent}
+                          className={`w-24 px-3 py-2 text-center border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                            !isValid
+                              ? 'border-red-500'
+                              : currentNote
+                              ? 'border-green-500'
+                              : 'border-gray-300'
+                          }`}
+                        />
+                      </td>
+                      {evaluation.bareme !== 20 && (
+                        <td className="px-6 py-4 text-center">
+                          <span className="text-sm font-semibold text-gray-700">
+                            {calculateNoteSur20(currentNote) || '-'}
+                          </span>
+                        </td>
                       )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isAbsent || false}
+                          onChange={(e) =>
+                            handleAbsentToggle(note.etudiant, e.target.checked)
+                          }
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {isAbsent ? (
+                          <Badge variant="error">Absent</Badge>
+                        ) : currentNote ? (
+                          <Badge variant="success">Saisi</Badge>
+                        ) : (
+                          <Badge variant="gray">Non saisi</Badge>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

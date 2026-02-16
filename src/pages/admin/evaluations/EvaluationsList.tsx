@@ -1,5 +1,6 @@
 /**
- * Page Liste des Évaluations
+ * Page Liste des Évaluations - Enhanced Table View
+ * Améliorations inspirées des modules Academic, Student et Teacher
  */
 
 import { useState } from 'react';
@@ -13,6 +14,14 @@ import {
   Eye,
   ClipboardList,
   Filter,
+  Download,
+  Upload,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
 } from 'lucide-react';
 import {
   useEvaluations,
@@ -79,13 +88,23 @@ export default function EvaluationsList() {
     );
   };
 
+  const getStatutIcon = (statut: StatutEvaluation) => {
+    const icons = {
+      PLANIFIEE: <Clock className="w-4 h-4 text-blue-500" />,
+      EN_COURS: <AlertCircle className="w-4 h-4 text-yellow-500" />,
+      TERMINEE: <CheckCircle className="w-4 h-4 text-green-500" />,
+      ANNULEE: <XCircle className="w-4 h-4 text-red-500" />,
+    };
+    return icons[statut] || null;
+  };
+
   const getProgressionBadge = (evaluation: Evaluation) => {
     if (!evaluation.total_etudiants) return null;
-    
+
     const progression = evaluation.progression || 0;
     const variant =
       progression === 100 ? 'success' : progression > 0 ? 'warning' : 'gray';
-    
+
     return (
       <Badge variant={variant}>
         {evaluation.notes_saisies || 0}/{evaluation.total_etudiants}
@@ -93,8 +112,75 @@ export default function EvaluationsList() {
     );
   };
 
+  // Calcul des statistiques
+  const stats = data?.results
+    ? {
+        total: data.count,
+        planifiees: data.results.filter((e) => e.statut === 'PLANIFIEE').length,
+        enCours: data.results.filter((e) => e.statut === 'EN_COURS').length,
+        terminees: data.results.filter((e) => e.statut === 'TERMINEE').length,
+        progression: data.results.length > 0
+          ? Math.round(
+              data.results.reduce((acc, e) => acc + (e.progression || 0), 0) /
+                data.results.length
+            )
+          : 0,
+      }
+    : { total: 0, planifiees: 0, enCours: 0, terminees: 0, progression: 0 };
+
   return (
     <div className="space-y-6">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Planifiées</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.planifiees}</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <Clock className="w-6 h-6 text-yellow-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-orange-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">En cours</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.enCours}</p>
+            </div>
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <AlertCircle className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Terminées</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.terminees}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* En-tête */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
@@ -106,26 +192,50 @@ export default function EvaluationsList() {
               Gestion des Évaluations
             </h1>
             <p className="text-gray-600 mt-1">
-              {data?.count || 0} évaluation(s)
+              {data?.count || 0} évaluation(s) • Progression moyenne: {stats.progression}%
             </p>
           </div>
 
-          <Button onClick={() => navigate('/admin/evaluations/new')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Nouvelle Évaluation
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => {/* TODO: Import */}}
+              variant="secondary"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Importer
+            </Button>
+            <Button
+              onClick={() => {/* TODO: Export */}}
+              variant="secondary"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exporter
+            </Button>
+            <Button
+              onClick={() => navigate('/admin/evaluations/statistiques')}
+              variant="secondary"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Statistiques
+            </Button>
+            <Button onClick={() => navigate('/admin/evaluations/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Nouvelle Évaluation
+            </Button>
+          </div>
         </div>
 
         {/* Barre de recherche */}
         <div className="flex gap-3">
-          <div className="flex-1">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
               type="text"
-              placeholder="Rechercher une évaluation..."
+              placeholder="Rechercher une évaluation (titre, matière, type)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              icon={<Search className="w-4 h-4" />}
+              className="pl-10"
             />
           </div>
           <Button
@@ -133,7 +243,7 @@ export default function EvaluationsList() {
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter className="w-4 h-4 mr-2" />
-            Filtres
+            Filtres {showFilters ? '▲' : '▼'}
           </Button>
           <Button onClick={handleSearch}>Rechercher</Button>
         </div>
@@ -148,10 +258,11 @@ export default function EvaluationsList() {
                 setFilters({
                   ...filters,
                   matiere: e.target.value ? Number(e.target.value) : undefined,
+                  page: 1,
                 })
               }
             >
-              <option value="">Toutes</option>
+              <option value="">Toutes les matières</option>
               {matieres?.results.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.code} - {m.nom}
@@ -168,10 +279,11 @@ export default function EvaluationsList() {
                   type_evaluation: e.target.value
                     ? Number(e.target.value)
                     : undefined,
+                  page: 1,
                 })
               }
             >
-              <option value="">Tous</option>
+              <option value="">Tous les types</option>
               {typesEval?.results.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.nom}
@@ -186,10 +298,11 @@ export default function EvaluationsList() {
                 setFilters({
                   ...filters,
                   statut: e.target.value as StatutEvaluation | undefined,
+                  page: 1,
                 })
               }
             >
-              <option value="">Tous</option>
+              <option value="">Tous les statuts</option>
               {STATUT_EVALUATION_CHOICES.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
@@ -204,16 +317,31 @@ export default function EvaluationsList() {
                 setFilters({
                   ...filters,
                   filiere: e.target.value ? Number(e.target.value) : undefined,
+                  page: 1,
                 })
               }
             >
-              <option value="">Toutes</option>
+              <option value="">Toutes les filières</option>
               {filieres?.results.map((f) => (
                 <option key={f.id} value={f.id}>
-                  {f.code}
+                  {f.code} - {f.nom}
                 </option>
               ))}
             </Select>
+
+            {/* Bouton reset filtres */}
+            <div className="col-span-4 flex justify-end">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setFilters({ page: 1, page_size: DEFAULT_PAGE_SIZE });
+                  setSearchTerm('');
+                }}
+              >
+                Réinitialiser les filtres
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -227,7 +355,11 @@ export default function EvaluationsList() {
         ) : !data?.results.length ? (
           <div className="text-center py-12">
             <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Aucune évaluation trouvée</p>
+            <p className="text-gray-500 mb-4">Aucune évaluation trouvée</p>
+            <Button onClick={() => navigate('/admin/evaluations/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Créer la première évaluation
+            </Button>
           </div>
         ) : (
           <>
@@ -263,14 +395,19 @@ export default function EvaluationsList() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {data.results.map((evaluation) => (
-                    <tr key={evaluation.id} className="hover:bg-gray-50">
+                    <tr key={evaluation.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="text-sm">
-                          <div className="font-semibold text-gray-900">
-                            {evaluation.matiere_details?.code}
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-blue-600" />
                           </div>
-                          <div className="text-gray-500">
-                            {evaluation.matiere_details?.nom}
+                          <div className="text-sm">
+                            <div className="font-semibold text-gray-900">
+                              {evaluation.matiere_details?.code}
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {evaluation.matiere_details?.nom}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -280,27 +417,47 @@ export default function EvaluationsList() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                           {evaluation.type_evaluation_details?.nom}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="w-4 h-4" />
                           {new Date(evaluation.date_evaluation).toLocaleDateString(
                             'fr-FR'
                           )}
-                        </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-gray-900">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-700 text-sm font-bold">
                           {evaluation.coefficient}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatutBadge(evaluation.statut)}
+                        <div className="flex items-center gap-2">
+                          {getStatutIcon(evaluation.statut)}
+                          {getStatutBadge(evaluation.statut)}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getProgressionBadge(evaluation)}
+                        <div className="flex flex-col gap-1">
+                          {getProgressionBadge(evaluation)}
+                          {evaluation.total_etudiants > 0 && (
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${
+                                  (evaluation.progression || 0) === 100
+                                    ? 'bg-green-500'
+                                    : (evaluation.progression || 0) > 0
+                                    ? 'bg-yellow-500'
+                                    : 'bg-gray-300'
+                                }`}
+                                style={{ width: `${evaluation.progression || 0}%` }}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex gap-2 justify-end">
@@ -310,12 +467,12 @@ export default function EvaluationsList() {
                             onClick={() =>
                               navigate(`/admin/evaluations/${evaluation.id}`)
                             }
-                            title="Voir"
+                            title="Voir les détails"
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="secondary"
+                            variant="primary"
                             size="sm"
                             onClick={() =>
                               navigate(
@@ -332,6 +489,7 @@ export default function EvaluationsList() {
                             onClick={() =>
                               navigate(`/admin/evaluations/${evaluation.id}/edit`)
                             }
+                            title="Modifier"
                           >
                             <Pencil className="w-4 h-4" />
                           </Button>
@@ -341,6 +499,7 @@ export default function EvaluationsList() {
                             onClick={() =>
                               setDeleteConfirm({ isOpen: true, item: evaluation })
                             }
+                            title="Supprimer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -359,6 +518,11 @@ export default function EvaluationsList() {
                   currentPage={filters.page || 1}
                   totalPages={Math.ceil(data.count / DEFAULT_PAGE_SIZE)}
                   onPageChange={(page) => setFilters({ ...filters, page })}
+                  pageSize={filters.page_size || DEFAULT_PAGE_SIZE}
+                  onPageSizeChange={(size) => 
+                    setFilters({ ...filters, page_size: size, page: 1 })
+                  }
+                  totalItems={data.count}
                 />
               </div>
             )}
@@ -372,7 +536,7 @@ export default function EvaluationsList() {
         onClose={() => setDeleteConfirm({ isOpen: false, item: null })}
         onConfirm={handleDelete}
         title="Supprimer cette évaluation ?"
-        message={`Êtes-vous sûr de vouloir supprimer l'évaluation "${deleteConfirm.item?.titre}" ? Toutes les notes seront également supprimées.`}
+        message={`Êtes-vous sûr de vouloir supprimer l'évaluation "${deleteConfirm.item?.titre}" ? Toutes les notes associées seront également supprimées. Cette action est irréversible.`}
         confirmText="Supprimer"
         isLoading={deleteMutation.isPending}
       />
