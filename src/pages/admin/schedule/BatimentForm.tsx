@@ -32,6 +32,7 @@ export default function BatimentForm({
   const updateMutation = useUpdateBatiment();
 
   const onSubmit = async (data: BatimentCreate) => {
+    console.log('📤 Données envoyées:', data);
     try {
       if (batiment) {
         await updateMutation.mutateAsync({ id: batiment.id, data });
@@ -39,8 +40,30 @@ export default function BatimentForm({
         await createMutation.mutateAsync(data);
       }
       onSuccess();
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("❌ Erreur complète:", error);
+      console.error("❌ Error.message:", error?.message);
+      console.error("❌ Error.errors:", error?.errors);
+      console.error("❌ Error.status:", error?.status);
+      
+      // L'intercepteur transforme l'erreur en ApiError {message, status, errors}
+      const errorMessage = error?.message || "Erreur lors de l'enregistrement";
+      const fieldErrors = error?.errors;
+      
+      if (fieldErrors && typeof fieldErrors === 'object') {
+        // Afficher les erreurs de champs spécifiques
+        const errorDetails = Object.entries(fieldErrors)
+          .map(([field, msgs]: [string, any]) => {
+            if (Array.isArray(msgs)) {
+              return `${field}: ${msgs.join(', ')}`;
+            }
+            return `${field}: ${msgs}`;
+          })
+          .join('\n');
+        alert(`Erreur de validation:\n${errorDetails}`);
+      } else {
+        alert(`Erreur: ${errorMessage}`);
+      }
     }
   };
 

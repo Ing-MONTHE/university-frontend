@@ -22,91 +22,139 @@ import type {
 } from '@/types/schedule.types';
 import type { PaginatedResponse } from '@/types/api.types';
 
-const BASE_URL = '/api/schedule';
+const BASE_URL = '/schedule';
 
 // ============== BÂTIMENTS ==============
 export const batimentApi = {
-  getAll: (params?: BatimentFilters) =>
-    apiClient.get<PaginatedResponse<Batiment>>(`${BASE_URL}/batiments/`, { params }),
+  getAll: async (params?: BatimentFilters) => {
+    const { data } = await apiClient.get<PaginatedResponse<Batiment>>(`${BASE_URL}/batiments/`, { params });
+    return data;
+  },
   
-  getById: (id: number) =>
-    apiClient.get<Batiment>(`${BASE_URL}/batiments/${id}/`),
+  getById: async (id: number) => {
+    const { data } = await apiClient.get<Batiment>(`${BASE_URL}/batiments/${id}/`);
+    return data;
+  },
   
-  create: (data: BatimentCreate) =>
-    apiClient.post<Batiment>(`${BASE_URL}/batiments/`, data),
+  create: async (createData: BatimentCreate) => {
+    const { data } = await apiClient.post<Batiment>(`${BASE_URL}/batiments/`, createData);
+    return data;
+  },
   
-  update: (id: number, data: BatimentUpdate) =>
-    apiClient.patch<Batiment>(`${BASE_URL}/batiments/${id}/`, data),
+  update: async (id: number, updateData: BatimentUpdate) => {
+    const { data } = await apiClient.patch<Batiment>(`${BASE_URL}/batiments/${id}/`, updateData);
+    return data;
+  },
   
-  delete: (id: number) =>
-    apiClient.delete(`${BASE_URL}/batiments/${id}/`),
+  delete: async (id: number) => {
+    const { data } = await apiClient.delete(`${BASE_URL}/batiments/${id}/`);
+    return data;
+  },
 };
 
 // ============== SALLES ==============
 export const salleApi = {
-  getAll: (params?: SalleFilters) =>
-    apiClient.get<PaginatedResponse<Salle>>(`${BASE_URL}/salles/`, { params }),
+  getAll: async (params?: SalleFilters) => {
+    const { data } = await apiClient.get<PaginatedResponse<Salle>>(`${BASE_URL}/salles/`, { params });
+    return data;
+  },
   
-  getById: (id: number) =>
-    apiClient.get<Salle>(`${BASE_URL}/salles/${id}/`),
+  getById: async (id: number) => {
+    const { data } = await apiClient.get<Salle>(`${BASE_URL}/salles/${id}/`);
+    return data;
+  },
   
-  create: (data: SalleCreate) =>
-    apiClient.post<Salle>(`${BASE_URL}/salles/`, data),
+  create: async (createData: SalleCreate) => {
+    const { data } = await apiClient.post<Salle>(`${BASE_URL}/salles/`, createData);
+    return data;
+  },
   
-  update: (id: number, data: SalleUpdate) =>
-    apiClient.patch<Salle>(`${BASE_URL}/salles/${id}/`, data),
+  update: async (id: number, updateData: SalleUpdate) => {
+    const { data } = await apiClient.patch<Salle>(`${BASE_URL}/salles/${id}/`, updateData);
+    return data;
+  },
   
-  delete: (id: number) =>
-    apiClient.delete(`${BASE_URL}/salles/${id}/`),
+  delete: async (id: number) => {
+    const { data } = await apiClient.delete(`${BASE_URL}/salles/${id}/`);
+    return data;
+  },
 };
 
 // ============== CRÉNEAUX ==============
 export const creneauApi = {
-  getAll: (params?: CreneauFilters) =>
-    apiClient.get<PaginatedResponse<Creneau>>(`${BASE_URL}/creneaux/`, { params }),
+  getAll: async (params?: CreneauFilters) => {
+    const { data } = await apiClient.get<PaginatedResponse<Creneau>>(`${BASE_URL}/creneaux/`, { params });
+    return data;
+  },
   
-  getById: (id: number) =>
-    apiClient.get<Creneau>(`${BASE_URL}/creneaux/${id}/`),
+  getById: async (id: number) => {
+    const { data } = await apiClient.get<Creneau>(`${BASE_URL}/creneaux/${id}/`);
+    return data;
+  },
   
-  create: (data: CreneauCreate) =>
-    apiClient.post<Creneau>(`${BASE_URL}/creneaux/`, data),
+  create: async (data: CreneauCreate) => {
+    const response = await apiClient.post<Creneau>(`${BASE_URL}/creneaux/`, data);
+    return response.data;
+  },
   
-  update: (id: number, data: CreneauUpdate) =>
-    apiClient.patch<Creneau>(`${BASE_URL}/creneaux/${id}/`, data),
+  update: async (id: number, updateData: CreneauUpdate) => {
+    const { data } = await apiClient.patch<Creneau>(`${BASE_URL}/creneaux/${id}/`, updateData);
+    return data;
+  },
   
-  delete: (id: number) =>
-    apiClient.delete(`${BASE_URL}/creneaux/${id}/`),
+  delete: async (id: number) => {
+    const { data } = await apiClient.delete(`${BASE_URL}/creneaux/${id}/`);
+    return data;
+  },
 };
 
 // ============== COURS ==============
 export const coursApi = {
-  getAll: (params?: CoursFilters) =>
-    apiClient.get<PaginatedResponse<Cours>>(`${BASE_URL}/cours/`, { params }),
+  getAll: async (params?: CoursFilters) => {
+    const { data } = await apiClient.get<PaginatedResponse<Cours>>(`${BASE_URL}/cours/`, { params });
+    return data;
+  },
   
-  getById: (id: number) =>
-    apiClient.get<Cours>(`${BASE_URL}/cours/${id}/`),
+  getById: async (id: number) => {
+    const { data } = await apiClient.get<Cours>(`${BASE_URL}/cours/${id}/`);
+    return data;
+  },
   
-  create: (data: CoursCreate) =>
-    apiClient.post<Cours>(`${BASE_URL}/cours/`, data),
+  create: async (createData: CoursCreate) => {
+    const { data } = await apiClient.post<Cours>(`${BASE_URL}/cours/`, createData);
+    return data;
+  },
   
-  update: (id: number, data: CoursUpdate) =>
-    apiClient.patch<Cours>(`${BASE_URL}/cours/${id}/`, data),
+  update: async (id: number, updateData: CoursUpdate) => {
+    const { data } = await apiClient.patch<Cours>(`${BASE_URL}/cours/${id}/`, updateData);
+    return data;
+  },
   
-  delete: (id: number) =>
-    apiClient.delete(`${BASE_URL}/cours/${id}/`),
+  delete: async (id: number) => {
+    const { data } = await apiClient.delete(`${BASE_URL}/cours/${id}/`);
+    return data;
+  },
 
-  getEmploiTemps: (filiereId: number, params?: { semestre?: number }) =>
-    apiClient.get<Cours[]>(`${BASE_URL}/cours/emploi-temps/${filiereId}/`, { params }),
+  getEmploiTemps: async (filiereId: number, params?: { semestre?: number }) => {
+    const { data } = await apiClient.get<Cours[]>(`${BASE_URL}/cours/emploi-temps/${filiereId}/`, { params });
+    return data;
+  },
 };
 
 // ============== CONFLITS ==============
 export const conflitApi = {
-  getAll: (params?: ConflitFilters) =>
-    apiClient.get<PaginatedResponse<ConflitSalle>>(`${BASE_URL}/conflits/`, { params }),
+  getAll: async (params?: ConflitFilters) => {
+    const { data } = await apiClient.get<PaginatedResponse<ConflitSalle>>(`${BASE_URL}/conflits/`, { params });
+    return data;
+  },
   
-  getById: (id: number) =>
-    apiClient.get<ConflitSalle>(`${BASE_URL}/conflits/${id}/`),
+  getById: async (id: number) => {
+    const { data } = await apiClient.get<ConflitSalle>(`${BASE_URL}/conflits/${id}/`);
+    return data;
+  },
   
-  resolve: (id: number, data: ConflitSalleUpdate) =>
-    apiClient.patch<ConflitSalle>(`${BASE_URL}/conflits/${id}/`, data),
+  resolve: async (id: number, updateData: ConflitSalleUpdate) => {
+    const { data } = await apiClient.patch<ConflitSalle>(`${BASE_URL}/conflits/${id}/`, updateData);
+    return data;
+  },
 };

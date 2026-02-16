@@ -1,7 +1,7 @@
 import { Button, Input, Select } from "@/components/ui";
 import { useCreateCreneau, useUpdateCreneau } from "@/hooks/useSchedule";
 import type { Creneau, CreneauCreate } from "@/types/schedule.types";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 interface CreneauFormProps {
   creneau?: Creneau | null;
@@ -26,6 +26,7 @@ export default function CreneauForm({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreneauCreate>({
     defaultValues: creneau || {
@@ -57,9 +58,18 @@ export default function CreneauForm({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Jour <span className="text-red-500">*</span>
         </label>
-        <Select
-          {...register("jour", { required: "Le jour est requis" })}
-          options={JOUR_OPTIONS}
+        <Controller
+          name="jour"
+          control={control}
+          rules={{ required: "Le jour est requis" }}
+          render={({ field }) => (
+            <Select
+              options={JOUR_OPTIONS}
+              value={field.value}
+              onChange={(value) => field.onChange(value)}
+              error={errors.jour?.message}
+            />
+          )}
         />
       </div>
 

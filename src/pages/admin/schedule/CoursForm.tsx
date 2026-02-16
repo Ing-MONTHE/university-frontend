@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useCreateCours, useUpdateCours, useCreneaux, useSalles } from '@/hooks/useSchedule';
 import { useMatieres } from '@/hooks/useMatieres';
 import { useTeachers } from '@/hooks/useTeachers';
@@ -19,7 +19,7 @@ const RECURRENCE_OPTIONS = [
 ];
 
 export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps) {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<CoursCreate>({
+  const { register, handleSubmit, control, formState: { errors }, watch } = useForm<CoursCreate>({
     defaultValues: cours || {
       matiere: 0,
       enseignant: 0,
@@ -55,7 +55,7 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
 
   const enseignantOptions = (enseignantsData?.results || []).map((e) => ({
     value: e.id.toString(),
-    label: `${e.first_name} ${e.last_name}`,
+    label: `${e.prenom} ${e.nom}`,
   }));
 
   const salleOptions = (sallesData?.results || []).map((s) => ({
@@ -94,9 +94,18 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Matière <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('matiere', { required: 'La matière est requise', valueAsNumber: true })}
-            options={matiereOptions}
+          <Controller
+            name="matiere"
+            control={control}
+            rules={{ required: 'La matière est requise' }}
+            render={({ field }) => (
+              <Select
+                options={matiereOptions}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.matiere?.message}
+              />
+            )}
           />
         </div>
 
@@ -104,9 +113,18 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Enseignant <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('enseignant', { required: 'L\'enseignant est requis', valueAsNumber: true })}
-            options={enseignantOptions}
+          <Controller
+            name="enseignant"
+            control={control}
+            rules={{ required: 'L\'enseignant est requis' }}
+            render={({ field }) => (
+              <Select
+                options={enseignantOptions}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.enseignant?.message}
+              />
+            )}
           />
         </div>
       </div>
@@ -116,9 +134,18 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Salle <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('salle', { required: 'La salle est requise', valueAsNumber: true })}
-            options={salleOptions}
+          <Controller
+            name="salle"
+            control={control}
+            rules={{ required: 'La salle est requise' }}
+            render={({ field }) => (
+              <Select
+                options={salleOptions}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.salle?.message}
+              />
+            )}
           />
           {salle && (
             <p className="text-xs text-gray-500 mt-1">
@@ -131,9 +158,18 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Créneau <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('creneau', { required: 'Le créneau est requis', valueAsNumber: true })}
-            options={creneauOptions}
+          <Controller
+            name="creneau"
+            control={control}
+            rules={{ required: 'Le créneau est requis' }}
+            render={({ field }) => (
+              <Select
+                options={creneauOptions}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.creneau?.message}
+              />
+            )}
           />
         </div>
       </div>
@@ -143,9 +179,18 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Année Académique <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('annee_academique', { required: 'L\'année est requise', valueAsNumber: true })}
-            options={anneeOptions}
+          <Controller
+            name="annee_academique"
+            control={control}
+            rules={{ required: 'L\'année est requise' }}
+            render={({ field }) => (
+              <Select
+                options={anneeOptions}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.annee_academique?.message}
+              />
+            )}
           />
         </div>
 
@@ -153,12 +198,21 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Semestre <span className="text-red-500">*</span>
           </label>
-          <Select
-            {...register('semestre', { required: 'Le semestre est requis', valueAsNumber: true })}
-            options={[
-              { value: '1', label: 'Semestre 1' },
-              { value: '2', label: 'Semestre 2' },
-            ]}
+          <Controller
+            name="semestre"
+            control={control}
+            rules={{ required: 'Le semestre est requis' }}
+            render={({ field }) => (
+              <Select
+                options={[
+                  { value: '1', label: 'Semestre 1' },
+                  { value: '2', label: 'Semestre 2' },
+                ]}
+                value={field.value?.toString()}
+                onChange={(value) => field.onChange(Number(value))}
+                error={errors.semestre?.message}
+              />
+            )}
           />
         </div>
       </div>
@@ -192,9 +246,16 @@ export default function CoursForm({ cours, onSuccess, onCancel }: CoursFormProps
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Récurrence
           </label>
-          <Select
-            {...register('recurrence')}
-            options={RECURRENCE_OPTIONS}
+          <Controller
+            name="recurrence"
+            control={control}
+            render={({ field }) => (
+              <Select
+                options={RECURRENCE_OPTIONS}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
         </div>
 

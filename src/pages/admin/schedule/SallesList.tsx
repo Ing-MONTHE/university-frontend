@@ -170,19 +170,45 @@ export default function SallesList() {
                   )}
                 </div>
 
-                {salle.equipements && salle.equipements.length > 0 && (
+                {salle.equipements && (
                   <div className="mb-4">
                     <div className="flex flex-wrap gap-1">
-                      {salle.equipements.slice(0, 3).map((eq, idx) => (
-                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">
-                          {eq}
-                        </span>
-                      ))}
-                      {salle.equipements.length > 3 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">
-                          +{salle.equipements.length - 3}
-                        </span>
-                      )}
+                      {(() => {
+                        // Parser equipements si c'est un JSON string, sinon le split
+                        let equipArray: string[] = [];
+                        try {
+                          if (typeof salle.equipements === 'string') {
+                            // Essayer de parser comme JSON
+                            try {
+                              equipArray = JSON.parse(salle.equipements);
+                            } catch {
+                              // Si pas JSON, split par virgule
+                              equipArray = salle.equipements.split(',').map(e => e.trim()).filter(Boolean);
+                            }
+                          } else if (Array.isArray(salle.equipements)) {
+                            equipArray = salle.equipements;
+                          }
+                        } catch (e) {
+                          console.error('Erreur parsing equipements:', e);
+                        }
+                        
+                        if (equipArray.length === 0) return null;
+                        
+                        return (
+                          <>
+                            {equipArray.slice(0, 3).map((eq, idx) => (
+                              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">
+                                {eq}
+                              </span>
+                            ))}
+                            {equipArray.length > 3 && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">
+                                +{equipArray.length - 3}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}

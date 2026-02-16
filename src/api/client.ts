@@ -165,12 +165,15 @@ apiClient.interceptors.response.use(
       }
     }
     
-    // Formater l'erreur
+    // Formater l'erreur mais préserver les données brutes
     const apiError: ApiError = {
       message: error.response?.data?.message || error.message || 'Une erreur est survenue',
       status: error.response?.status || 500,
-      errors: error.response?.data?.errors,
+      errors: error.response?.data?.errors || error.response?.data,
     };
+    
+    // Préserver l'objet response original pour le debugging
+    (apiError as any).response = error.response;
     
     return Promise.reject(apiError);
   }

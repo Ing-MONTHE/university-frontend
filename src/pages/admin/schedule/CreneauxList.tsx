@@ -129,7 +129,7 @@ export default function CreneauxList() {
                       <Clock className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{creneau.nom}</h3>
+                      <h3 className="font-semibold text-gray-900">{getJourLabel(creneau.jour)}</h3>
                       <p className="text-sm text-gray-500 font-mono">{creneau.code}</p>
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export default function CreneauxList() {
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-700">
                     <Calendar className="w-4 h-4 text-indigo-500" />
-                    <span className="font-medium">{getJourLabel(creneau.jour_semaine)}</span>
+                    <span className="font-medium">{creneau.jour_display || getJourLabel(creneau.jour)}</span>
                   </div>
 
                   <div className="flex items-center justify-between text-sm">
@@ -157,12 +157,6 @@ export default function CreneauxList() {
                     </div>
                   </div>
                 </div>
-
-                {creneau.description && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    {creneau.description}
-                  </p>
-                )}
 
                 <div className="flex gap-2 pt-4 border-t border-gray-100">
                   <Button
@@ -225,7 +219,7 @@ export default function CreneauxList() {
         onClose={() => setDeleteConfirm({ isOpen: false, item: null })}
         onConfirm={handleDelete}
         title="Supprimer le créneau"
-        message={`Êtes-vous sûr de vouloir supprimer le créneau "${deleteConfirm.item?.nom}" ? Cette action est irréversible.`}
+        message={`Êtes-vous sûr de vouloir supprimer le créneau "${deleteConfirm.item?.code}" ? Cette action est irréversible.`}
         confirmText="Supprimer"
       />
     </div>

@@ -63,7 +63,7 @@ export default function Select({
   // Filtrer les options selon la recherche
   const filteredOptions = searchQuery
     ? (options || []).filter(option =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase())
+        option?.label?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : (options || []);
 

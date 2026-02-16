@@ -94,9 +94,11 @@ export interface SalleUpdate {
 export interface Creneau {
   id: number;
   jour: JourSemaine;
+  jour_display?: string;
   heure_debut: string; // HH:MM
   heure_fin: string; // HH:MM
-  duree_minutes: number; // Calculé automatiquement
+  code: string;
+  duree_minutes?: number; // Calculé automatiquement
   created_at: string;
   updated_at: string;
 }
@@ -223,6 +225,7 @@ export interface CreneauFilters {
   jour?: JourSemaine;
   heure_debut?: string;
   heure_fin?: string;
+  search?: string;
   ordering?: string;
   page?: number;
   page_size?: number;
