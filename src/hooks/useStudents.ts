@@ -49,15 +49,6 @@ export const useStudentStatistics = () => {
   });
 };
 
-// Hook pour obtenir les inscriptions d'un étudiant
-export const useStudentInscriptions = (id: number) => {
-  return useQuery({
-    queryKey: studentKeys.inscriptions(id),
-    queryFn: () => studentApi.getInscriptions(id),
-    enabled: !!id,
-  });
-};
-
 // Hook pour obtenir le bulletin
 export const useStudentBulletin = (id: number) => {
   return useQuery({
@@ -178,7 +169,7 @@ export const inscriptionKeys = {
 export const useStudentInscriptions = (studentId: number) => {
   return useQuery({
     queryKey: inscriptionKeys.student(studentId),
-    queryFn: () => inscriptionApi.getAll({ etudiant: studentId }),
+    queryFn: () => studentApi.getInscriptions(studentId),
     enabled: !!studentId,
   });
 };

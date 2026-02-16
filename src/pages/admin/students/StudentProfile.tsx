@@ -329,9 +329,11 @@ export default function StudentProfilePage() {
                   Nouvelle Inscription
                 </Button>
               </div>
-              {inscriptionsData?.inscriptions && inscriptionsData.inscriptions.length > 0 ? (
-                <div className="space-y-4">
-                  {inscriptionsData.inscriptions.map((inscription: any) => (
+              {(() => {
+                const inscriptions = inscriptionsData?.results || inscriptionsData?.inscriptions || [];
+                return inscriptions.length > 0 ? (
+                  <div className="space-y-4">
+                    {inscriptions.map((inscription: any) => (
                     <div
                       key={inscription.id}
                       className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors"
@@ -392,7 +394,8 @@ export default function StudentProfilePage() {
                     Créer une inscription
                   </Button>
                 </div>
-              )}
+              );
+              })()}
             </div>
           )}
         </div>

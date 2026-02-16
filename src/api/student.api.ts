@@ -174,27 +174,27 @@ export const uploadPhoto = studentApi.uploadPhoto;
 // ============= INSCRIPTION API =============
 export const inscriptionApi = {
   getAll: async (filters?: any): Promise<PaginatedResponse<Inscription>> => {
-    const { data } = await apiClient.get('/students/inscriptions/', { params: filters });
+    const { data } = await apiClient.get('/inscriptions/', { params: filters });
     return data;
   },
 
   getById: async (id: number): Promise<Inscription> => {
-    const { data } = await apiClient.get(`/students/inscriptions/${id}/`);
+    const { data } = await apiClient.get(`/inscriptions/${id}/`);
     return data;
   },
 
   create: async (inscriptionData: any): Promise<Inscription> => {
-    const { data } = await apiClient.post('/students/inscriptions/', inscriptionData);
+    const { data } = await apiClient.post('/inscriptions/', inscriptionData);
     return data;
   },
 
   update: async (id: number, inscriptionData: any): Promise<Inscription> => {
-    const { data } = await apiClient.patch(`/students/inscriptions/${id}/`, inscriptionData);
+    const { data } = await apiClient.patch(`/inscriptions/${id}/`, inscriptionData);
     return data;
   },
 
   delete: async (id: number): Promise<void> => {
-    await apiClient.delete(`/students/inscriptions/${id}/`);
+    await apiClient.delete(`/inscriptions/${id}/`);
   },
 };
 

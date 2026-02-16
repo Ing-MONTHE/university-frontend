@@ -57,18 +57,6 @@ export const useTeacherStatistics = () => {
 };
 
 /**
- * Hook pour récupérer les attributions d'un enseignant
- */
-export const useTeacherAttributions = (id: number) => {
-  return useQuery({
-    queryKey: teacherKeys.attributions(id),
-    queryFn: () => teacherApi.getTeacherAttributions(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-  });
-};
-
-/**
  * Hook pour récupérer la charge horaire d'un enseignant
  */
 export const useTeacherChargeHoraire = (id: number) => {

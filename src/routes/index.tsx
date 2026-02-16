@@ -24,6 +24,7 @@ import {
   StudentsList,
   StudentForm,
   StudentProfile,
+  InscriptionForm,
 } from '@/pages/admin/students';
 
 // Pages Enseignants
@@ -260,6 +261,16 @@ export const router = createBrowserRouter([
       <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
         <MainLayout>
           <StudentForm />
+        </MainLayout>
+      </RoleRoute>
+    ),
+  },
+  {
+    path: '/admin/students/inscriptions/new',
+    element: (
+      <RoleRoute allowedRoles={[USER_ROLES.ADMIN]}>
+        <MainLayout>
+          <InscriptionForm />
         </MainLayout>
       </RoleRoute>
     ),
