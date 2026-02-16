@@ -62,13 +62,13 @@ export default function Select({
 
   // Filtrer les options selon la recherche
   const filteredOptions = searchQuery
-    ? options.filter(option =>
+    ? (options || []).filter(option =>
         option.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : options;
+    : (options || []);
 
   // Trouver l'option sélectionnée
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = (options || []).find(opt => opt.value === value);
 
   // Gérer la sélection
   const handleSelect = (optionValue: string | number) => {
@@ -197,7 +197,7 @@ export default function Select({
                     {option.label}
                   </span>
                   {option.value === value && (
-                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-blue-600 shrink-0" />
                   )}
                 </button>
               ))

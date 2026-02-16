@@ -69,7 +69,7 @@ export default function ResultatsFiliere() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Moyenne classe</p>
-                  <p className="text-2xl font-bold">{resultats.statistiques.moyenne_classe.toFixed(2)}</p>
+                  <p className="text-2xl font-bold">{resultats.statistiques?.moyenne_classe?.toFixed(2) || '0.00'}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-blue-600" />
               </div>
@@ -78,7 +78,7 @@ export default function ResultatsFiliere() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Taux réussite</p>
-                  <p className="text-2xl font-bold">{resultats.statistiques.taux_reussite.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold">{resultats.statistiques?.taux_reussite?.toFixed(1) || '0.0'}%</p>
                 </div>
                 <Award className="w-8 h-8 text-green-600" />
               </div>
@@ -87,7 +87,7 @@ export default function ResultatsFiliere() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Admis</p>
-                  <p className="text-2xl font-bold text-green-600">{resultats.statistiques.admis}</p>
+                  <p className="text-2xl font-bold text-green-600">{resultats.statistiques?.admis || 0}</p>
                 </div>
                 <Users className="w-8 h-8 text-green-600" />
               </div>
@@ -96,7 +96,7 @@ export default function ResultatsFiliere() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Ajournés</p>
-                  <p className="text-2xl font-bold text-red-600">{resultats.statistiques.ajournes}</p>
+                  <p className="text-2xl font-bold text-red-600">{resultats.statistiques?.ajournes || 0}</p>
                 </div>
                 <Users className="w-8 h-8 text-red-600" />
               </div>
@@ -117,23 +117,31 @@ export default function ResultatsFiliere() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {resultats.etudiants.map((etudiant) => (
-                  <tr key={etudiant.etudiant_id}>
-                    <td className="px-6 py-4 font-bold">{etudiant.rang}</td>
-                    <td className="px-6 py-4">{etudiant.matricule}</td>
-                    <td className="px-6 py-4">{etudiant.nom} {etudiant.prenom}</td>
-                    <td className="px-6 py-4 text-center font-semibold">{etudiant.moyenne_generale.toFixed(2)}</td>
-                    <td className="px-6 py-4 text-center">{etudiant.credits_obtenus}/{etudiant.credits_total}</td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge variant="info">{etudiant.mention}</Badge>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge variant={etudiant.decision === 'ADMIS' ? 'success' : 'error'}>
-                        {etudiant.decision}
-                      </Badge>
+                {resultats.etudiants?.length > 0 ? (
+                  resultats.etudiants.map((etudiant) => (
+                    <tr key={etudiant.etudiant_id}>
+                      <td className="px-6 py-4 font-bold">{etudiant.rang}</td>
+                      <td className="px-6 py-4">{etudiant.matricule}</td>
+                      <td className="px-6 py-4">{etudiant.nom} {etudiant.prenom}</td>
+                      <td className="px-6 py-4 text-center font-semibold">{etudiant.moyenne_generale?.toFixed(2) || '0.00'}</td>
+                      <td className="px-6 py-4 text-center">{etudiant.credits_obtenus || 0}/{etudiant.credits_total || 0}</td>
+                      <td className="px-6 py-4 text-center">
+                        <Badge variant="info">{etudiant.mention || 'N/A'}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Badge variant={etudiant.decision === 'ADMIS' ? 'success' : 'error'}>
+                          {etudiant.decision || 'N/A'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      Aucun étudiant trouvé
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

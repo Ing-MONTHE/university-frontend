@@ -162,3 +162,162 @@ export const useImportStudentsCSV = () => {
     },
   });
 };
+
+// ============= INSCRIPTION HOOKS =============
+import { inscriptionApi } from '../api/student.api';
+
+export const inscriptionKeys = {
+  all: ['inscriptions'] as const,
+  lists: () => [...inscriptionKeys.all, 'list'] as const,
+  list: (filters?: any) => [...inscriptionKeys.lists(), filters] as const,
+  details: () => [...inscriptionKeys.all, 'detail'] as const,
+  detail: (id: number) => [...inscriptionKeys.details(), id] as const,
+  student: (studentId: number) => [...inscriptionKeys.all, 'student', studentId] as const,
+};
+
+export const useStudentInscriptions = (studentId: number) => {
+  return useQuery({
+    queryKey: inscriptionKeys.student(studentId),
+    queryFn: () => inscriptionApi.getAll({ etudiant: studentId }),
+    enabled: !!studentId,
+  });
+};
+
+export const useInscriptions = (filters?: any) => {
+  return useQuery({
+    queryKey: inscriptionKeys.list(filters),
+    queryFn: () => inscriptionApi.getAll(filters),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useInscription = (id: number) => {
+  return useQuery({
+    queryKey: inscriptionKeys.detail(id),
+    queryFn: () => inscriptionApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateInscription = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: any) => inscriptionApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: inscriptionKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: studentKeys.lists() });
+      toast.success('Inscription créée avec succès');
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Erreur lors de l'inscription";
+      toast.error(message);
+    },
+  });
+};
+
+export const useUpdateInscription = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      inscriptionApi.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: inscriptionKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: inscriptionKeys.lists() });
+      toast.success('Inscription mise à jour');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};
+
+export const useDeleteInscription = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => inscriptionApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: inscriptionKeys.lists() });
+      toast.success('Inscription supprimée');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};
+
+// ============= ATTRIBUTION HOOKS =============
+import { attributionApi } from '../api/student.api';
+
+export const attributionKeys = {
+  all: ['attributions'] as const,
+  lists: () => [...attributionKeys.all, 'list'] as const,
+  list: (filters?: any) => [...attributionKeys.lists(), filters] as const,
+  details: () => [...attributionKeys.all, 'detail'] as const,
+  detail: (id: number) => [...attributionKeys.details(), id] as const,
+};
+
+export const useAttributions = (filters?: any) => {
+  return useQuery({
+    queryKey: attributionKeys.list(filters),
+    queryFn: () => attributionApi.getAll(filters),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useAttribution = (id: number) => {
+  return useQuery({
+    queryKey: attributionKeys.detail(id),
+    queryFn: () => attributionApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: any) => attributionApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution créée avec succès');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erreur");
+    },
+  });
+};
+
+export const useUpdateAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      attributionApi.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution mise à jour');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};
+
+export const useDeleteAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => attributionApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution supprimée');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};

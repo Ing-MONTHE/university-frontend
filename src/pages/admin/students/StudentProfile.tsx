@@ -318,15 +318,23 @@ export default function StudentProfilePage() {
           {/* Onglet Inscriptions */}
           {activeTab === 'inscriptions' && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Historique des inscriptions ({inscriptionsData?.count || 0})
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Historique des inscriptions ({inscriptionsData?.count || 0})
+                </h3>
+                <Button 
+                  size="sm"
+                  onClick={() => navigate(`/admin/students/inscriptions/new?etudiant=${id}`)}
+                >
+                  Nouvelle Inscription
+                </Button>
+              </div>
               {inscriptionsData?.inscriptions && inscriptionsData.inscriptions.length > 0 ? (
                 <div className="space-y-4">
                   {inscriptionsData.inscriptions.map((inscription: any) => (
                     <div
                       key={inscription.id}
-                      className="border border-gray-200 rounded-lg p-6"
+                      className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -334,31 +342,40 @@ export default function StudentProfilePage() {
                             {inscription.filiere_details?.nom || 'Filière inconnue'}
                           </h4>
                           <p className="text-sm text-gray-600">
-                            {inscription.annee_academique_details?.libelle} • Niveau {inscription.niveau}
+                            {inscription.annee_academique_details?.annee} • Niveau {inscription.niveau}
                           </p>
                         </div>
-                        <span className="text-sm text-gray-500">
-                          {new Date(inscription.date_inscription).toLocaleDateString('fr-FR')}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            inscription.statut_paiement === 'COMPLET' ? 'bg-green-100 text-green-700' :
+                            inscription.statut_paiement === 'PARTIEL' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'
+                          }`}>
+                            {inscription.statut_paiement_display || inscription.statut_paiement}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {new Date(inscription.date_inscription).toLocaleDateString('fr-FR')}
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-3 gap-4 bg-gray-50 rounded-lg p-4">
                         <div>
-                          <p className="text-sm text-gray-600">Montant inscription</p>
-                          <p className="font-medium text-gray-900">
-                            {inscription.montant_inscription?.toLocaleString()} FCFA
+                          <p className="text-xs text-gray-600 mb-1">Montant inscription</p>
+                          <p className="font-semibold text-gray-900">
+                            {Number(inscription.montant_inscription)?.toLocaleString() || 0} FCFA
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Montant payé</p>
-                          <p className="font-medium text-green-600">
-                            {inscription.montant_paye?.toLocaleString()} FCFA
+                          <p className="text-xs text-gray-600 mb-1">Montant payé</p>
+                          <p className="font-semibold text-green-600">
+                            {Number(inscription.montant_paye)?.toLocaleString() || 0} FCFA
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Reste à payer</p>
-                          <p className="font-medium text-red-600">
-                            {inscription.reste_a_payer?.toLocaleString()} FCFA
+                          <p className="text-xs text-gray-600 mb-1">Reste à payer</p>
+                          <p className="font-semibold text-red-600">
+                            {(Number(inscription.montant_inscription) - Number(inscription.montant_paye))?.toLocaleString() || 0} FCFA
                           </p>
                         </div>
                       </div>
@@ -366,9 +383,15 @@ export default function StudentProfilePage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-12">
-                  Aucune inscription enregistrée
-                </p>
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">Aucune inscription enregistrée</p>
+                  <Button 
+                    onClick={() => navigate(`/admin/students/inscriptions/new?etudiant=${id}`)}
+                  >
+                    Créer une inscription
+                  </Button>
+                </div>
               )}
             </div>
           )}

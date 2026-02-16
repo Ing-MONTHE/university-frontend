@@ -171,4 +171,58 @@ NGONO,Marie,F,2001-03-20,marie.ngono@email.com,+237677777777,Yaoundé,Camerounai
 // Exporter uploadPhoto séparément pour utilisation directe
 export const uploadPhoto = studentApi.uploadPhoto;
 
+// ============= INSCRIPTION API =============
+export const inscriptionApi = {
+  getAll: async (filters?: any): Promise<PaginatedResponse<Inscription>> => {
+    const { data } = await apiClient.get('/students/inscriptions/', { params: filters });
+    return data;
+  },
+
+  getById: async (id: number): Promise<Inscription> => {
+    const { data } = await apiClient.get(`/students/inscriptions/${id}/`);
+    return data;
+  },
+
+  create: async (inscriptionData: any): Promise<Inscription> => {
+    const { data } = await apiClient.post('/students/inscriptions/', inscriptionData);
+    return data;
+  },
+
+  update: async (id: number, inscriptionData: any): Promise<Inscription> => {
+    const { data } = await apiClient.patch(`/students/inscriptions/${id}/`, inscriptionData);
+    return data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/students/inscriptions/${id}/`);
+  },
+};
+
+// ============= ATTRIBUTION API =============
+export const attributionApi = {
+  getAll: async (filters?: any): Promise<PaginatedResponse<any>> => {
+    const { data } = await apiClient.get('/students/attributions/', { params: filters });
+    return data;
+  },
+
+  getById: async (id: number): Promise<any> => {
+    const { data } = await apiClient.get(`/students/attributions/${id}/`);
+    return data;
+  },
+
+  create: async (attributionData: any): Promise<any> => {
+    const { data } = await apiClient.post('/students/attributions/', attributionData);
+    return data;
+  },
+
+  update: async (id: number, attributionData: any): Promise<any> => {
+    const { data } = await apiClient.patch(`/students/attributions/${id}/`, attributionData);
+    return data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/students/attributions/${id}/`);
+  },
+};
+
 export default studentApi;

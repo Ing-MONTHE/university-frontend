@@ -9,7 +9,7 @@ import { useSessionsDeliberation, useGenererPVDeliberation } from '@/hooks/useEv
 import { useFilieres } from '@/hooks/useFilieres';
 import type { SessionDeliberationFilters } from '@/types/evaluation.types';
 import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
+import NativeSelect from '@/components/ui/NativeSelect';
 import Badge from '@/components/ui/Badge';
 import Pagination from '@/components/ui/Pagination';
 import Spinner from '@/components/ui/Spinner';
@@ -53,7 +53,7 @@ export default function DeliberationsList() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <Select
+          <NativeSelect
             label="Filière"
             value={filters.filiere || ''}
             onChange={(e) => setFilters({ ...filters, filiere: e.target.value ? Number(e.target.value) : undefined })}
@@ -62,9 +62,9 @@ export default function DeliberationsList() {
             {filieres?.results.map(f => (
               <option key={f.id} value={f.id}>{f.code}</option>
             ))}
-          </Select>
+          </NativeSelect>
 
-          <Select
+          <NativeSelect
             label="Semestre"
             value={filters.semestre || ''}
             onChange={(e) => setFilters({ ...filters, semestre: e.target.value ? Number(e.target.value) : undefined })}
@@ -72,9 +72,9 @@ export default function DeliberationsList() {
             <option value="">Tous</option>
             <option value={1}>Semestre 1</option>
             <option value={2}>Semestre 2</option>
-          </Select>
+          </NativeSelect>
 
-          <Select
+          <NativeSelect
             label="Statut"
             value={filters.statut || ''}
             onChange={(e) => setFilters({ ...filters, statut: e.target.value as any })}
@@ -83,7 +83,7 @@ export default function DeliberationsList() {
             {STATUT_SESSION_CHOICES.map(s => (
               <option key={s.value} value={s.value}>{s.label}</option>
             ))}
-          </Select>
+          </NativeSelect>
         </div>
       </div>
 

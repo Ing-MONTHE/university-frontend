@@ -196,3 +196,118 @@ export interface PaginatedResponse<T> {
   previous: string | null;
   results: T[];
 }
+
+// ============= INSCRIPTION =============
+export interface Inscription {
+  id: number;
+  etudiant: number;
+  etudiant_details?: Etudiant;
+  filiere: number;
+  filiere_details?: Filiere;
+  annee_academique: number;
+  annee_academique_details?: {
+    id: number;
+    annee: string;
+    statut: string;
+  };
+  niveau: number;
+  date_inscription: string;
+  montant_inscription: string;
+  montant_paye: string;
+  reste_a_payer?: string;
+  est_solde?: boolean;
+  statut_paiement: 'COMPLET' | 'PARTIEL' | 'IMPAYE';
+  statut_paiement_display?: string;
+  statut: 'INSCRIT' | 'ABANDONNE' | 'TRANSFERE';
+  statut_display?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InscriptionCreate {
+  etudiant_id: number;
+  filiere_id: number;
+  annee_academique_id: number;
+  niveau: number;
+  montant_inscription: number;
+  montant_paye?: number;
+  statut_paiement?: 'COMPLET' | 'PARTIEL' | 'IMPAYE';
+  statut?: 'INSCRIT' | 'ABANDONNE' | 'TRANSFERE';
+}
+
+export interface InscriptionUpdate {
+  niveau?: number;
+  montant_inscription?: number;
+  montant_paye?: number;
+  statut_paiement?: 'COMPLET' | 'PARTIEL' | 'IMPAYE';
+  statut?: 'INSCRIT' | 'ABANDONNE' | 'TRANSFERE';
+}
+
+export interface InscriptionFilters {
+  page?: number;
+  page_size?: number;
+  etudiant?: number;
+  filiere?: number;
+  annee_academique?: number;
+  niveau?: number;
+  statut_paiement?: string;
+  statut?: string;
+}
+
+// ============= ENSEIGNANT & ATTRIBUTION =============
+export interface Enseignant {
+  id: number;
+  matricule: string;
+  user_details?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  specialite?: string;
+  grade?: string;
+}
+
+export interface Attribution {
+  id: number;
+  enseignant: number;
+  enseignant_details?: Enseignant;
+  matiere: number;
+  matiere_details?: {
+    id: number;
+    code: string;
+    nom: string;
+  };
+  annee_academique: number;
+  annee_academique_details?: {
+    id: number;
+    annee: string;
+    statut: string;
+  };
+  type_enseignement: 'CM' | 'TD' | 'TP';
+  type_enseignement_display?: string;
+  volume_horaire_assigne: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AttributionCreate {
+  enseignant_id: number;
+  matiere_id: number;
+  annee_academique_id: number;
+  type_enseignement: 'CM' | 'TD' | 'TP';
+  volume_horaire_assigne: number;
+}
+
+export interface AttributionUpdate {
+  type_enseignement?: 'CM' | 'TD' | 'TP';
+  volume_horaire_assigne?: number;
+}
+
+export interface AttributionFilters {
+  page?: number;
+  page_size?: number;
+  enseignant?: number;
+  matiere?: number;
+  annee_academique?: number;
+  type_enseignement?: string;
+}

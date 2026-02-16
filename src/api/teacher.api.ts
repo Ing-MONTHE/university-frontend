@@ -152,6 +152,33 @@ export const getTeacherChargeHoraire = async (id: number): Promise<ChargeHoraire
   return response.data;
 };
 
+// ============= ATTRIBUTION API =============
+export const attributionApi = {
+  getAll: async (filters?: any) => {
+    const { data } = await apiClient.get('/students/attributions/', { params: filters });
+    return data;
+  },
+
+  getById: async (id: number) => {
+    const { data } = await apiClient.get(`/students/attributions/${id}/`);
+    return data;
+  },
+
+  create: async (attributionData: any) => {
+    const { data } = await apiClient.post('/students/attributions/', attributionData);
+    return data;
+  },
+
+  update: async (id: number, attributionData: any) => {
+    const { data } = await apiClient.patch(`/students/attributions/${id}/`, attributionData);
+    return data;
+  },
+
+  delete: async (id: number) => {
+    await apiClient.delete(`/students/attributions/${id}/`);
+  },
+};
+
 export default {
   getTeachers,
   getTeacherById,
@@ -163,4 +190,5 @@ export default {
   getTeacherStatistics,
   getTeacherAttributions,
   getTeacherChargeHoraire,
+  attributionApi,
 };

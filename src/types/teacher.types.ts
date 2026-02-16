@@ -175,6 +175,54 @@ export interface ChargeHoraire {
   nombre_matieres: number;
 }
 
+// ============= ATTRIBUTION =============
+export interface Attribution {
+  id: number;
+  enseignant: number;
+  enseignant_details?: Enseignant;
+  matiere: number;
+  matiere_details?: {
+    id: number;
+    code: string;
+    nom: string;
+    credits?: number;
+    coefficient?: number;
+  };
+  annee_academique: number;
+  annee_academique_details?: {
+    id: number;
+    annee: string;
+    statut: string;
+  };
+  type_enseignement: 'CM' | 'TD' | 'TP';
+  type_enseignement_display?: string;
+  volume_horaire_assigne: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AttributionCreate {
+  enseignant_id: number;
+  matiere_id: number;
+  annee_academique_id: number;
+  type_enseignement: 'CM' | 'TD' | 'TP';
+  volume_horaire_assigne: number;
+}
+
+export interface AttributionUpdate {
+  type_enseignement?: 'CM' | 'TD' | 'TP';
+  volume_horaire_assigne?: number;
+}
+
+export interface AttributionFilters {
+  page?: number;
+  page_size?: number;
+  enseignant?: number;
+  matiere?: number;
+  annee_academique?: number;
+  type_enseignement?: string;
+}
+
 export interface PaginatedResponse<T> {
   count: number;
   next: string | null;

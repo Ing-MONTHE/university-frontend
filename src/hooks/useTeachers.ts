@@ -176,3 +176,84 @@ export const useUploadTeacherCV = () => {
     },
   });
 };
+
+// ============= ATTRIBUTION HOOKS =============
+export const attributionKeys = {
+  all: ['attributions'] as const,
+  lists: () => [...attributionKeys.all, 'list'] as const,
+  list: (filters?: any) => [...attributionKeys.lists(), filters] as const,
+  details: () => [...attributionKeys.all, 'detail'] as const,
+  detail: (id: number) => [...attributionKeys.details(), id] as const,
+  teacher: (teacherId: number) => [...attributionKeys.all, 'teacher', teacherId] as const,
+};
+
+export const useTeacherAttributions = (teacherId: number) => {
+  return useQuery({
+    queryKey: attributionKeys.teacher(teacherId),
+    queryFn: () => teacherApi.attributionApi.getAll({ enseignant: teacherId }),
+    enabled: !!teacherId,
+  });
+};
+
+export const useAttributions = (filters?: any) => {
+  return useQuery({
+    queryKey: attributionKeys.list(filters),
+    queryFn: () => teacherApi.attributionApi.getAll(filters),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useAttribution = (id: number) => {
+  return useQuery({
+    queryKey: attributionKeys.detail(id),
+    queryFn: () => teacherApi.attributionApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: any) => teacherApi.attributionApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution créée avec succès');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Erreur");
+    },
+  });
+};
+
+export const useUpdateAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      teacherApi.attributionApi.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution mise à jour');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};
+
+export const useDeleteAttribution = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => teacherApi.attributionApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attributionKeys.lists() });
+      toast.success('Attribution supprimée');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur');
+    },
+  });
+};
